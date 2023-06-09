@@ -1,0 +1,37 @@
+name: CI
+
+# Trigger CI for pull requests to the main branch or when a release is made
+# Do not trigger CI for draft pull request
+on:
+  push:
+    branches: ["main"]
+    tags: ["v*"]
+  pull_request:  
+    types: [opened, synchronize, reopened, ready_for_review]
+
+
+jobs:
+  build:
+    name: Pythom ${{ matrix.python-version }} - ${{ matrix.os }} - ${{ matrix.arch }} - ${{ github.event_name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version:
+          - "3.7"
+        os:
+          - ubuntu-latest
+        arch:
+          - x64
+    if: ${{ github.event_name == 'push' || !github.event.pull_request.draft }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          arch: ${{ matrix.arch }}
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip setuptools wheel
