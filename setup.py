@@ -5,9 +5,9 @@ setuptools.setup(
     author='Kenny Vilella',
     author_email='kenny.vilella@gmail.com',
     description='Calculates the material properties of potential LLSVP compositions',
-    url='',
+    url='https://github.com/KennyVilella/LLSVP_composition_python',
     project_urls={
-        'Source Code': '',
+        'Source Code': 'https://github.com/KennyVilella/LLSVP_composition_python',
     },
     package_dir={'': 'src'},
     packages=setuptools.find_packages(where='src'),

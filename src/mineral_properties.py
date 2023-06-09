@@ -1,4 +1,4 @@
-"""Calculates the material properties of potential lower mantle compositions.
+"""Calculates the mineral properties of potential lower mantle compositions.
 
 This file is associated with the article:
 "Constraints on the composition and temperature of LLSVPs from seismic properties of
@@ -25,20 +25,20 @@ Vilella et al. (2015) and Vilella et al. (2021).
 
 Typical usage example:
 
-  LLSVP_compositions_simulator = MaterialProperties()
-  LLSVP_compositions_simulator.calc_material_properties()
+  LLSVP_compositions_simulator = MineralProperties()
+  LLSVP_compositions_simulator.calc_mineral_properties()
 
 Copyright, 2023,  Vilella Kenny.
 """
 #======================================================================================#
 #                                                                                      #
-#          Starting implementation of class calculating material properties            #
+#           Starting implementation of class calculating mineral properties            #
 #                                                                                      #
 #======================================================================================#
-class MaterialProperties:
-    """Calculates material properties of lower mantle compositions.
+class MineralProperties:
+    """Calculates mineral properties of lower mantle compositions.
 
-    This class provides the functionality required to calculate material properties for
+    This class provides the functionality required to calculate mineral properties for
     a wide range of mineral compositions under pressure and temperature conditions
     suitable for the lowermost mantle. It is assumed that the desired compositions are
     close to a typical pyrolitic composition.
@@ -48,7 +48,7 @@ class MaterialProperties:
     from the provided references. Alternatively, the user can override the default
     values by providing a dictionary.
 
-    The class method `calc_material_properties` calculates the material properties for
+    The class method `calc_mineral_properties` calculates the mineral properties for
     a large range of compositions. A dictionary can be provided to specify the desired
     range for each input property (CaPv proportion, Bm proportion, FeO content,
     Al2O3 content, oxidation state, temperature contrast).
@@ -63,15 +63,15 @@ class MaterialProperties:
         n_capv_am: Proportion of CaPv in the ambient lower mantle.
                    Default to 0.07. [vol%]
         iron_content_am: FeO content in the ambient mantle. Default to 0.08. [wt%]
-        n_pv_am: Proportion of Bm in the ambient lower mantle. Default to 0.75. [vol%]
+        n_bm_am: Proportion of Bm in the ambient lower mantle. Default to 0.75. [vol%]
         al_content_am: Al2O3 content in the ambient mantle. Default to 0.036. [mol%]
         kd_ref_am: Fe partioning coefficient in the ambient mantle. Default to 0.5.
-        ratio_fe_pv_am: Oxidation state in Bm. Default to 0.5.
-        k0t_prime_pv: Pressure derivative of the bulk modulus for Bm.
+        ratio_fe_bm_am: Oxidation state in Bm. Default to 0.5.
+        k0t_prime_bm: Pressure derivative of the bulk modulus for Bm.
                       Default to 3.7.
-        theta_pv_0: Debye temperature for Bm at ambient conditions. Default to 1100. [K]
-        gamma_pv_0: Gruneisen parameter for Bm at ambient conditions. Default to 1.4.
-        q_pv: Exponent of the Gruneisen parameter for Bm. Default to 1.4.
+        theta_bm_0: Debye temperature for Bm at ambient conditions. Default to 1100. [K]
+        gamma_bm_0: Gruneisen parameter for Bm at ambient conditions. Default to 1.4.
+        q_bm: Exponent of the Gruneisen parameter for Bm. Default to 1.4.
         k0t_prime_fp: Pressure derivative of the bulk modulus for Fp.
                       Default to 4.0.
         theta_fp_0: Debye temperature for Fp at ambient conditions. Default to 673. [K]
@@ -115,9 +115,9 @@ class MaterialProperties:
         n_capv_max: Maximum proportion of CaPv assumed for the considered compositions.
                     Default to 0.40. [vol%]
         delta_capv: Step value for the proportion of CaPv. Default to 0.01. [vol%]
-        n_pv_min: Minimum proportion of Bm assumed for the considered compositions.
+        n_bm_min: Minimum proportion of Bm assumed for the considered compositions.
                   Default to 0.60. [vol%]
-        delta_pv: Step value for the proportion of Bm. Default to 0.01. [vol%]
+        delta_bm: Step value for the proportion of Bm. Default to 0.01. [vol%]
         dT_min: Minimum temperature contrast against the ambient mantle assumed for the
                 considered compositions. Default to 0. [K]
         dT_max: Maximum temperature contrast against the ambient mantle assumed for the
@@ -134,9 +134,9 @@ class MaterialProperties:
         al_content_max: Maximum Al2O3 content assumed for the considered compositions.
                         Default to 0.19. [wt%]
         delta_al: Step value for the Al2O3 content. Default to 0.005. [wt%]
-        ratio_fe_pv_min: Minimum oxidation state in Bm assumed for the considered
+        ratio_fe_bm_min: Minimum oxidation state in Bm assumed for the considered
                          compositions. Default to 0.
-        ratio_fe_pv_max: Maximum oxidation state in Bm assumed for the considered
+        ratio_fe_bm_max: Maximum oxidation state in Bm assumed for the considered
                          compositions. Default to 1.
         delta_ratio_fe: Step value for the oxidation state in Bm. Default to 0.1.
         delta_v: Step value for the volume in the spin transition calculation.
@@ -175,16 +175,16 @@ class MaterialProperties:
         # Parameters of the considered ambient mantle
         self.n_capv_am = prop.get(n_capv_am, 0.07) # Irifune 1994, 2010
         self.iron_content_am = prop.get(iron_content_am, 0.08) # Irifune 2010
-        self.n_pv_am = prop.get(n_pv_am, 0.75) # Irifune 2010
+        self.n_bm_am = prop.get(n_bm_am, 0.75) # Irifune 2010
         self.al_content_am = prop.get(al_content_am, 0.036) # Irifune 2010
         self.kd_ref_am = prop.get(kd_ref_am, 0.5) # Piet 2016
-        self.ratio_fe_pv_am = prop.get(ratio_fe_pv_am, 0.5) # Piet 2016
+        self.ratio_fe_bm_am = prop.get(ratio_fe_bm_am, 0.5) # Piet 2016
 
         # EOS parameters for Bridgmanite
-        self.k0t_prime_pv = prop.get(k0t_prime_pv, 3.7) # Fiquet 2000
-        self.theta_pv_0 = prop.get(theta_pv_0, 1100.) # Fiquet 2000
-        self.gamma_pv_0 = prop.get(gamma_pv_0, 1.4) # Fiquet 2000
-        self.q_pv = prop.get(q_pv, 1.4) # Fiquet 2000
+        self.k0t_prime_bm = prop.get(k0t_prime_bm, 3.7) # Fiquet 2000
+        self.theta_bm_0 = prop.get(theta_bm_0, 1100.) # Fiquet 2000
+        self.gamma_bm_0 = prop.get(gamma_bm_0, 1.4) # Fiquet 2000
+        self.q_bm = prop.get(q_bm, 1.4) # Fiquet 2000
 
         # EOS parameters for Ferropericlase
         self.k0t_prime_fp = prop.get(k0t_prime_fp, 4.0) # Jackson 1982
@@ -222,7 +222,7 @@ class MaterialProperties:
         self.m_capv = 116.161
         self.rho_capv_0 = 1000. * m_capv/v_casio3_0
 
-    def calc_material_properties(self, conditions={}):
+    def calc_mineral_properties(self, conditions={}):
         """Work in progress.
         """
         # Load simulation conditions
@@ -247,8 +247,8 @@ class MaterialProperties:
         self.n_capv_max = conditions.get(n_capv_max, 0.40)
         self.delta_capv = conditions.get(delta_capv, 0.01)
 
-        self.n_pv_min = conditions.get(n_pv_min, 0.60)
-        self.delta_pv = conditions.get(delta_pv, 0.01)
+        self.n_bm_min = conditions.get(n_bm_min, 0.60)
+        self.delta_bm = conditions.get(delta_bm, 0.01)
 
         self.dT_min = conditions.get(dT_min, 0.)
         self.dT_max = conditions.get(dT_max, 1000.)
@@ -262,8 +262,8 @@ class MaterialProperties:
         self.al_content_max = conditions.get(al_content_max, 0.19)
         self.delta_al = conditions.get(delta_al, 0.005)
 
-        self.ratio_fe_pv_min = conditions.get(ratio_fe_pv_min, 0.)
-        self.ratio_fe_pv_max = conditions.get(ratio_fe_pv_max, 1.0)
+        self.ratio_fe_bm_min = conditions.get(ratio_fe_bm_min, 0.)
+        self.ratio_fe_bm_max = conditions.get(ratio_fe_bm_max, 1.0)
         self.delta_ratio_fe = conditions.get(delta_ratio_fe, 0.1)
 
         # Stepping used for the spin transition calculation
