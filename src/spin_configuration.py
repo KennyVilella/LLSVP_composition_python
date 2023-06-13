@@ -22,7 +22,6 @@ Copyright, 2023,  Vilella Kenny.
 """
 import numpy as np
 import scipy.optimize
-import scipy.integrate
 #======================================================================================#
 #                                                                                      #
 #         Starting implementation of class calculating the spin configuration          #
@@ -115,7 +114,7 @@ class SpinConfiguration:
         v_fp_0 = x_fp * v_feo_0 + (1 - x_fp) * self.MP.v_mgo_0
 
         solution = scipy.optimize.fsolve(
-            lambda x: self._MGD_fp(x, T_i, P_i, k_fp_0, v_fp_0), 1.5
+            lambda x: self.MP._MGD_fp(x, T_i, P_i, k_fp_0, v_fp_0), 1.5
         )
         v_fp = v_fp_0 / (0.15055 * solution)
 
@@ -179,79 +178,7 @@ class SpinConfiguration:
         v_feo_0 = eta_ls * self.MP.v_feo_ls_0 + eta_hs * self.MP.v_feo_hs_0
         v_fp_0 = x_fp * v_feo_0 + (1 - x_fp) * self.MP.v_mgo_0
 
-        return -self._MGD_fp(v_fp_0 / v_fp, T_i, 0.0, k_fp_0, v_fp_0)
-
-    def _MGD_fp(self, x, T_i, P_i, k_fp_0, v_fp_0):
-        """Implements the Mie-Gruneisen-Debye EOS.
-
-        This function calculates the residue of the Mie-Gruneisen-Debye equation of
-        state applied to Ferropericlase (Fp) and can be used to obtain the volume of Fp
-        given the pressure and temperature conditions.
-        It corresponds to the eq. (6) of Vilella et al. (2015).
-
-        This function can also be used to obtained the pressure by providing a zero
-        pressure as the residue would simply be the pressure.
-
-        The formalism of the Mie-Gruneisen-Debye equation of state can be found in
-        Jackson and Rigden (1996).
-
-        Args:
-            x: Volume ratio V0 / V, where V0 is the volume at ambient conditions and V
-               the volume at the considered conditions.
-            T_i: Considered temperature. [K]
-            P_i: Considered pressure. [GPa]
-            k_fp_0: Bulk modulus of Ferropericlase at ambient conditions. [GPa]
-            v_fp_0: Volume of Ferropericlase at ambient conditions. [cm^3/mol]
-
-        Returns:
-            Float64: The residue of the Mie-Gruneisen-Debye EOS. [GPa]
-        """
-        # Gruneisen parameter at P, T conditions
-        gamma_fp = self.MP.gamma_fp_0 * x**(-self.MP.q_fp)
-
-        # Debye temperature at P, T conditions
-        theta_fp = self.MP.theta_fp_0 * np.exp(
-            (self.MP.gamma_fp_0 - gamma_fp) / self.MP.q_fp
-        )
-
-        # The third-order Birch–Murnaghan isothermal equation of state
-        BM3 = P_i - (
-            1.5 * k_fp_0 * (x**(7/3) - x**(5/3)) *
-            (1 + 3/4 * (self.MP.k0t_prime_fp - 4) * (x**(2/3) - 1))
-        )
-
-        E_th = 9. * 2. * self.MP.R * T_i**4 / theta_fp**3 * (
-            self._integral_vibrational_energy(theta_fp / T_i)
-        )
-        E_th_0 = 9. * 2. * self.MP.R * 300.**4 / theta_fp**3 * (
-            self._integral_vibrational_energy(theta_fp / 300.)
-        )
-
-        # The Mie-Gruneisen-Debye equation of state
-        MGD =  BM3  - gamma_fp * x / v_fp_0 * (E_th - E_th_0)
-
-        return MGD
-
-
-    def _integral_vibrational_energy(self, x_max):
-        """Calculates the integral part of the vibrational energy.
-
-        This function calculates the integral part of the vibrational energy and returns
-        its value. It corresponds to the eq. (9) of Vilella et al. (2015).
-
-
-        This function is necessary because the method scipy.integrate.quad returns both         the value and the error, while only the value is needed.
-
-        Args:
-            x_max: Value for the upper bound of the integral.
-
-        Returns:
-            Float64: Value of the integral.
-        """
-        value, err = scipy.integrate.quad(
-            lambda x: x**3 / (np.exp(x) - 1), 0, x_max
-        )
-        return value
+        return -self.MP._MGD_fp(v_fp_0 / v_fp, T_i, 0.0, k_fp_0, v_fp_0)
 
 
     def _energy_equation(self, spin_state, v_0, v):
