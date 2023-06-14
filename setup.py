@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(
-    name='LLSVP_composition',
+    name='llsvp',
     author='Kenny Vilella',
     author_email='kenny.vilella@gmail.com',
     description='Calculates the material properties of potential LLSVP compositions',
