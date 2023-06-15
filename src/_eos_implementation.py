@@ -536,7 +536,7 @@ class _EOS_bm(_EOS):
         return super()._E_th(5, data.R, T, theta_bm, int_part_bm)
 
     def _MGD(self, data, T, P, v_bm, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3):
-       """Implements the Mie-Gruneisen-Debye EOS for Bridgmanite.
+        """Implements the Mie-Gruneisen-Debye EOS for Bridgmanite.
 
         This function calculates the residue of the Mie-Gruneisen-Debye equation of
         state applied to Bridgmanite (Bm). It can be used to obtain one of the
