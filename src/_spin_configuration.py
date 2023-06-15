@@ -66,7 +66,7 @@ def _calc_spin_configuration(self):
     delta_x = 0.01
     self.x_vec = np.arange(x_min, x_max + delta_x, delta_x)
     self.T_vec = self.T_am + np.arange(
-        self.dT_min, self.dT_max + self.delta_dT, self.delta_dT
+        0.0, self.dT_max + self.delta_dT, self.delta_dT
     )
 
     # Calculating range for the volume of Fp using extreme cases
@@ -82,13 +82,13 @@ def _calc_spin_configuration(self):
     v_max = solution[0] / 0.15055
 
     n_T = len(self.T_vec)
-    n_v = round((v_max - v_min) / self.delta_v)
+    n_v = round((v_max - v_min) / self.delta_v) + 1
     n_x = len(self.x_vec)
 
     # Initializing
     spin_config = np.zeros((n_T, n_v, n_x))
     P_table = np.zeros((n_T, n_v, n_x))
-    k_b = 8.617**(-5) # Boltzmann constant
+    k_b = 8.617 * 10**(-5) # Boltzmann constant
     v_fp_0 = self.v_feo_hs_0 / 0.15055
 
     # The energy degeneracy of the electronic configuration for the low/high
