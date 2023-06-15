@@ -531,7 +531,7 @@ def _oxides_content_in_bm(
     )
 
     # Equations giving the FeO and AlO2 content in Bm
-    c_1 = 0.5 * self.m_al2o3 / (al * (feo / self.m_feo - x_feo_fp * x_m_fp / m_fp))
+    c_1 = 0.5 * self.m_al2o3 / al * (feo / self.m_feo - x_feo_fp * x_m_fp / m_fp)
     x_alo2_bm = self.kd_ref_am * x_feo_fp / (
         2 * c_1 * (1 - x_feo_fp) + self.kd_ref_am * x_feo_fp +
         self.kd_ref_am * x_feo_fp * (2 - ratio_fe) * c_1
