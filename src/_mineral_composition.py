@@ -238,6 +238,9 @@ def _solve_mineral_composition(
     else:
         al_excess = False
 
+    # Converting density
+    rho_capv = rho_capv / 5500
+
     if (p_fp > 0.0):
         ### Ferropericlase is present in the rock assemblage ###
         # Setting lower bound and upper bound for the solution
