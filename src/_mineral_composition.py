@@ -11,6 +11,7 @@ Typical usage example:
 Copyright, 2023,  Vilella Kenny.
 """
 import numpy as np
+from math import isclose
 import os
 import csv
 import scipy.optimize
@@ -224,6 +225,7 @@ def _calc_mineral_composition(self, spin_config, P_table):
         jj_start = 0 # In case the calculation has been resumed
     # End of temperature loop
 
+
 def _solve_mineral_composition(
     self, dT, p_capv, p_bm, feo, al, ratio_fe, ii,
     spin_config, P_table, rho_capv, p_fp, x_init
@@ -283,6 +285,8 @@ def _solve_mineral_composition(
             # Checking that solution is indeed correct
             if (ratio_fe * x_feo_bm > x_alo2_bm):
                 ### Guess for al_excess is again incorrect ###
+                # Skipping this calculation
+                x_feo_bm, x_feo_fp, x_alo2_bm, rho_bm, rho_fp = (0., 0., 0., 0., 0.)
                 print("Problem with Al_excess")
                 print("p_bm = ", p_bm, " p_capv = ", p_capv," feo = ", feo,
                     " al = ", al, " ratio_fe = ", ratio_fe, " dT = ", dT)
@@ -310,14 +314,18 @@ def _solve_mineral_composition(
             # Checking that solution is indeed correct
             if (ratio_fe * x_feo_bm < x_alo2_bm):
                 ### Guess for al_excess is again incorrect ###
+                # Skipping this calculation
+                x_feo_bm, x_feo_fp, x_alo2_bm, rho_bm, rho_fp = (0., 0., 0., 0., 0.)
                 print("Problem with Al_excess")
                 print("p_bm = ", p_bm, " p_capv = ", p_capv," feo = ", feo,
                     " al = ", al, " ratio_fe = ", ratio_fe, " dT = ", dT)
                 print("Skip this condition")
 
         # Verifying that the solution is indeed consistent
-
-
+        _set_eqs_with_fp(
+            self, solution.x, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config,
+            P_table, rho_capv, p_fp, al_excess, True
+        )
     else:
         ### Ferropericlase is absent from the rock assemblage ###
         # Setting lower bound and upper bound for the solution
@@ -325,17 +333,75 @@ def _solve_mineral_composition(
         x_alo2_bm_bound = (0.0, 1.0)
         rho_bm_bound = (0.5, 1.8)
 
-        x_feo_bm = 0.1
+        # Solving the system of equation
+        solution = scipy.optimize.minimize(
+            lambda x: _set_eqs_without_fp(
+                self, x, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
+            ),
+            [x_init[0], x_init[2], x_init[3] / 5500],
+            bounds=(x_feo_bm_bound, x_alo2_bm_bound, rho_bm_bound)
+        )
+
+        # Unpacking the results
+        x_feo_bm, x_alo2_bm, rho_bm = solution.x
         x_feo_fp = 0.0
-        x_alo2_bm = 0.1
-        rho_bm = 1.0
         rho_fp = 0.0
+
+        if ((not al_excess) and (ratio_fe * x_feo_bm < x_alo2_bm)):
+            ### First guess for al_excess is incorrect ###
+            # Trying to solve the system of equation with al_excess
+            al_excess = True
+            solution = scipy.optimize.minimize(
+                lambda x: _set_eqs_without_fp(
+                    self, x, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
+                ),
+                [x_init[0], x_init[2], x_init[3] / 5500],
+                bounds=(x_feo_bm_bound, x_alo2_bm_bound, rho_bm_bound)
+            )
+
+            # Unpacking the results
+            x_feo_bm, x_alo2_bm, rho_bm = solution.x
+
+            # Checking that solution is indeed correct
+            if (ratio_fe * x_feo_bm > x_alo2_bm):
+                ### Guess for al_excess is again incorrect ###
+                # Skipping this calculation
+                x_feo_bm, x_alo2_bm, rho_bm = (0., 0., 0.)
+                print("Problem with Al_excess")
+                print("p_bm = ", p_bm, " p_capv = ", p_capv," feo = ", feo,
+                    " al = ", al, " ratio_fe = ", ratio_fe, " dT = ", dT)
+                print("Skip this condition")
+        elif ((al_excess) and (ratio_fe * x_feo_bm > x_alo2_bm)):
+            ### First guess for al_excess is incorrect ###
+            # Trying to solve the system of equation without al_excess
+            al_excess = False
+            solution = scipy.optimize.minimize(
+                lambda x: _set_eqs_without_fp(
+                    self, x, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
+                ),
+                [x_init[0], x_init[2], x_init[3] / 5500],
+                bounds=(x_feo_bm_bound, x_alo2_bm_bound, rho_bm_bound)
+            )
+
+            # Unpacking the results
+            x_feo_bm, x_alo2_bm, rho_bm = solution.x
+
+            # Checking that solution is indeed correct
+            if (ratio_fe * x_feo_bm < x_alo2_bm):
+                ### Guess for al_excess is again incorrect ###
+                # Skipping this calculation
+                x_feo_bm, x_alo2_bm, rho_bm = (0., 0., 0.)
+                print("Problem with Al_excess")
+                print("p_bm = ", p_bm, " p_capv = ", p_capv," feo = ", feo,
+                    " al = ", al, " ratio_fe = ", ratio_fe, " dT = ", dT)
+                print("Skip this condition")
 
     return [x_feo_bm, x_feo_fp, x_alo2_bm, 5500 * rho_bm, 5500 * rho_fp]
 
+
 def _set_eqs_with_fp(
     self, var_in, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config, P_table,
-    rho_capv, p_fp, al_excess,
+    rho_capv, p_fp, al_excess, testing=False
 ):
     """Work in progress.
     """
@@ -406,7 +472,50 @@ def _set_eqs_with_fp(
     # Equation from the alumina content
     eq_alo2 = -x_alo2_bm * self.m_al2o3 * x_m_bm + m_bm * al
 
+    if (testing):
+        # Verifying that error on the spin configuration is reasonable
+        if (abs(P_table[ii, index_P, index_x] - self.P_am) > self.delta_P):
+            print("Error on P for the spin transition is large")
+            print("Pressure for the spin configuration: `",
+                P_table[ii, index_P, index_x], "` actual pressure: `", self.P_am, "`")
+        elif ((self.x_vec[index_x] - x_feo_fp) > self.x_vec[1] - self.x_vec[0]):
+            print("Error on x for the spin transition is large")
+            print("FeO content for the spin configuration: `",
+                self.x_vec[index_x], "` calculated FeO content: `", x_feo_fp, "`")
+
+
+        # Verifying that the sum of all chemical elements is equal to 1
+        x_m_capv = (p_capv * rho_capv) / (
+            (p_capv * rho_capv) + p_fp * rho_fp + p_bm * rho_bm
+        )
+        x_m_fp = 1 / (
+            1 + p_capv * rho_capv / (p_fp * rho_fp) + p_bm * rho_bm / (p_fp * rho_fp)
+        )
+        m_ca, m_al, m_mg, m_fe, m_o = (40.078, 26.982, 24.305, 55.845, 15.999)
+        m_si = 28.086
+        sum_elements = (
+            m_ca / self.m_capv * x_m_capv + m_al / m_bm * 2 * x_m_bm * x_alo2_bm +
+            m_mg / m_bm * x_m_bm * x_mgsio3_bm + m_mg / m_fp * x_m_fp * (1 - x_feo_fp) +
+            m_fe / m_bm * 2 * x_m_bm * x_feo_bm + m_fe / m_fp * x_m_fp * x_feo_fp +
+            m_si / m_bm * x_m_bm * (x_mgsio3_bm + x_fesio3_bm) +
+            m_si / self.m_capv * x_m_capv + m_o / m_bm * 3 * x_m_bm +
+            m_o / m_fp * x_m_fp + m_o / self.m_capv * 3 * x_m_capv
+        )
+        if (not isclose(sum_elements, 1.0, abs_tol=1e-3)):
+            print("Problem with the sum of elements")
+            print("Sum of elements is equal to `", sum_elements, "`")
+
+        # Verifying that the FeO content is consistent
+        sum_feo = self.m_feo * (
+            2 * x_m_bm * x_feo_bm / m_bm + x_m_fp * x_feo_fp / m_fp
+        )
+        if (not isclose(sum_feo, feo, abs_tol=1e-3)):
+            print("Problem with the FeO content")
+            print("Calculated FeO content is `", sum_feo,
+                "` , while the actual value is `", feo, "`")
+
     return abs(eq_MGD_fp) + abs(eq_MGD_bm) + abs(eq_alo2)
+
 
 def _oxides_content_in_bm(
     self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe, rho_capv, p_fp
@@ -430,3 +539,55 @@ def _oxides_content_in_bm(
     x_feo_bm  = c_1 * x_alo2_bm
 
     return (x_alo2_bm, x_feo_bm)
+
+
+def _set_eqs_without_fp(
+    self, var_in, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
+):
+    """Work in progress.
+    """
+    # Loading utility class for mineral properties calculation
+    bm_eos = _EOS_bm()
+
+    # Unpacking input variables
+    x_feo_bm, x_alo2_bm, rho_bm = var_in
+
+    if (al_excess):
+        ### Al is asssumed to be in excess ###
+        # Calculating molar proportion of the different components of Bm
+        x_mgsio3_bm = 1 - x_alo2_bm - (2 - ratio_fe) * x_feo_bm
+        x_fesio3_bm = 2 * (1 - ratio_fe) * x_feo_bm
+        x_fealo3_bm = 2 * ratio_fe * x_feo_bm
+        x_fe2o3_bm = 0.0
+        x_al2o3_bm = x_alo2_bm - ratio_fe * x_feo_bm
+    else:
+        ### Fe is assumed to be in excess ###
+        # Calculating molar proportion of the different components of Bm
+        x_mgsio3_bm = 1 - x_alo2_bm - (2 - ratio_fe) * x_feo_bm
+        x_fesio3_bm = 2 * (1 - ratio_fe) * x_feo_bm
+        x_fealo3_bm = 2 * x_alo2_bm
+        x_fe2o3_bm = ratio_fe * x_feo_bm - x_alo2_bm
+        x_al2o3_bm = 0.0
+
+    # Mass proportion of Bm
+    x_m_bm = 1 / (1 + p_capv * rho_capv / (p_bm * rho_bm))
+    m_bm = (
+        self.m_mgsio3 * x_mgsio3_bm + self.m_fealo3 * x_fealo3_bm +
+        self.m_al2o3 * x_al2o3_bm + self.m_fe2o3 * x_fe2o3_bm +
+        self.m_fesio3 * x_fesio3_bm
+    )
+    v_bm = 1000 * m_bm / (5500 * rho_bm)
+
+    # Equation from the EOS for Bm
+    eq_MGD_bm = bm_eos._MGD(
+        self, self.T_am + dT, self.P_am, v_bm, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm,
+        x_fe2o3_bm, x_al2o3_bm
+    )
+
+    # Equation from alumina and FeO content
+    eq_feo_al = -feo / al + (2 * self.m_feo * x_feo_bm) / (self.m_al2o3 * x_alo2_bm)
+
+    # Equation from the alumina content
+    eq_alo2 = -x_alo2_bm + m_bm * al / (self.m_al2o3 * x_m_bm)
+
+    return abs(eq_MGD_bm) + abs(eq_feo_al) + abs(eq_alo2)
