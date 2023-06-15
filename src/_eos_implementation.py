@@ -156,19 +156,69 @@ class _EOS(ABC):
         )
         return value
 
-
+#======================================================================================#
+#                                                                                      #
+#   Starting implementation of the class for calculation of Ferropericlase properties  #
+#                                                                                      #
+#======================================================================================#
 class _EOS_fp(_EOS):
-    """
+    """Implement the Mie-Gruneisen-Debye equation of state for Ferropericlase.
+
+    This class is derived from the abstract class _EOS, which implements the basic
+    functionality required to implement the Mie-Gruneisen-Debye equation of state.
+
+    The formalism for the Mie-Gruneisen-Debye equation of state used in this class can
+    be found in Jackson and Rigden (1996).
+
+    This class should not be used outside the class MineralProperties.
     """
     def _v_feo_0(self, data, eta_ls):
+        """Calculates the volume of FeO at ambient conditions.
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            eta_ls: Average proportion of FeO in the low spin state.
+
+        Returns:
+            Float64: Volume of FeO at ambient conditions. [cm^3/mol]
+        """
         return eta_ls * data.v_feo_ls_0 + (1 - eta_ls) * data.v_feo_hs_0
 
     def _v_fp_0(self, data, eta_ls, x_fp):
+        """Calculates the volume of Ferropericlase at ambient conditions.
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            eta_ls: Average proportion of FeO in the low spin state.
+            x_fp: Molar concentration of FeO in Fp.
+
+        Returns:
+            Float64: Volume of Fp at ambient conditions. [cm^3/mol]
+        """
         v_feo_0 = self. _v_feo_0(data, eta_ls)
         return x_fp * v_feo_0 + (1 - x_fp) * data.v_mgo_0
 
     def _k_VRH_average(self, x_1, v_1, k_1, v_2, k_2):
-        """Calculates the Voigt-Reuss-Hill average of the bulk modulus."""
+        """Calculates the Voigt-Reuss-Hill average of the bulk modulus.
+
+        Implement the Voigt-Reuss-Hill average for a mixture of two components. This is
+        traditionally used to calculate the elasticity of polycrystal from the
+        elasticity of its individual components. Here, it is used to calculate the bulk
+        modulus of Ferropericlase.
+
+        Note that the volume can be given in any unit as long as the two volumes are
+        given in the same unit.
+
+        Args:
+            x_1: Molar concentraion of the first component.
+            v_1: Volume of the first component.
+            k_1: Bulk modulus of the first component. [GPa]
+            v_2: Volume of the second component.
+            k_2: Bulk modulus of the second component. [GPa]
+
+        Returns:
+            Float64: Voigt-Reuss-Hill average of the bulk modulus. [GPa]
+        """
         x_2 = 1 - x_1
         v_tot = x_1 * v_1 + x_2 * v_2
         k_v = x_1 * v_1 / v_tot * k_1 + x_2 * v_2 / v_tot * k_2
@@ -176,11 +226,37 @@ class _EOS_fp(_EOS):
         return 0.5 * (k_v + k_r)
 
     def _k_feo_0_VRH_average(self, data, eta_ls):
+        """Calculates the bulk modulus of FeO in Ferropericlase at ambient conditions.
+
+        This function calculates the bulk modulus of FeO at ambient conditions using
+        the Voigt-Reuss-Hill average. It is assumed that the FeO in Ferropericlase is a
+        mixture of FeO in a low spin state and FeO in a high spin state.
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            eta_ls: Average proportion of FeO in the low spin state.
+
+        Returns:
+            Float64: Bulk modulus of FeO in Fp at ambient conditions. [GPa]
+        """
         return self._k_VRH_average(
             eta_ls, data.v_feo_ls_0, data.k_feo_ls_0, data.v_feo_hs_0, data.k_feo_hs_0
         )
 
     def _k_fp_0_VRH_average(self, data, eta_ls, x_fp):
+        """Calculates the bulk modulus of Ferropericlase at ambient conditions.
+
+        This function calculates the bulk modulus of Fp at ambient conditions using
+        the Voigt-Reuss-Hill average. It is assumed that Fp is a mixture of FeO and MgO.
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            eta_ls: Average proportion of FeO in the low spin state.
+            x_fp: Molar concentration of FeO in Fp.
+
+        Returns:
+            Float64: Bulk modulus of Fp at ambient conditions. [GPa]
+        """
         # Volume of FeO at ambient conditions
         v_feo_0 = self._v_feo_0(data, eta_ls)
         # Bulk modulus of FeO at ambient conditions
@@ -190,17 +266,77 @@ class _EOS_fp(_EOS):
         )
 
     def _gamma(self, data, v_ratio):
+        """Calculates the Gruneisen parameter of Ferropericlase.
+
+        It corresponds to the eq. (31) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            v_ratio: Volume ratio V0 / V of Fp, where V0 is the volume of Fp at ambient
+                     conditions and V the volume of Fp at the considered conditions.
+
+        Returns:
+            Float64: Gruneisen parameter of Fp at the considered conditions.
+        """
         return super()._gamma(data.gamma_fp_0, v_ratio, data.q_fp)
 
     def _theta(self, data, v_ratio):
+        """Calculates the Debye temperature of Ferropericlase.
+
+        It corresponds to the eq. (32) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            v_ratio: Volume ratio V0 / V of Fp, where V0 is the volume of Fp at ambient
+                     conditions and V the volume of Fp at the considered conditions.
+
+        Returns:
+            Float64: Debye temperature of Fp at the considered conditions. [K]
+        """
         # Gruneisen parameter
         gamma_fp = self._gamma(data, v_ratio)
         return super()._theta(data.theta_fp_0, data.gamma_fp_0, gamma_fp, data.q_fp)
 
     def _BM3(self, data, P, k_fp_0, v_ratio):
+        """Implements the third-order Birch–Murnaghan isothermal EOS for Ferropericlase.
+
+        This function calculates the residue of the third-order Birch–Murnaghan
+        isothermal equation of state applied to Ferroepriclase (Fp).
+
+        It corresponds to the eq. (B1) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            P: Considered pressure. [GPa]
+            k_fp_0: Bulk modulus of Fp at ambient conditions. [GPa]
+            v_ratio: Volume ratio V0 / V of Fp, where V0 is the volume of Fp at ambient
+                     conditions and V the volume of Fp at the considered conditions.
+
+        Returns:
+            Float64: Residue of the third-order Birch–Murnaghan isothermal
+                     equation of state for Fp. [GPa]
+        """
         return super()._BM3(P, k_fp_0, v_ratio, data.k0t_prime_fp)
 
     def _E_th(self, data, T, v_ratio):
+        """Calculates the vibrational energy of Ferropericlase.
+
+        The integral part of the expression is calculated separately because the method 
+        scipy.integrate.quad returns both the value and the error, while only the value
+        is needed.
+
+        It corresponds to the eq. (30) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            T: Considered temperature. [K]
+            v_ratio: Volume ratio V0 / V of Fp, where V0 is the volume of Fp at ambient
+                     conditions and V the volume of Fp at the considered conditions.
+
+        Returns:
+            Float64: Vibrational energy of Fp at the considered conditions.
+                     [cm^3 GPa mol^−1]
+        """
         # Debye temperature
         theta_fp = self._theta(data, v_ratio)
         # Integral part of the vibrational energy
@@ -225,7 +361,7 @@ class _EOS_fp(_EOS):
             x_fp: Molar concentration of FeO in Fp.
 
         Returns:
-            Float64: The residue of the Mie-Gruneisen-Debye EOS. [GPa]
+            Float64: Residue of the Mie-Gruneisen-Debye EOS for Fp. [GPa]
         """
         # Bulk modulus of Fp at ambient conditions
         k_fp_0 = self._k_fp_0_VRH_average(data, eta_ls, x_fp)
@@ -243,11 +379,36 @@ class _EOS_fp(_EOS):
         E_th_fp_0 = self._E_th(data, 300, v_ratio)
         return super()._MGD(BM3_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0)
 
-
+#======================================================================================#
+#                                                                                      #
+#    Starting implementation of the class for calculation of Bridgmanite properties    #
+#                                                                                      #
+#======================================================================================#
 class _EOS_bm(_EOS):
-    """
+    """Implement the Mie-Gruneisen-Debye equation of state for Bridgmanite.
+
+    This class is derived from the abstract class _EOS, which implements the basic
+    functionality required to implement the Mie-Gruneisen-Debye equation of state.
+
+    The formalism for the Mie-Gruneisen-Debye equation of state used in this class can
+    be found in Jackson and Rigden (1996).
+
+    This class should not be used outside the class MineralProperties.
     """
     def _v_bm_0(self, data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3):
+        """Calculates the volume of Bridgmanite at ambient conditions.
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            x_mgsio3: Molar concentration of MgSiO3 in Bm.
+            x_fesio3: Molar concentration of FeSiO3 in Bm.
+            x_fealo3: Molar concentration of FeAlO3 in Bm.
+            x_fe2o3: Molar concentration of Fe2O3 in Bm.
+            x_al2o3: Molar concentration of Al2O3 in Bm.
+
+        Returns:
+            Float64: Volume of Bm at ambient conditions. [cm^3/mol]
+        """
         v_bm_0 = (
             x_mgsio3 * data.v_mgsio3_0 + x_fesio3 * data.v_fesio3_0 +
             x_fealo3 * data.v_fealo3_0 + x_al2o3 * data.v_al2o3_0 +
@@ -258,7 +419,26 @@ class _EOS_bm(_EOS):
     def _k_bm_0_VRH_average(
         self, data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3, v_tot
     ):
-        """Calculates the Voigt-Reuss-Hill average of the bulk modulus."""
+        """Calculates the bulk modulus of Bridgmanite at ambient conditions.
+
+        This function calculates the bulk modulus of Bm at ambient conditions using
+        the Voigt-Reuss-Hill average. The Voigt-Reuss-Hill average is traditionally
+        used to calculate the elasticity of polycrystal from the elasticity of its
+        individual components. Here, it is assumed that Bm is a mixture of MgSiO3, 
+        FeSiO3, FeAlO3, Fe2O3, and Al2O3.
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            x_mgsio3: Molar concentration of MgSiO3 in Bm.
+            x_fesio3: Molar concentration of FeSiO3 in Bm.
+            x_fealo3: Molar concentration of FeAlO3 in Bm.
+            x_fe2o3: Molar concentration of Fe2O3 in Bm.
+            x_al2o3: Molar concentration of Al2O3 in Bm.
+            v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
+
+        Returns:
+            Float64: Bulk modulus of Fp at ambient conditions. [GPa]
+        """
         k_v = (
             x_mgsio3 * data.v_mgsio3_0 * data.k_mgsio3_0 +
             x_fesio3 * data.v_fesio3_0 * data.k_fesio3_0 +
@@ -276,9 +456,33 @@ class _EOS_bm(_EOS):
         return 0.5 * (k_v + k_r)
 
     def _gamma(self, data, v_ratio):
+        """Calculates the Gruneisen parameter of Bridgmanite.
+
+        It corresponds to the eq. (31) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            v_ratio: Volume ratio V0 / V of Bm, where V0 is the volume of Bm at ambient
+                     conditions and V the volume of Bm at the considered conditions.
+
+        Returns:
+            Float64: Gruneisen parameter of Bm at the considered conditions.
+        """
         return super()._gamma(data.gamma_bm_0, v_ratio, data.q_bm)
 
     def _theta(self, data, v_ratio):
+        """Calculates the Debye temperature of Bridgmanite.
+
+        It corresponds to the eq. (32) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            v_ratio: Volume ratio V0 / V of Bm, where V0 is the volume of Bm at ambient
+                     conditions and V the volume of Bm at the considered conditions.
+
+        Returns:
+            Float64: Debye temperature of Bm at the considered conditions. [K]
+        """
         # Gruneisen parameter
         gamma_bm = self._gamma(data, v_ratio)
         return super()._theta(
@@ -286,9 +490,45 @@ class _EOS_bm(_EOS):
         )
 
     def _BM3(self, data, P, k_bm_0, v_ratio):
+        """Implements the third-order Birch–Murnaghan isothermal EOS for Bridgmanite.
+
+        This function calculates the residue of the third-order Birch–Murnaghan
+        isothermal equation of state applied to Bridgmanite (Bm).
+
+        It corresponds to the eq. (B1) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            P: Considered pressure. [GPa]
+            k_bm_0: Bulk modulus of Bm at ambient conditions. [GPa]
+            v_ratio: Volume ratio V0 / V of Bm, where V0 is the volume of Bm at ambient
+                     conditions and V the volume of Bm at the considered conditions.
+
+        Returns:
+            Float64: Residue of the third-order Birch–Murnaghan isothermal
+                     equation of state for Bm. [GPa]
+        """
         return super()._BM3(P, k_bm_0, v_ratio, data.k0t_prime_bm)
 
     def _E_th(self, data, T, v_ratio):
+        """Calculates the vibrational energy of Bridgmanite.
+
+        The integral part of the expression is calculated separately because the method 
+        scipy.integrate.quad returns both the value and the error, while only the value
+        is needed.
+
+        It corresponds to the eq. (30) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            T: Considered temperature. [K]
+            v_ratio: Volume ratio V0 / V of Bm, where V0 is the volume of Bm at ambient
+                     conditions and V the volume of Bm at the considered conditions.
+
+        Returns:
+            Float64: Vibrational energy of Bm at the considered conditions.
+                     [cm^3 GPa mol^−1]
+        """
         # Debye temperature
         theta_bm = self._theta(data, v_ratio)
         # Integral part of the vibrational energy
@@ -316,7 +556,7 @@ class _EOS_bm(_EOS):
             x_al2o3: Molar concentration of Al2O3 in Bm.
 
         Returns:
-            Float64: The residue of the Mie-Gruneisen-Debye EOS. [GPa]
+            Float64: Residue of the Mie-Gruneisen-Debye EOS for Bm. [GPa]
         """
         # Calculate volume of Bm at ambient conditions
         v_bm_0 = self._v_bm_0(data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3)
@@ -336,14 +576,52 @@ class _EOS_bm(_EOS):
         E_th_bm_0 = self._E_th(data, 300, v_ratio)
         return super()._MGD(BM3_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0)
 
-
+#======================================================================================#
+#                                                                                      #
+# Starting implementation of the class for calculation of Calcio Perovskite properties #
+#                                                                                      #
+#======================================================================================#
 class _EOS_capv(_EOS):
-    """
+    """Implement the Mie-Gruneisen-Debye equation of state for Calcio Perovskite.
+
+    This class is derived from the abstract class _EOS, which implements the basic
+    functionality required to implement the Mie-Gruneisen-Debye equation of state.
+
+    The formalism for the Mie-Gruneisen-Debye equation of state used in this class can
+    be found in Jackson and Rigden (1996).
+
+    This class should not be used outside the class MineralProperties.
     """
     def _gamma(self, data, v_ratio):
+        """Calculates the Gruneisen parameter of Calcio Perovskite.
+
+        It corresponds to the eq. (31) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            v_ratio: Volume ratio V0 / V of CaPv, where V0 is the volume of CaPv at
+                     ambient conditions and V the volume of CaPv at the considered
+                     conditions.
+
+        Returns:
+            Float64: Gruneisen parameter of CaPv at the considered conditions.
+        """
         return super()._gamma(data.gamma_capv_0, v_ratio, data.q_capv)
 
     def _theta(self, data, v_ratio):
+        """Calculates the Debye temperature of Calcio Perovskite.
+
+        It corresponds to the eq. (32) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            v_ratio: Volume ratio V0 / V of CaPv, where V0 is the volume of CaPv at
+                     ambient conditions and V the volume of CaPv at the considered
+                     conditions.
+
+        Returns:
+            Float64: Debye temperature of CaPv at the considered conditions. [K]
+        """
         # Gruneisen parameter
         gamma_capv = self._gamma(data, v_ratio)
         return super()._theta(
@@ -351,9 +629,46 @@ class _EOS_capv(_EOS):
         )
 
     def _BM3(self, data, P, v_ratio):
+        """Implements the third-order Birch–Murnaghan EOS for Calcio Perovskite.
+
+        This function calculates the residue of the third-order Birch–Murnaghan
+        isothermal equation of state applied to Calcio Perovskite (CaPv).
+
+        It corresponds to the eq. (B1) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            P: Considered pressure. [GPa]
+            v_ratio: Volume ratio V0 / V of CaPv, where V0 is the volume of CaPv at
+                     ambient conditions and V the volume of CaPv at the considered
+                     conditions.
+
+        Returns:
+            Float64: Residue of the third-order Birch–Murnaghan isothermal
+                     equation of state for CaPv. [GPa]
+        """
         return super()._BM3(P, data.k_casio3_0, v_ratio, data.k0t_prime_capv)
 
     def _E_th(self, data, T, v_ratio):
+        """Calculates the vibrational energy of Calcio Perovskite.
+
+        The integral part of the expression is calculated separately because the method 
+        scipy.integrate.quad returns both the value and the error, while only the value
+        is needed.
+
+        It corresponds to the eq. (30) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            T: Considered temperature. [K]
+            v_ratio: Volume ratio V0 / V of CaPv, where V0 is the volume of CaPv at
+                     ambient conditions and V the volume of CaPv at the considered
+                     conditions.
+
+        Returns:
+            Float64: Vibrational energy of Bm at the considered conditions.
+                     [cm^3 GPa mol^−1]
+        """
         # Debye temperature
         theta_capv = self._theta(data, v_ratio)
         # Integral part of the vibrational energy
@@ -376,7 +691,7 @@ class _EOS_capv(_EOS):
             v_capv: Volume of CaPv at considered conditions. [cm^3/mol]
 
         Returns:
-            Float64: The residue of the Mie-Gruneisen-Debye EOS. [GPa]
+            Float64: Residue of the Mie-Gruneisen-Debye EOS for CaPv. [GPa]
         """
         # Calculate volume ratio
         v_ratio = data.v_casio3_0 / v_capv
