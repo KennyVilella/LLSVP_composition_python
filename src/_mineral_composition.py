@@ -374,26 +374,26 @@ def _solve_with_fp(
 
     while (n_iter < 1000):
         ### Solution has not yet been found ###
-            try:
-                ### Solution has been found ###
-                # Solving the system of equation
-                solution = scipy.optimize.newton_krylov(
-                    lambda x: _set_eqs_with_fp(
-                        self, x, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config,
-                        P_table, rho_capv, p_fp, al_excess
-                    ),
-                    x_init,
-                    maxiter=1000
-                )
+        try:
+            ### Solution has been found ###
+            # Solving the system of equation
+            solution = scipy.optimize.newton_krylov(
+                lambda x: _set_eqs_with_fp(
+                    self, x, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config,
+                    P_table, rho_capv, p_fp, al_excess
+                ),
+                x_init,
+                maxiter=1000
+            )
 
-                return solution
-            except:
-                ### Solution has not been found ###
-                # Setting random starting conditions
-                x_init[0] = random.uniform(0.0, 1.0)
-                x_init[1] = random.uniform(0.8, 1.8)
-                x_init[2] = random.uniform(0.8, 1.8)
-                n_iter += 1
+            return solution
+        except:
+            ### Solution has not been found ###
+            # Setting random starting conditions
+            x_init[0] = random.uniform(0.0, 1.0)
+            x_init[1] = random.uniform(0.8, 1.8)
+            x_init[2] = random.uniform(0.8, 1.8)
+            n_iter += 1
 
     return 0.0, 0.0, 0.0
 
@@ -550,26 +550,26 @@ def _solve_without_fp(
 
     while (n_iter < 1000):
         ### Solution has not yet been found ###
-            try:
-                ### Solution has been found ###
-                # Solving the system of equation
-                solution = scipy.optimize.newton_krylov(
-                    lambda x: _set_eqs_without_fp(
-                        self, x, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv,
-                        al_excess
-                    ),
-                    x_init,
-                    maxiter=1000
-                )
+        try:
+            ### Solution has been found ###
+            # Solving the system of equation
+            solution = scipy.optimize.newton_krylov(
+                lambda x: _set_eqs_without_fp(
+                    self, x, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv,
+                    al_excess
+                ),
+                x_init,
+                maxiter=1000
+            )
 
-                return solution
-            except:
-                ### Solution has not been found ###
-                # Setting random starting conditions
-                x_init[0] = random.uniform(0.0, 1.0)
-                x_init[1] = random.uniform(0.0, 1.0)
-                x_init[2] = random.uniform(0.8, 1.8)
-                n_iter += 1
+            return solution
+        except:
+            ### Solution has not been found ###
+            # Setting random starting conditions
+            x_init[0] = random.uniform(0.0, 1.0)
+            x_init[1] = random.uniform(0.0, 1.0)
+            x_init[2] = random.uniform(0.8, 1.8)
+            n_iter += 1
 
     return 0.0, 0.0, 0.0
 
