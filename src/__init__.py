@@ -291,7 +291,7 @@ class MineralProperties:
 
         # Stepping used for the spin transition calculation
         self.delta_v = conditions.get("delta_v", 0.05)
-        self.delta_P = conditions.get("delta_P", 0.5)
+        self.delta_P = conditions.get("delta_P", 2.0)
 
 
     def calc_mineral_properties(self, conditions={}):
