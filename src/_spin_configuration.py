@@ -50,12 +50,10 @@ def _calc_spin_configuration(self):
     the actual solution is the one associated with the lowest value of F.
 
     Returns:
-        np.ndarray: The average spin state of FeO in Ferropericalse for a given
-                    value for the temperature, volume of Ferropericlase, and FeO
-                    content in Ferropericalse.
-        np.ndarray: The corresponding pressure for a given value for the
-                    temperature, volume of Ferropericlase, and FeO content in
-                    Ferropericalse.
+        np.ndarray: Average spin state of FeO in Fp for a given value for the
+                    temperature, volume of Fp, and FeO content in Fp.
+        np.ndarray: Pressure for a given value for the temperature, volume of Fp, and
+                    FeO content in Fp.
     """
     # Loading utility class for mineral properties calculation
     fp_eos = _EOS_fp()

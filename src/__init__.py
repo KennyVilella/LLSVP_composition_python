@@ -30,11 +30,7 @@ Typical usage example:
 
 Copyright, 2023,  Vilella Kenny.
 """
-import numpy as np
 import os
-import csv
-import scipy.optimize
-import scipy.integrate
 from _spin_configuration import _calc_spin_configuration
 from _mineral_composition import _calc_mineral_composition
 #======================================================================================#
@@ -61,16 +57,18 @@ class MineralProperties:
     Al2O3 content, oxidation state, temperature contrast).
 
     Attributes:
+        path: Absolute path to results directory. Default to the `results` folder in the
+              repository root.
         R: Gas constant. [cm^3 GPa K^−1 mol^−1]
         xi: Scaling of the volume dependence of the crystal-field splitting used for the
             calculation of the spin transition. Default to 1.5.
         delta_0: Crystal-field splitting at ambient condition used for the calculation
                  of the spin transition. Default to 1.35. [eV]
         v_trans: Volume of FeO at which the spin transition occurs. Default to 59. [A^3]
-        n_capv_am: Proportion of CaPv in the ambient lower mantle.
+        p_capv_am: Proportion of CaPv in the ambient lower mantle.
                    Default to 0.07. [vol%]
         iron_content_am: FeO content in the ambient mantle. Default to 0.08. [wt%]
-        n_bm_am: Proportion of Bm in the ambient lower mantle. Default to 0.75. [vol%]
+        p_bm_am: Proportion of Bm in the ambient lower mantle. Default to 0.75. [vol%]
         al_content_am: Al2O3 content in the ambient mantle. Default to 0.036. [mol%]
         kd_ref_am: Fe partioning coefficient in the ambient mantle. Default to 0.5.
         ratio_fe_bm_am: Oxidation state in Bm. Default to 0.5.
@@ -156,7 +154,7 @@ class MineralProperties:
         delta_v: Step value for the volume in the spin transition calculation.
                  Default to 0.05. [A^3]
         delta_P: Step value for the pressure in the spin transition calculation.
-                 Default to 0.5. [GPa]
+                 Default to 2.0. [GPa]
     """
     def __init__(self, prop={}):
         """Initializes all the mineral properties.
@@ -192,9 +190,9 @@ class MineralProperties:
         self.v_trans = prop.get("v_trans", 59.) # Fei 2007
 
         # Parameters of the considered ambient mantle
-        self.n_capv_am = prop.get("n_capv_am", 0.07) # Irifune 1994, 2010
+        self.p_capv_am = prop.get("p_capv_am", 0.07) # Irifune 1994, 2010
         self.iron_content_am = prop.get("iron_content_am", 0.08) # Irifune 2010
-        self.n_bm_am = prop.get("n_bm_am", 0.75) # Irifune 2010
+        self.p_bm_am = prop.get("p_bm_am", 0.75) # Irifune 2010
         self.al_content_am = prop.get("al_content_am", 0.036) # Irifune 2010
         self.kd_ref_am = prop.get("kd_ref_am", 0.5) # Piet 2016
         self.ratio_fe_bm_am = prop.get("ratio_fe_bm_am", 0.5) # Piet 2016
