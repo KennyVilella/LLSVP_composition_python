@@ -14,6 +14,7 @@ import numpy as np
 from math import isclose
 import os
 import csv
+import random
 import scipy.optimize
 from _eos_implementation import _EOS_fp, _EOS_bm, _EOS_capv
 #======================================================================================#
@@ -238,28 +239,19 @@ def _solve_mineral_composition(
     else:
         al_excess = False
 
-    # Converting density
+    # Converting inputs
     rho_capv = rho_capv / 5500
 
     if (p_fp > 0.0):
         ### Ferropericlase is present in the rock assemblage ###
-        # Setting lower bound and upper bound for the solution
-        x_feo_fp_bound = (0.001, 1.0)
-        rho_bm_bound = (0.5, 1.8)
-        rho_fp_bound = (0.5, 1.8)
-
         # Solving the system of equation
-        solution = scipy.optimize.minimize(
-            lambda x: _set_eqs_with_fp(
-                self, x, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config, P_table,
-                rho_capv, p_fp, al_excess
-            ),
-            [x_init[1], x_init[3] / 5500, x_init[4] / 5500],
-            bounds=(x_feo_fp_bound, rho_bm_bound, rho_fp_bound)
+        x_init = [x_init[1], x_init[3] / 5500, x_init[4] / 5500]
+        x_feo_fp, rho_bm, rho_fp = _solve_with_fp(
+            self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config, P_table,
+            rho_capv, p_fp, al_excess
         )
 
-        # Unpacking the results
-        x_feo_fp, rho_bm, rho_fp = solution.x
+        # Getting extra outputs
         x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
             self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe, rho_capv,
             p_fp
@@ -269,17 +261,13 @@ def _solve_mineral_composition(
             ### First guess for al_excess is incorrect ###
             # Trying to solve the system of equation with al_excess
             al_excess = True
-            solution = scipy.optimize.minimize(
-                lambda x: _set_eqs_with_fp(
-                    self, x, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config,
-                    P_table, rho_capv, p_fp, al_excess
-                ),
-                [x_init[1], x_init[3] / 5500, x_init[4] / 5500],
-                bounds=(x_feo_fp_bound, rho_bm_bound, rho_fp_bound)
+            x_init = [x_feo_fp, rho_bm, rho_fp]
+            x_feo_fp, rho_bm, rho_fp = _solve_with_fp(
+                self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config,
+                P_table, rho_capv, p_fp, al_excess
             )
 
-            # Unpacking the results
-            x_feo_fp, rho_bm, rho_fp = solution.x
+            # Getting extra outputs
             x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
                 self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
                 rho_capv, p_fp
@@ -298,17 +286,13 @@ def _solve_mineral_composition(
             ### First guess for al_excess is incorrect ###
             # Trying to solve the system of equation without al_excess
             al_excess = False
-            solution = scipy.optimize.minimize(
-                lambda x: _set_eqs_with_fp(
-                    self, x, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config,
-                    P_table, rho_capv, p_fp, al_excess
-                ),
-                [x_init[1], x_init[3] / 5500, x_init[4] / 5500],
-                bounds=(x_feo_fp_bound, rho_bm_bound, rho_fp_bound)
+            x_init = [x_feo_fp, rho_bm, rho_fp]
+            x_feo_fp, rho_bm, rho_fp = _solve_with_fp(
+                self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config,
+                P_table, rho_capv, p_fp, al_excess
             )
 
-            # Unpacking the results
-            x_feo_fp, rho_bm, rho_fp = solution.x
+            # Getting extra outputs
             x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
                 self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
                 rho_capv, p_fp
@@ -326,27 +310,16 @@ def _solve_mineral_composition(
 
         # Verifying that the solution is indeed consistent
         _set_eqs_with_fp(
-            self, solution.x, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config,
-            P_table, rho_capv, p_fp, al_excess, True
+            self, [x_feo_fp, rho_bm, rho_fp], dT, p_capv, p_bm, feo, al, ratio_fe, ii,
+            spin_config, P_table, rho_capv, p_fp, al_excess, True
         )
     else:
         ### Ferropericlase is absent from the rock assemblage ###
-        # Setting lower bound and upper bound for the solution
-        x_feo_bm_bound = (0.0, 1.0)
-        x_alo2_bm_bound = (0.0, 1.0)
-        rho_bm_bound = (0.5, 1.8)
-
         # Solving the system of equation
-        solution = scipy.optimize.minimize(
-            lambda x: _set_eqs_without_fp(
-                self, x, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
-            ),
-            [x_init[0], x_init[2], x_init[3] / 5500],
-            bounds=(x_feo_bm_bound, x_alo2_bm_bound, rho_bm_bound)
+        x_init = [x_init[0], x_init[2], x_init[3] / 5500]
+        x_feo_bm, x_alo2_bm, rho_bm = _solve_without_fp(
+            self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
         )
-
-        # Unpacking the results
-        x_feo_bm, x_alo2_bm, rho_bm = solution.x
         x_feo_fp = 0.0
         rho_fp = 0.0
 
@@ -354,16 +327,10 @@ def _solve_mineral_composition(
             ### First guess for al_excess is incorrect ###
             # Trying to solve the system of equation with al_excess
             al_excess = True
-            solution = scipy.optimize.minimize(
-                lambda x: _set_eqs_without_fp(
-                    self, x, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
-                ),
-                [x_init[0], x_init[2], x_init[3] / 5500],
-                bounds=(x_feo_bm_bound, x_alo2_bm_bound, rho_bm_bound)
+            x_init = [x_feo_bm, x_alo2_bm, rho_bm]
+            x_feo_bm, x_alo2_bm, rho_bm = _solve_without_fp(
+                self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
             )
-
-            # Unpacking the results
-            x_feo_bm, x_alo2_bm, rho_bm = solution.x
 
             # Checking that solution is indeed correct
             if (ratio_fe * x_feo_bm > x_alo2_bm):
@@ -378,16 +345,10 @@ def _solve_mineral_composition(
             ### First guess for al_excess is incorrect ###
             # Trying to solve the system of equation without al_excess
             al_excess = False
-            solution = scipy.optimize.minimize(
-                lambda x: _set_eqs_without_fp(
-                    self, x, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
-                ),
-                [x_init[0], x_init[2], x_init[3] / 5500],
-                bounds=(x_feo_bm_bound, x_alo2_bm_bound, rho_bm_bound)
+            x_init = [x_feo_bm, x_alo2_bm, rho_bm]
+            x_feo_bm, x_alo2_bm, rho_bm = _solve_without_fp(
+                self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
             )
-
-            # Unpacking the results
-            x_feo_bm, x_alo2_bm, rho_bm = solution.x
 
             # Checking that solution is indeed correct
             if (ratio_fe * x_feo_bm < x_alo2_bm):
@@ -400,6 +361,41 @@ def _solve_mineral_composition(
                 print("Skip this condition")
 
     return [x_feo_bm, x_feo_fp, x_alo2_bm, 5500 * rho_bm, 5500 * rho_fp]
+
+
+def _solve_with_fp(
+    self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config, P_table,
+    rho_capv, p_fp, al_excess
+):
+    """
+    """
+    # Initialization
+    n_iter = 0
+
+    while (n_iter < 1000):
+        ### Solution has not yet been found ###
+        try:
+            ### Solution has been found ###
+            # Solving the system of equation
+            solution = scipy.optimize.newton_krylov(
+                lambda x: _set_eqs_with_fp(
+                    self, x, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config,
+                    P_table, rho_capv, p_fp, al_excess
+                ),
+                x_init,
+                maxiter=1000
+            )
+
+            return solution
+        except:
+            ### Solution has not been found ###
+            # Setting random starting conditions
+            x_init[0] = random.uniform(0.0, 1.0)
+            x_init[1] = random.uniform(0.8, 1.8)
+            x_init[2] = random.uniform(0.8, 1.8)
+            n_iter += 1
+
+    return 0.0, 0.0, 0.0
 
 
 def _set_eqs_with_fp(
@@ -517,7 +513,7 @@ def _set_eqs_with_fp(
             print("Calculated FeO content is `", sum_feo,
                 "` , while the actual value is `", feo, "`")
 
-    return abs(eq_MGD_fp) + abs(eq_MGD_bm) + abs(eq_alo2)
+    return eq_MGD_fp, eq_MGD_bm, eq_alo2
 
 
 def _oxides_content_in_bm(
@@ -542,6 +538,40 @@ def _oxides_content_in_bm(
     x_feo_bm  = c_1 * x_alo2_bm
 
     return (x_alo2_bm, x_feo_bm)
+
+
+def _solve_without_fp(
+    self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
+):
+    """
+    """
+    # Initialization
+    n_iter = 0
+
+    while (n_iter < 1000):
+        ### Solution has not yet been found ###
+        try:
+            ### Solution has been found ###
+            # Solving the system of equation
+            solution = scipy.optimize.newton_krylov(
+                lambda x: _set_eqs_without_fp(
+                    self, x, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv,
+                    al_excess
+                ),
+                x_init,
+                maxiter=1000
+            )
+
+            return solution
+        except:
+            ### Solution has not been found ###
+            # Setting random starting conditions
+            x_init[0] = random.uniform(0.0, 1.0)
+            x_init[1] = random.uniform(0.0, 1.0)
+            x_init[2] = random.uniform(0.8, 1.8)
+            n_iter += 1
+
+    return 0.0, 0.0, 0.0
 
 
 def _set_eqs_without_fp(
