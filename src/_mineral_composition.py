@@ -898,4 +898,4 @@ def _set_eqs_without_fp(
     # Equation from the alumina content
     eq_alo2 = -x_alo2_bm + m_bm * al / (self.m_al2o3 * x_m_bm)
 
-    return eq_MGD_bm, eq_feo_al, eq_alo2
+    return abs(eq_MGD_bm) + abs(eq_feo_al) + abs(eq_alo2)
