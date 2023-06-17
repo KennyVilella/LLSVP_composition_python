@@ -1,12 +1,38 @@
-"""
+"""Provides functions used to calculate the mineral composition of the assemblage.
 
 This file is associated with the article:
 "Constraints on the composition and temperature of LLSVPs from seismic properties of
 lower mantle minerals" by K. Vilella, T. Bodin, C.-E. Boukare, F. Deschamps, J. Badro,
 M. D. Ballmer, and Y. Li
 
+This file provides all the functions used to calculate for a large range of input
+parameters the composition of the corresponding rock assemblage.
+The six input parameters are the temperature contrast against the ambient mantle, the 
+proportion of Calcio Perovskite, the proportion of Bridgmanite, the FeO content, the
+alumina content, and the oxidation state of iron in Bridgmanite.
+Given these input parameters, the simulator returns the molar concentration of FeO in
+Bridgmanite, the molar concentration of FeO in Ferropericlase, the molar
+concentration of AlO2 in Bridgmanite, the density of Bridgmanite, and the density of
+Ferropericlase.
+
+The results are written into files separated by the considered temperature contrast,
+which also gives the name of the file. The simulation can be resumed if stopped.
+The results can then be used to calculate the seismic properties of all the rock
+assemblages.
+
+Solving the equations governing this problem is quite difficult as they are highly
+non-linear. If a solution is not found, a value of 0.0 is returned for each property.
+To improve convergence, one has to either tweak the starting conditions or the
+non-linear solver, both being somewhat challenging.
+
+These functions should not be used outside the class MineralProperties.
+
 Typical usage example:
 
+  from _spin_configuration import _calc_spin_configuration
+  from _mineral_composition import _calc_mineral_composition
+  spin_config, P_table = _calc_spin_configuration(self)
+  _calc_mineral_composition(self, spin_config, P_table)
 
 Copyright, 2023,  Vilella Kenny.
 """
@@ -23,7 +49,33 @@ from _eos_implementation import _EOS_fp, _EOS_bm, _EOS_capv
 #                                                                                      #
 #======================================================================================#
 def _calc_mineral_composition(self, spin_config, P_table):
-    """Work in progress.
+    """Calculates the mineral composition of a large range of rock assemblages.
+
+    This function calculates the properties of a large range of mineral composition and
+    write the results into files.
+    The calculated properties are the molar concentration of FeO in Bm, the molar
+    concentration of FeO in Fp, the molar concentration of AlO2 in Bm, the density of
+    Bm, and the density of Fp.
+
+    The range of mineral compositions investigated are provided to the class
+    MineralProperties as an optional input.
+
+    The directory where the results are saved is given by the `path` attribute of the
+    class MineralProperties. The name of the file corresponds to the value of the
+    temperature contrast against the ambient mantle.
+    The simulation can be resumed if exsiting files are already present. As a result, it
+    is necessary to remove old files from the results folder before launching a new set
+    of simulations.
+
+    An attempt is made to use a previous solution as starting conditions for the solver,
+    but if no previous solution with close enough composition is available, default
+    starting conditions are used.
+
+    Args:
+        spin_config: Average spin state of FeO in Fp for a given value for the
+                     temperature, volume of Fp, and FeO content in Fp.
+        P_table: Pressure for a given value for the temperature, volume of Fp, and
+                 FeO content in Fp.
     """
     # Loading utility class for mineral properties calculation
     capv_eos = _EOS_capv()
@@ -231,7 +283,54 @@ def _solve_mineral_composition(
     self, dT, p_capv, p_bm, feo, al, ratio_fe, ii,
     spin_config, P_table, rho_capv, p_fp, x_init
 ):
-    """Work in progress.
+    """Calculates the mineral composition of the provided rock assemblage.
+
+    This function calculates five properties fully characterizing the composition of
+    the rock assemblage (molar concentration of FeO in Bm, molar concentration of FeO
+    in Fp, molar concentration of AlO2 in Bm, density of Bm, and density of Fp) from the
+    value of six input parameters (temperature contrast against the ambient mantle,
+    proportion of CaPv, proportion of Bm, FeO content, alumina content, and oxidation
+    state in Bm).
+
+    The calculation is quite complex so that several tricks are used to make the physics
+    problem easier to solve.
+    First, all densities are divided by 5500 to avoid the generation of large numbers
+    during the solving step.
+    Second, a first-order empirical guess is made concerning the composition of Bm, that
+    is, whether Fe2O3 or Al2O3 is formed. The consistency of the first obtained solution
+    is then checked, and the inital guess is reversed in case of inconsistency.
+    Third, the physics problem is separated in two cases, with and without the presence
+    of Fp. This is because the system of equations to solve is different in these two
+    cases.
+
+    Note that a value of 0.0 is returned for each property, if no solution can be found.
+
+    Args:
+        dT: Temperature contrast against the ambient mantle. [K]
+        p_capv: Proportion of CaPv. [vol%]
+        p_bm: Proportion of Bm. [vol%]
+        feo: FeO content in the rock assemblage. [wt%]
+        al: Al2O3 content in the rock assemblage. [wt%]
+        ratio_fe: Oxidation state in Bm.
+        ii: The index of the temperature contrast against the ambient mantle.
+        spin_config: Average spin state of FeO in Fp for a given value for the
+                     temperature, volume of Fp, and FeO content in Fp.
+        P_table: Pressure for a given value for the temperature, volume of Fp, and
+                 FeO content in Fp.
+        rho_capv: Density of CaPv for the considered conditions. Its value has been
+                  rescaled by 5500. [kg/m^3]
+        p_fp: Proportion of Fp. [vol%]
+        x_init: Starting conditions for the physics problem, that is, the molar
+                concentration of FeO in Bm, the molar concentration of FeO in Fp, the
+                molar concentration of AlO2 in Bm, the rescaled density of Bm, and the
+                rescaled density of Fp.
+
+    Returns:
+        Float64: The molar concentration of FeO in Bm.
+        Float64: The molar concentration of FeO in Fp.
+        Float64: The molar concentration of AlO2 in Bm.
+        Float64: The rescaled density of Bm.
+        Float64: The rescaled density of Fp.
     """
     # First guess on whether Al or Fe is in excess in Bm
     if (al < 0.75 * ratio_fe * feo):
@@ -367,7 +466,52 @@ def _solve_with_fp(
     self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config, P_table,
     rho_capv, p_fp, al_excess
 ):
-    """
+    """Implements the solver for the physics problem with Ferropericlase.
+
+    This function implements a solver for the system of equations governing the physics
+    problem when Ferropericlase is present.
+    This physics problem is highly non-linear such that finding a proper solution is
+    challenging. It is particularly challenging when the starting conditions are not
+    well known, for instance at the start of the simulation loop.
+
+    To circumvent this issue, this function first try to find a solution using the
+    suggested starting conditions. If a solution cannot be found, the starting
+    conditions are randomly sampled within predetermined ranges until a solution is
+    found or that the number of attempts exceeds 1000.
+    If a solution cannot be found within these conditions, a value of 0.0 is returned
+    for each property.
+
+    If it remains too difficult to find a solution, the user can manually increase the
+    maximum number of attempts or the maximum number of iterations (maxiter) in the
+    solver call.
+
+    Note that several solvers from scipy.optimize have been tried (minimize, fsolve,
+    least_squares) and they have produced unsatisfactory results.
+
+    Args:
+        x_init: Starting conditions for the physics problem, that is, the molar
+                concentration of FeO in Fp, the rescaled density of Bm, and the
+                rescaled density of Fp.
+        dT: Temperature contrast against the ambient mantle. [K]
+        p_capv: Proportion of CaPv. [vol%]
+        p_bm: Proportion of Bm. [vol%]
+        feo: FeO content in the rock assemblage. [wt%]
+        al: Al2O3 content in the rock assemblage. [wt%]
+        ratio_fe: Oxidation state in Bm.
+        ii: The index of the temperature contrast against the ambient mantle.
+        spin_config: Average spin state of FeO in Fp for a given value for the
+                     temperature, volume of Fp, and FeO content in Fp.
+        P_table: Pressure for a given value for the temperature, volume of Fp, and
+                 FeO content in Fp.
+        rho_capv: Density of CaPv for the considered conditions. Its value has been
+                  rescaled by 5500. [kg/m^3]
+        p_fp: Proportion of Fp. [vol%]
+        al_excess: Flag indicating whether alumina is assumed to be in excess in Bm.
+
+    Returns:
+        Float64: The molar concentration of FeO in Fp.
+        Float64: The rescaled density of Bm.
+        Float64: The rescaled density of Fp.
     """
     # Initialization
     n_iter = 0
@@ -402,7 +546,44 @@ def _set_eqs_with_fp(
     self, var_in, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config, P_table,
     rho_capv, p_fp, al_excess, testing=False
 ):
-    """Work in progress.
+    """Calculates the equations for the physics problem with Ferropericlase.
+
+    This function calculates the residue for the system of equations governing the
+    physics problem when Ferropericlase is present.
+
+    The first and second equation come from the equation of state for Ferropericlase
+    and Bridgmanite, respectively. More specifically, the Mie-Gruneisen-Debye equation
+    of state, which corresponds to the eq. (33) of Jackson and Rigden (1996).
+    The third equation comes from the alumina content in Bridgmanite. It corresponds
+    to the eq. (13) in the supplementary material of Vilella et al. (2021).
+
+    Args:
+        var_in: Vector composed of the equation unknowns, that is, the molar
+                concentration of FeO in Fp, the rescaled density of Bm, and the
+                rescaled density of Fp.
+        dT: Temperature contrast against the ambient mantle. [K]
+        p_capv: Proportion of CaPv. [vol%]
+        p_bm: Proportion of Bm. [vol%]
+        feo: FeO content in the rock assemblage. [wt%]
+        al: Al2O3 content in the rock assemblage. [wt%]
+        ratio_fe: Oxidation state in Bm.
+        ii: The index of the temperature contrast against the ambient mantle.
+        spin_config: Average spin state of FeO in Fp for a given value for the
+                     temperature, volume of Fp, and FeO content in Fp.
+        P_table: Pressure for a given value for the temperature, volume of Fp, and
+                 FeO content in Fp.
+        rho_capv: Density of CaPv for the considered conditions. Its value has been
+                  rescaled by 5500. [kg/m^3]
+        p_fp: Proportion of Fp. [vol%]
+        al_excess: Flag indicating whether alumina is assumed to be in excess in Bm.
+        testing: Whether tests are conducted to make sure that the provided values of
+                 var_in lead to a consistent composition.
+
+    Returns:
+        Float64: Residue of the equation of state for Bridgmanite.
+        Float64: Residue of the equation for the ratio of FeO and alumina content in
+                 Bridgmanite.
+        Float64: Residue of the equation for the alunina content in Bridgmanite.
     """
     # Loading utility class for mineral properties calculation
     fp_eos = _EOS_fp()
@@ -519,7 +700,30 @@ def _set_eqs_with_fp(
 def _oxides_content_in_bm(
     self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe, rho_capv, p_fp
 ):
-    """Work in progress.
+    """Calculates the molar concentration of FeO and AlO2 in Bridgmanite.
+
+   This function calculates the molar concentration of FeO and AlO2 in Bridgmanite.
+   The calculation here is a combination of eqs. (1), (2), (4) and (13) in the
+   supplementary material of Vilella et al. (2021).
+
+   Args:
+        x_feo_fp: The molar concentration of FeO in Fp.
+        rho_bm: Density of Bm for the considered conditions. Its value has been
+                rescaled by 5500. [kg/m^3]
+        rho_fp: Density of Fp for the considered conditions. Its value has been
+                rescaled by 5500. [kg/m^3]
+        p_capv: Proportion of CaPv. [vol%]
+        p_bm: Proportion of Bm. [vol%]
+        feo: FeO content in the rock assemblage. [wt%]
+        al: Al2O3 content in the rock assemblage. [wt%]
+        ratio_fe: Oxidation state in Bm.
+        rho_capv: Density of CaPv for the considered conditions. Its value has been
+                  rescaled by 5500. [kg/m^3]
+        p_fp: Proportion of Fp. [vol%]
+
+    Returns:
+        Float64: The molar concentration of AlO2 in Bm.
+        Float64: The molar concentration of FeO in Bm.
     """
     # Molar mass of Fp
     m_fp = self.m_mgo * (1 - x_feo_fp) + self.m_feo * x_feo_fp
@@ -537,13 +741,52 @@ def _oxides_content_in_bm(
     )
     x_feo_bm  = c_1 * x_alo2_bm
 
-    return (x_alo2_bm, x_feo_bm)
+    return x_alo2_bm, x_feo_bm
 
 
 def _solve_without_fp(
     self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
 ):
-    """
+    """Implements the solver for the physics problem without Ferropericlase.
+
+    This function implement a solver for the system of equations governing the physics
+    problem when no Ferropericlase is present.
+    This physics problem is highly non-linear such that finding a proper solution is
+    challenging. It is particularly challenging when the starting conditions are not
+    well known, for instance at the start of the simulation loop.
+
+    To circumvent this issue, this function first try to find a solution using the
+    suggested starting conditions. If a solution cannot be found, the starting
+    conditions are randomly sampled within predetermined ranges until a solution is
+    found or that the number of attempts exceeds 1000.
+    If a solution cannot be found within these conditions, a value of 0.0 is returned
+    for each property.
+
+    If it remains too difficult to find a solution, the user can manually increase the
+    maximum number of attempts or the maximum number of iterations (maxiter) in the
+    solver call.
+
+    Note that several solvers from scipy.optimize have been tried (minimize, fsolve,
+    least_squares) and they have produced unsatisfactory results.
+
+    Args:
+        x_init: Starting conditions for the physics problem, that is, the molar
+                concentration of FeO in Bm, the molar concentration of AlO2 in Bm, and
+                the rescaled density of Bm.
+        dT: Temperature contrast against the ambient mantle. [K]
+        p_capv: Proportion of CaPv. [vol%]
+        p_bm: Proportion of Bm. [vol%]
+        feo: FeO content in the rock assemblage. [wt%]
+        al: Al2O3 content in the rock assemblage. [wt%]
+        ratio_fe: Oxidation state in Bm.
+        rho_capv: Density of CaPv for the considered conditions. Its value has been
+                  rescaled by 5500. [kg/m^3]
+        al_excess: Flag indicating whether alumina is assumed to be in excess in Bm.
+
+    Returns:
+        Float64: The molar concentration of FeO in Bm.
+        Float64: The molar concentration of AlO2 in Bm.
+        Float64: The rescaled density of Bm.
     """
     # Initialization
     n_iter = 0
@@ -577,7 +820,39 @@ def _solve_without_fp(
 def _set_eqs_without_fp(
     self, var_in, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
 ):
-    """Work in progress.
+    """Calculates the equations for the physics problem without Ferropericlase.
+
+    This function calculates the residue for the system of equations governing the
+    physics problem when no Ferropericlase is present.
+
+    The first equation comes from the equation of state for Bridgmanite. More
+    specifically, the Mie-Gruneisen-Debye equation of state, which corresponds to the
+    eq. (33) of Jackson and Rigden (1996).
+    The second equation comes from the ratio of FeO and alumina content in Bridgmanite.
+    It corresponds to the eq. (16) in the supplementary material of Vilella et al.
+    (2021).
+    The third equation comes from the alumina content in Bridgmanite. It corresponds
+    to the eq. (13) in the supplementary material of Vilella et al. (2021).
+
+    Args:
+        var_in: Vector composed of the equation unknowns, that is, the molar
+                concentration of FeO in Bm, the molar concentration of AlO2 in Bm, and
+                the rescaled density of Bm.
+        dT: Temperature contrast against the ambient mantle. [K]
+        p_capv: Proportion of CaPv. [vol%]
+        p_bm: Proportion of Bm. [vol%]
+        feo: FeO content in the rock assemblage. [wt%]
+        al: Al2O3 content in the rock assemblage. [wt%]
+        ratio_fe: Oxidation state in Bm.
+        rho_capv: Density of CaPv for the considered conditions. Its value has been
+                  rescaled by 5500. [kg/m^3]
+        al_excess: Flag indicating whether alumina is assumed to be in excess in Bm.
+
+    Returns:
+        Float64: Residue of the equation of state for Bridgmanite.
+        Float64: Residue of the equation for the ratio of FeO and alumina content in
+                 Bridgmanite.
+        Float64: Residue of the equation for the alunina content in Bridgmanite.
     """
     # Loading utility class for mineral properties calculation
     bm_eos = _EOS_bm()
