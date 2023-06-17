@@ -203,7 +203,7 @@ def _calc_mineral_composition(self, spin_config, P_table):
 
                             # Calculating the composition of the rock assemblage
                             x_result = _solve_mineral_composition(
-                                self, dT, p_capv, p_bm, feo, al, ratio_fe, ii,
+                                self, dT, p_capv, p_bm, feo, al, ratio_fe,
                                 spin_config, P_table, rho_capv, p_fp, x_init
                             )
 
@@ -280,7 +280,7 @@ def _calc_mineral_composition(self, spin_config, P_table):
 
 
 def _solve_mineral_composition(
-    self, dT, p_capv, p_bm, feo, al, ratio_fe, ii,
+    self, dT, p_capv, p_bm, feo, al, ratio_fe,
     spin_config, P_table, rho_capv, p_fp, x_init
 ):
     """Calculates the mineral composition of the provided rock assemblage.
@@ -312,7 +312,6 @@ def _solve_mineral_composition(
         feo: FeO content in the rock assemblage. [wt%]
         al: Al2O3 content in the rock assemblage. [wt%]
         ratio_fe: Oxidation state in Bm.
-        ii: The index of the temperature contrast against the ambient mantle.
         spin_config: Average spin state of FeO in Fp for a given value for the
                      temperature, volume of Fp, and FeO content in Fp.
         P_table: Pressure for a given value for the temperature, volume of Fp, and
@@ -346,7 +345,7 @@ def _solve_mineral_composition(
         # Solving the system of equation
         x_init = [x_init[1], x_init[3] / 5500, x_init[4] / 5500]
         x_feo_fp, rho_bm, rho_fp = _solve_with_fp(
-            self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config, P_table,
+            self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, spin_config, P_table,
             rho_capv, p_fp, al_excess
         )
 
@@ -362,7 +361,7 @@ def _solve_mineral_composition(
             al_excess = True
             x_init = [x_feo_fp, rho_bm, rho_fp]
             x_feo_fp, rho_bm, rho_fp = _solve_with_fp(
-                self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config,
+                self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, spin_config,
                 P_table, rho_capv, p_fp, al_excess
             )
 
@@ -387,7 +386,7 @@ def _solve_mineral_composition(
             al_excess = False
             x_init = [x_feo_fp, rho_bm, rho_fp]
             x_feo_fp, rho_bm, rho_fp = _solve_with_fp(
-                self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config,
+                self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, spin_config,
                 P_table, rho_capv, p_fp, al_excess
             )
 
@@ -409,7 +408,7 @@ def _solve_mineral_composition(
 
         # Verifying that the solution is indeed consistent
         _set_eqs_with_fp(
-            self, [x_feo_fp, rho_bm, rho_fp], dT, p_capv, p_bm, feo, al, ratio_fe, ii,
+            self, [x_feo_fp, rho_bm, rho_fp], dT, p_capv, p_bm, feo, al, ratio_fe,
             spin_config, P_table, rho_capv, p_fp, al_excess, True
         )
     else:
@@ -463,7 +462,7 @@ def _solve_mineral_composition(
 
 
 def _solve_with_fp(
-    self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config, P_table,
+    self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, spin_config, P_table,
     rho_capv, p_fp, al_excess
 ):
     """Implements the solver for the physics problem with Ferropericlase.
@@ -498,7 +497,6 @@ def _solve_with_fp(
         feo: FeO content in the rock assemblage. [wt%]
         al: Al2O3 content in the rock assemblage. [wt%]
         ratio_fe: Oxidation state in Bm.
-        ii: The index of the temperature contrast against the ambient mantle.
         spin_config: Average spin state of FeO in Fp for a given value for the
                      temperature, volume of Fp, and FeO content in Fp.
         P_table: Pressure for a given value for the temperature, volume of Fp, and
@@ -523,7 +521,7 @@ def _solve_with_fp(
             # Solving the system of equation
             solution = scipy.optimize.newton_krylov(
                 lambda x: _set_eqs_with_fp(
-                    self, x, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config,
+                    self, x, dT, p_capv, p_bm, feo, al, ratio_fe, spin_config,
                     P_table, rho_capv, p_fp, al_excess
                 ),
                 x_init,
@@ -543,7 +541,7 @@ def _solve_with_fp(
 
 
 def _set_eqs_with_fp(
-    self, var_in, dT, p_capv, p_bm, feo, al, ratio_fe, ii, spin_config, P_table,
+    self, var_in, dT, p_capv, p_bm, feo, al, ratio_fe, spin_config, P_table,
     rho_capv, p_fp, al_excess, testing=False
 ):
     """Calculates the equations for the physics problem with Ferropericlase.
@@ -567,7 +565,6 @@ def _set_eqs_with_fp(
         feo: FeO content in the rock assemblage. [wt%]
         al: Al2O3 content in the rock assemblage. [wt%]
         ratio_fe: Oxidation state in Bm.
-        ii: The index of the temperature contrast against the ambient mantle.
         spin_config: Average spin state of FeO in Fp for a given value for the
                      temperature, volume of Fp, and FeO content in Fp.
         P_table: Pressure for a given value for the temperature, volume of Fp, and
@@ -594,8 +591,9 @@ def _set_eqs_with_fp(
 
     # Average spin state of FeO
     index_x = np.argmin(np.abs(self.x_vec - x_feo_fp))
-    index_P = np.argmin(np.abs(P_table[ii, :, index_x] - self.P_am))
-    eta_ls = spin_config[ii, index_P, index_x]
+    index_T = np.argmin(np.abs(self.T_vec - (self.T_am + dT)))
+    index_P = np.argmin(np.abs(P_table[index_T, :, index_x] - self.P_am))
+    eta_ls = spin_config[index_T, index_P, index_x]
 
     # Volume of Fp
     m_fp = self.m_mgo * (1 - x_feo_fp) + self.m_feo * x_feo_fp
@@ -654,10 +652,10 @@ def _set_eqs_with_fp(
 
     if (testing):
         # Verifying that error on the spin configuration is reasonable
-        if (abs(P_table[ii, index_P, index_x] - self.P_am) > self.delta_P):
+        if (abs(P_table[index_T, index_P, index_x] - self.P_am) > self.delta_P):
             print("Error on P for the spin transition is large")
             print("Pressure for the spin configuration: `",
-                P_table[ii, index_P, index_x], "` actual pressure: `", self.P_am, "`")
+                P_table[index_T, index_P, index_x], "` actual pressure: `", self.P_am, "`")
         elif ((self.x_vec[index_x] - x_feo_fp) > self.x_vec[1] - self.x_vec[0]):
             print("Error on x for the spin transition is large")
             print("FeO content for the spin configuration: `",
