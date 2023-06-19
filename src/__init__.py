@@ -33,7 +33,7 @@ Copyright, 2023,  Vilella Kenny.
 import os
 from _spin_configuration import _calc_spin_configuration
 from _mineral_composition import _calc_mineral_composition
-from _seismic_properties import _calc_seismic_properties
+from _seismic_anomalies import _calc_seismic_anomalies
 #======================================================================================#
 #                                                                                      #
 #                    Starting implementation of the simulator class                    #
@@ -365,7 +365,7 @@ class MineralProperties:
         spin_config, P_table = _calc_spin_configuration(self)
 
         # Calculating the mineral compositions
-        _calc_mineral_composition(self, spin_config, P_table)
+        #_calc_mineral_composition(self, spin_config, P_table)
 
-        # Calculating the seismic properties
-        _calc_seismic_properties(self, spin_config, P_table)
+        # Calculating the seismic anomalies
+        _calc_seismic_anomalies(self, spin_config, P_table)
