@@ -33,6 +33,7 @@ Copyright, 2023,  Vilella Kenny.
 import os
 from _spin_configuration import _calc_spin_configuration
 from _mineral_composition import _calc_mineral_composition
+from _seismic_properties import _calc_seismic_properties
 #======================================================================================#
 #                                                                                      #
 #                    Starting implementation of the simulator class                    #
@@ -111,6 +112,43 @@ class MineralProperties:
         v_al2o3_0: Volume of Al2O3 at ambient conditions. Default to 26.74. [cm^3/mol]
         k_casio3_0: Bulk modulus of CaSiO3 at ambient conditions. Default to 236. [GPa]
         v_casio3_0: Volume of CaSiO3 at ambient conditions. Default to 27.45. [cm^3/mol]
+        g_mgo_0: Shear modulus of MgO at ambient conditions. Default to 131. [GPa]
+        g_prime_mgo: Pressure derivative of the shear modulus for MgO. Default to 1.92.
+        g_feo_hs_0: Shear modulus of FeO in the high spin state at ambient conditions.
+                    Default to 29.9. [GPa]
+        g_prime_feo_hs: Pressure derivative of the shear modulus for FeO in the high
+                        spin state. Default to 6.26.
+        g_feo_ls_0: Shear modulus of FeO in the low spin state at ambient conditions.
+                    Default to 119. [GPa]
+        g_prime_feo_ls: Pressure derivative of the shear modulus for FeO in the high
+                        spin state. Default to 3.9.
+        g_casio3_0: Shear modulus of CaSiO3 at ambient conditions. Default to 135. [GPa]
+        g_prime_casio3: Pressure derivative of the shear modulus for CaSiO3.
+                      Default to 1.57.
+        g_mgsio3_0: Shear modulus of MgSiO3 at ambient conditions.
+                    Default to 168.2. [GPa]
+        g_prime_mgsio3: Pressure derivative of the shear modulus for MgSiO3.
+                        Default to 1.79.
+        g_fesio3_0: Shear modulus of FeSiO3 at ambient conditions.
+                    Default to 145.7. [GPa]
+        g_prime_fesio3: Pressure derivative of the shear modulus for FeSiO3.
+                        Default to 1.87.
+        g_fealo3_0: Shear modulus of FeAlO3 at ambient conditions.
+                    Default to 95.3. [GPa]
+        g_prime_fealo3: Pressure derivative of the shear modulus for FeAlO3.
+                        Default to 2.13.
+        g_fe2o3_0: Shear modulus of Fe2O3 at ambient conditions. Default to 53.2. [GPa]
+        g_prime_fe2o3: Pressure derivative of the shear modulus for Fe2O3.
+                       Default to 2.63.
+        g_al2o3_0: Shear modulus of Al2O3 at ambient conditions. Default to 129.2. [GPa]
+        g_prime_al2o3: Pressure derivative of the shear modulus for Al2O3.
+                       Default to 2.32.
+        g_dot_bm: Temperature derivative of the shear modulus for Bm.
+                  Default to -0.02. [GPa/K]
+        g_dot_fp: Temperature derivative of the shear modulus for Fp.
+                  Default to -0.02. [GPa/K]
+        g_dot_capv: Temperature derivative of the shear modulus for CaPv.
+                    Default to -0.002. [GPa/K]
         m_mgo: Molar mass of MgO. [g/mol]
         m_feo: Molar mass of FeO. [g/mol]
         m_mgsio3: Molar mass of MgSiO3. [g/mol]
@@ -235,6 +273,31 @@ class MineralProperties:
         self.k_casio3_0 = prop.get("k_casio3_0", 236.) # Shin 2000
         self.v_casio3_0 = prop.get("v_casio3_0", 27.45) # Shin 2000
 
+        # Shear modulus parameters for various components
+        self.g_mgo_0 = prop.get("g_mgo_0", 131.) # Murakami 2009
+        self.g_prime_mgo = prop.get("g_prime_mgo", 1.92) # Murakami 2009
+        self.g_feo_hs_0 = prop.get("g_feo_hs_0", 29.9) # Murakami 2012
+        self.g_prime_feo_hs = prop.get("g_prime_feo_hs", 6.26) # Murakami 2012
+        self.g_feo_ls_0 = prop.get("g_feo_ls_0", 119.) # Murakami 2012
+        self.g_prime_feo_ls = prop.get("g_prime_feo_ls", 3.90) # Murakami 2012
+        self.g_casio3_0 = prop.get("g_casio3_0", 135.) # Li 2006
+        self.g_prime_casio3 = prop.get("g_prime_casio3", 1.57) # Li 2006
+        self.g_mgsio3_0 = prop.get("g_mgsio3_0", 168.2) # Shukla 2015
+        self.g_prime_mgsio3 = prop.get("g_prime_mgsio3", 1.79) # Shukla 2015
+        self.g_fesio3_0 = prop.get("g_fesio3_0", 145.7) # Shukla 2015
+        self.g_prime_fesio3 = prop.get("g_prime_fesio3", 1.87) # Shukla 2015
+        self.g_fealo3_0 = prop.get("g_fealo3_0", 95.3) # Shukla 2016
+        self.g_prime_fealo3 = prop.get("g_prime_fealo3", 2.13) # Shukla 2016
+        self.g_fe2o3_0 = prop.get("g_fe2o3_0", 53.2) # Shukla 2016
+        self.g_prime_fe2o3 = prop.get("g_prime_fe2o3", 2.63) # Shukla 2016
+        self.g_al2o3_0 = prop.get("g_al2o3_0", 129.2) # Shukla 2016
+        self.g_prime_al2o3 = prop.get("g_prime_al2o3", 2.32) # Shukla 2016
+
+        # Temperature derivative of the shear modulus
+        self.g_dot_bm = prop.get("g_dot_bm", -0.02) # Murakami 2012
+        self.g_dot_fp = prop.get("g_dot_fp", -0.02) # Murakami 2012
+        self.g_dot_capv = prop.get("g_dot_capv", -0.002) # Li 2006
+
         # Molar masses for various components
         self.m_mgo = 40.304
         self.m_feo = 71.844
@@ -303,3 +366,6 @@ class MineralProperties:
 
         # Calculating the mineral compositions
         _calc_mineral_composition(self, spin_config, P_table)
+
+        # Calculating the seismic properties
+        _calc_seismic_properties(self, spin_config, P_table)
