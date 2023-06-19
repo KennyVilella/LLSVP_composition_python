@@ -188,13 +188,13 @@ class _EOS(ABC):
         return value
 
     @abstractmethod
-    def _alpha(self, k_0, gamma, q, v, E_th, E_th_0, E_th_dv, E_th_dT):
+    def _alpha(self, k_v, gamma, q, v, E_th, E_th_0, E_th_dv, E_th_dT):
         """Calculates the thermal expansion coefficient.
 
         It corresponds to the sixth equation in (B5) of Jackson and Rigden (1996).
 
         Args:
-            k_0: Bulk modulus at ambient conditions. [GPa]
+            k_v: Bulk modulus at ambient temperature. [GPa]
             gamma: Gruneisen parameter at the considered conditions.
             q: Exponent of the Gruneisen parameter.
             v: Volume at considered conditions. [cm^3/mol]
@@ -209,7 +209,7 @@ class _EOS(ABC):
             Float64: Thermal expansion coefficient. [K^-1]
         """
         return gamma / v * E_th_dT / (
-            k_0 - (q - 1) * gamma * (E_th - E_th_0) / v - gamma * E_th_dv
+            k_v - (q - 1) * gamma * (E_th - E_th_0) / v - gamma * E_th_dv
         )
 
     @abstractmethod
@@ -252,10 +252,23 @@ class _EOS(ABC):
             g_0 + (1 - v_ratio**(2/3)) * 0.5 * (5 * g_0 - 3 * k_0 * g_prime)
         )
 
+    def _k_v(self, k_0, k0t_prime, v_ratio):
+        """
+        """
+        return k_0 * (
+            (v_ratio**(7/3) - v_ratio**(5/3)) * 3/4 * (k0t_prime - 4) * v_ratio**(2/3) +
+            0.5 * (7 * v_ratio**(7/3) - 5 * v_ratio**(5/3)) *
+            (1 + 3/4 * (k0t_prime - 4) * (v_ratio**(2/3) - 1))
+        )
+
     @abstractmethod
-    def _k_s(
-        self, T, k_0, k0t_prime, gamma, q, alpha, v, v_ratio, E_th, E_th_0, E_th_dv
-    ):
+    def _k_t(self, k_v, gamma, q, v, E_th, E_th_0, E_th_dv):
+        """
+        """
+        return k_v - (q - 1) * gamma / v * (E_th - E_th_0) - gamma * E_th_dv
+
+    @abstractmethod
+    def _k_s(self, T, k_t, alpha, gamma):
         """Calculates the isentropic bulk modulus.
 
         The expression of the isentropic bulk modulus corresponds to the twelfth
@@ -268,30 +281,13 @@ class _EOS(ABC):
 
         Args:
             T: Considered temperature. [K]
-            k_0: Bulk modulus at ambient conditions. [GPa]
-            k0t_prime: Pressure derivative of the bulk modulus at ambient conditions.
-            gamma: Gruneisen parameter at the considered conditions.
-            q: Exponent of the Gruneisen parameter.
+            k_t: Isothermal bulk modulus at considered conditions. [GPa]
             alpha: Thermal expansion coefficient. [K^-1]
-            v: Volume at considered conditions. [cm^3/mol]
-            v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
-                     and V the volume at the considered conditions.
-            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
-            E_th_0: Vibrational energy at ambient conditions. [cm^3 GPa mol^−1]
-            E_th_dv: Partial derivative of the vibrational energy with respect to
-                     temperature. [cm^3 GPa mol^−1 K^-1]
+            gamma: Gruneisen parameter at the considered conditions.
 
         Returns:
             Float64: Isentropic bulk modulus. [GPa]
         """
-        # Bulk modulus at ambient temperature and considered pressure/volume
-        k_v = k_0 * (
-            (v_ratio**(7/3) - v_ratio**(5/3)) * 3/4 * (k0t_prime - 4) * v_ratio**(2/3) +
-            0.5 * (7 * v_ratio**(7/3) - 5 * v_ratio**(5/3)) *
-            (1 + 3/4 * (k0t_prime - 4) * (v_ratio**(2/3) - 1))
-        )
-        # Bulk modulus at considered temperature/pressure/volume
-        k_t = k_v - (q - 1) * gamma / v * (E_th - E_th_0) - gamma * E_th_dv
         return k_t * (1 + alpha * gamma * T)
 
 #======================================================================================#
@@ -609,7 +605,7 @@ class _EOS_fp(_EOS):
         """
         return super()._E_th_dT(2, data.R, T, theta_fp, E_th_fp)
 
-    def _alpha(self, data, T, k_fp_0, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0):
+    def _alpha(self, data, T, k_v_fp, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0):
         """
         """
         # Partial derivative of the vibrational energy with respect to volume
@@ -619,7 +615,7 @@ class _EOS_fp(_EOS):
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_fp_dT = self._E_th_dT(data, T, theta_fp, E_th_fp)
         return super()._alpha(
-            k_fp_0, gamma_fp, data.q_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv,
+            k_v_fp, gamma_fp, data.q_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv,
             E_th_fp_dT
         )
 
@@ -709,6 +705,13 @@ class _EOS_fp(_EOS):
         g_fp_t0 = self._g_t0(data, v_fp, eta_ls, x_fp)
         return g_fp_t0 + data.g_dot_fp * (T - 300)
 
+    def _k_t(self, data, k_v_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv):
+        """
+        """
+        return super()._k_t(
+            k_v_fp, gamma_fp, data.q_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv
+        )
+
     def _k_s(self, data, T, v_fp, eta_ls, x_fp):
         """Calculates the isentropic bulk modulus of Ferropericlase.
 
@@ -748,14 +751,17 @@ class _EOS_fp(_EOS):
         E_th_fp_dv = self._E_th_dv(
             data, T, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0
         )
+        # Isothermal bulk modulus at ambient temperature
+        k_v_fp = super()._k_v(k_fp_0, data.k0t_prime_fp, v_ratio)
+        # Isothermal bulk modulus
+        k_t_fp = self._k_t(
+            data, k_v_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv
+        )
         # Thermal expansion coefficient
         alpha_fp = self._alpha(
-            data, T, k_fp_0, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0
+            data, T, k_v_fp, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0
         )
-        return super()._k_s(
-            T, k_fp_0, data.k0t_prime_fp, gamma_fp, data.q_fp, alpha_fp, v_fp, v_ratio,
-            E_th_fp, E_th_fp_0, E_th_fp_dv
-        )
+        return super()._k_s(T, k_t_fp, alpha_fp, gamma_fp)
 
 #======================================================================================#
 #                                                                                      #
@@ -1037,7 +1043,7 @@ class _EOS_bm(_EOS):
         """
         return super()._E_th_dT(2, data.R, T, theta_bm, E_th_bm)
 
-    def _alpha(self, data, T, k_bm_0, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0):
+    def _alpha(self, data, T, k_v_bm, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0):
         """
         """
         # Partial derivative of the vibrational energy with respect to volume
@@ -1047,7 +1053,7 @@ class _EOS_bm(_EOS):
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_bm_dT = self._E_th_dT(data, T, theta_bm, E_th_bm)
         return super()._alpha(
-            k_bm_0, gamma_bm, data.q_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv,
+            k_v_bm, gamma_bm, data.q_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv,
             E_th_bm_dT
         )
 
@@ -1154,6 +1160,13 @@ class _EOS_bm(_EOS):
         g_bm_t0 = self._g_t0(data, v_bm, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3)
         return g_bm_t0 + data.g_dot_bm * (T - 300)
 
+    def _k_t(self, data, k_v_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv):
+        """
+        """
+        return super()._k_t(
+            k_v_bm, gamma_bm, data.q_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv
+        )
+
     def _k_s(self, data, T, v_bm, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3):
         """Calculates the isentropic bulk modulus of Bridgmanite.
 
@@ -1198,14 +1211,17 @@ class _EOS_bm(_EOS):
         E_th_bm_dv = self._E_th_dv(
             data, T, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0
         )
+        # Isothermal bulk modulus at ambient temperature
+        k_v_bm = super()._k_v(k_bm_0, data.k0t_prime_bm, v_ratio)
+        # Isothermal bulk modulus
+        k_t_bm = self._k_t(
+            data, k_v_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv
+        )
         # Thermal expansion coefficient
         alpha_bm = self._alpha(
             data, T, k_bm_0, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0
         )
-        return super()._k_s(
-            T, k_bm_0, data.k0t_prime_bm, gamma_bm, data.q_bm, alpha_bm, v_bm, v_ratio,
-            E_th_bm, E_th_bm_0, E_th_bm_dv
-        )
+        return super()._k_s(T, k_t_bm, alpha_bm, gamma_bm)
 
 #======================================================================================#
 #                                                                                      #
@@ -1354,7 +1370,7 @@ class _EOS_capv(_EOS):
         return super()._E_th_dT(2, data.R, T, theta_capv, E_th_capv)
 
     def _alpha(
-        self, data, T, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
+        self, data, T, k_v_capv, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
     ):
         """
         """
@@ -1365,7 +1381,7 @@ class _EOS_capv(_EOS):
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_capv_dT = self._E_th_dT(data, T, theta_capv, E_th_capv)
         return super()._alpha(
-            data.k_casio3_0, gamma_capv, data.q_capv, v_capv, E_th_capv, E_th_capv_0,
+            k_v_capv, gamma_capv, data.q_capv, v_capv, E_th_capv, E_th_capv_0,
             E_th_capv_dv, E_th_capv_dT
         )
 
@@ -1441,6 +1457,16 @@ class _EOS_capv(_EOS):
         g_capv_t0 = self._g_t0(data, v_ratio)
         return g_capv_t0 + data.g_dot_capv * (T - 300)
 
+    def _k_t(
+        self, data, k_v_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0, E_th_capv_dv
+    ):
+        """
+        """
+        return super()._k_t(
+            k_v_capv, gamma_capv, data.q_capv, v_capv, E_th_capv, E_th_capv_0,
+            E_th_capv_dv
+        )
+
     def _k_s(self, data, T, v_capv):
         """Calculates the isentropic bulk modulus of Calcio Perovskite.
 
@@ -1474,11 +1500,14 @@ class _EOS_capv(_EOS):
         E_th_capv_dv = self._E_th_dv(
             data, T, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
         )
+        # Isothermal bulk modulus at ambient temperature
+        k_v_capv = super()._k_v(data.k_casio3_0, data.k0t_prime_capv, v_ratio)
+        # Isothermal bulk modulus
+        k_t_capv = self._k_t(
+            data, k_v_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0, E_th_capv_dv
+        )
         # Thermal expansion coefficient
         alpha_capv = self._alpha(
-            data, T, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
+            data, T, k_v_capv, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
         )
-        return super()._k_s(
-            T, data.k_casio3_0, data.k0t_prime_capv, gamma_capv, data.q_capv,
-            alpha_capv, v_capv, v_ratio, E_th_capv, E_th_capv_0, E_th_capv_dv
-        )
+        return super()._k_s(T, k_t_capv, alpha_capv, gamma_capv)
