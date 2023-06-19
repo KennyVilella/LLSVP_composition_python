@@ -365,7 +365,7 @@ class MineralProperties:
         spin_config, P_table = _calc_spin_configuration(self)
 
         # Calculating the mineral compositions
-        #_calc_mineral_composition(self, spin_config, P_table)
+        _calc_mineral_composition(self, spin_config, P_table)
 
         # Calculating the seismic anomalies
         _calc_seismic_anomalies(self, spin_config, P_table)
