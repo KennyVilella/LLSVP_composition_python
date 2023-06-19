@@ -1116,9 +1116,11 @@ class _EOS_capv(_EOS):
             data.g_casio3_0, data.g_prime_casio3, data.k_casio3_0, v_ratio
         )
 
-    def _g(self, data, T, v_ratio):
+    def _g(self, data, T, v_capv):
         """
         """
+        # Volume ratio
+        v_ratio = data.v_casio3_0 / v_capv
         # Shear modulus at ambient temperature
         g_capv_t0 = self._g_t0(data, v_ratio)
         return g_capv_t0 + data.g_dot_capv * (T - 300)
