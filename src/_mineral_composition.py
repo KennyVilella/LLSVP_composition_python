@@ -218,8 +218,8 @@ def _calc_mineral_composition(self, spin_config, P_table):
                             with open(filename, 'a', newline='') as csvfile:
                                 data_writer = csv.writer(csvfile, delimiter=' ')
                                 data_writer.writerow([
-                                    dT, p_capv, p_bm, feo, al, ratio_fe, x_init[0],
-                                    x_init[1], x_init[2], x_init[3], x_init[4]
+                                    dT, p_capv, p_bm, feo, al, ratio_fe, x_result[0],
+                                    x_result[1], x_result[2], x_result[3], x_result[4]
                                 ])
                             p_capv_ii[jj, kk, ll, mm, nn] = p_capv
                             p_bm_ii[jj, kk, ll, mm, nn] = p_bm
