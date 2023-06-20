@@ -253,7 +253,21 @@ class _EOS(ABC):
         )
 
     def _k_v(self, k_0, k0t_prime, v_ratio):
-        """
+        """Calculates the isothermal bulk modulus at ambient temperature.
+
+        The expression for the bulk modulus at ambient temperature is not given in
+        Jackson and Rigden (1996), but it can be calculated from the third-order
+        Birch–Murnaghan isothermal equation of state (B1) and the definition of the
+        isothermal bulk modulus (eq. 5).
+
+        Args:
+            k_0: Bulk modulus at ambient conditions. [GPa]
+            k0t_prime: Pressure derivative of the bulk modulus at ambient conditions.
+            v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
+                     and V the volume at the considered conditions.
+
+        Returns:
+            Float64: Isothermal bulk modulus at ambient temperature. [GPa]
         """
         return k_0 * (
             (v_ratio**(7/3) - v_ratio**(5/3)) * 3/4 * (k0t_prime - 4) * v_ratio**(2/3) +
@@ -263,7 +277,22 @@ class _EOS(ABC):
 
     @abstractmethod
     def _k_t(self, k_v, gamma, q, v, E_th, E_th_0, E_th_dv):
-        """
+        """Calculates the isothermal bulk modulus.
+
+        It corresponds to the fifth equation in (B5) of Jackson and Rigden (1996).
+
+        Args:
+            k_v: Isothermal bulk modulus at ambient temperature. [GPa]
+            gamma: Gruneisen parameter at the considered conditions.
+            q: Exponent of the Gruneisen parameter.
+            v: Volume at considered conditions. [cm^3/mol]
+            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
+            E_th_0: Vibrational energy at ambient conditions. [cm^3 GPa mol^−1]
+            E_th_dv: Partial derivative of the vibrational energy with respect to
+                     temperature. [cm^3 GPa mol^−1 K^-1]
+
+        Returns:
+            Float64: Isothermal bulk modulus. [GPa]
         """
         return k_v - (q - 1) * gamma / v * (E_th - E_th_0) - gamma * E_th_dv
 
@@ -271,13 +300,7 @@ class _EOS(ABC):
     def _k_s(self, T, k_t, alpha, gamma):
         """Calculates the isentropic bulk modulus.
 
-        The expression of the isentropic bulk modulus corresponds to the twelfth
-        equation in (B5) of Jackson and Rigden (1996), while the expression of the
-        isothermal bulk modulus corresponds to the fifth equation in (B5).
-        The expression for the bulk modulus at ambient temperature is not given in
-        Jackson and Rigden (1996), but it can be calculated from the third-order
-        Birch–Murnaghan isothermal equation of state and the definition of the
-        isothermal bulk modulus.
+        It corresponds to the twelfth equation in (B5) of Jackson and Rigden (1996).
 
         Args:
             T: Considered temperature. [K]
@@ -605,13 +628,29 @@ class _EOS_fp(_EOS):
         """
         return super()._E_th_dT(2, data.R, T, theta_fp, E_th_fp)
 
-    def _alpha(self, data, T, k_v_fp, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0):
+    def _alpha(
+        self, data, T, k_v_fp, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv
+    ):
+        """Calculates the thermal expansion coefficient of Ferropericlase.
+
+        It corresponds to the sixth equation in (B5) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            T: Considered temperature. [K]
+            k_v_fp: Bulk modulus of Fp at ambient temperature. [GPa]
+            theta_fp: Debye temperature of Fp at the considered conditions. [K]
+            gamma_fp: Gruneisen parameter of Fp at the considered conditions.
+            v_fp: Volume of Fp at considered conditions. [cm^3/mol]
+            E_th_fp: Vibrational energy of Fp at the considered conditions.
+                     [cm^3 GPa mol^−1]
+            E_th_fp_0: Vibrational energy of Fp at ambient conditions. [cm^3 GPa mol^−1]
+            E_th_fp_dv: Partial derivative of the vibrational energy with respect to
+                        temperature for Fp. [cm^3 GPa mol^−1 K^-1]
+
+        Returns:
+            Float64: Thermal expansion coefficient of Fp. [K^-1]
         """
-        """
-        # Partial derivative of the vibrational energy with respect to volume
-        E_th_fp_dv = self._E_th_dv(
-            data, T, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0
-        )
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_fp_dT = self._E_th_dT(data, T, theta_fp, E_th_fp)
         return super()._alpha(
@@ -706,7 +745,23 @@ class _EOS_fp(_EOS):
         return g_fp_t0 + data.g_dot_fp * (T - 300)
 
     def _k_t(self, data, k_v_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv):
-        """
+        """Calculates the isothermal bulk modulus for Ferropericlase.
+
+        It corresponds to the fifth equation in (B5) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            k_v_fp: Isothermal bulk modulus of Fp at ambient temperature. [GPa]
+            gamma_fp: Gruneisen parameter of Fp at the considered conditions.
+            v_fp: Volume of Fp at considered conditions. [cm^3/mol]
+            E_th_fp: Vibrational energy of Fp at the considered conditions.
+                     [cm^3 GPa mol^−1]
+            E_th_fp_0: Vibrational energy of Fp at ambient conditions. [cm^3 GPa mol^−1]
+            E_th_fp_dv: Partial derivative of the vibrational energy with respect to
+                        temperature for Fp. [cm^3 GPa mol^−1 K^-1]
+
+        Returns:
+            Float64: Isothermal bulk modulus Fp. [GPa]
         """
         return super()._k_t(
             k_v_fp, gamma_fp, data.q_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv
@@ -715,13 +770,7 @@ class _EOS_fp(_EOS):
     def _k_s(self, data, T, v_fp, eta_ls, x_fp):
         """Calculates the isentropic bulk modulus of Ferropericlase.
 
-        The expression of the isentropic bulk modulus corresponds to the twelfth
-        equation in (B5) of Jackson and Rigden (1996), while the expression of the
-        isothermal bulk modulus corresponds to the fifth equation in (B5).
-        The expression for the bulk modulus at ambient temperature is not given in
-        Jackson and Rigden (1996), but it can be calculated from the third-order
-        Birch–Murnaghan isothermal equation of state and the definition of the
-        isothermal bulk modulus.
+        It corresponds to the twelfth equation in (B5) of Jackson and Rigden (1996).
 
         Args:
             data: Data holder for the MineralProperties class.
@@ -759,7 +808,7 @@ class _EOS_fp(_EOS):
         )
         # Thermal expansion coefficient
         alpha_fp = self._alpha(
-            data, T, k_v_fp, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0
+            data, T, k_v_fp, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv
         )
         return super()._k_s(T, k_t_fp, alpha_fp, gamma_fp)
 
@@ -1043,13 +1092,29 @@ class _EOS_bm(_EOS):
         """
         return super()._E_th_dT(2, data.R, T, theta_bm, E_th_bm)
 
-    def _alpha(self, data, T, k_v_bm, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0):
+    def _alpha(
+        self, data, T, k_v_bm, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv
+    ):
+        """Calculates the thermal expansion coefficient of Bridgmanite.
+
+        It corresponds to the sixth equation in (B5) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            T: Considered temperature. [K]
+            k_v_bm: Bulk modulus of Bm at ambient temperature. [GPa]
+            theta_bm: Debye temperature of Bm at the considered conditions. [K]
+            gamma_bm: Gruneisen parameter of Bm at the considered conditions.
+            v_bm: Volume of Bm at considered conditions. [cm^3/mol]
+            E_th_bm: Vibrational energy of Bm at the considered conditions.
+                     [cm^3 GPa mol^−1]
+            E_th_bm_0: Vibrational energy of Bm at ambient conditions. [cm^3 GPa mol^−1]
+            E_th_bm_dv: Partial derivative of the vibrational energy with respect to
+                        temperature for Bm. [cm^3 GPa mol^−1 K^-1]
+
+        Returns:
+            Float64: Thermal expansion coefficient of Bm. [K^-1]
         """
-        """
-        # Partial derivative of the vibrational energy with respect to volume
-        E_th_bm_dv = self._E_th_dv(
-            data, T, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0
-        )
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_bm_dT = self._E_th_dT(data, T, theta_bm, E_th_bm)
         return super()._alpha(
@@ -1161,7 +1226,23 @@ class _EOS_bm(_EOS):
         return g_bm_t0 + data.g_dot_bm * (T - 300)
 
     def _k_t(self, data, k_v_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv):
-        """
+        """Calculates the isothermal bulk modulus for Bridgmanite.
+
+        It corresponds to the fifth equation in (B5) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            k_v_bm: Isothermal bulk modulus of Bm at ambient temperature. [GPa]
+            gamma_bm: Gruneisen parameter of Bm at the considered conditions.
+            v_bm: Volume of Bm at considered conditions. [cm^3/mol]
+            E_th_bm: Vibrational energy of Bm at the considered conditions.
+                     [cm^3 GPa mol^−1]
+            E_th_bm_0: Vibrational energy of Bm at ambient conditions. [cm^3 GPa mol^−1]
+            E_th_bm_dv: Partial derivative of the vibrational energy with respect to
+                        temperature for Bm. [cm^3 GPa mol^−1 K^-1]
+
+        Returns:
+            Float64: Isothermal bulk modulus of Bm. [GPa]
         """
         return super()._k_t(
             k_v_bm, gamma_bm, data.q_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv
@@ -1170,13 +1251,7 @@ class _EOS_bm(_EOS):
     def _k_s(self, data, T, v_bm, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3):
         """Calculates the isentropic bulk modulus of Bridgmanite.
 
-        The expression of the isentropic bulk modulus corresponds to the twelfth
-        equation in (B5) of Jackson and Rigden (1996), while the expression of the
-        isothermal bulk modulus corresponds to the fifth equation in (B5).
-        The expression for the bulk modulus at ambient temperature is not given in
-        Jackson and Rigden (1996), but it can be calculated from the third-order
-        Birch–Murnaghan isothermal equation of state and the definition of the
-        isothermal bulk modulus.
+        It corresponds to the twelfth equation in (B5) of Jackson and Rigden (1996).
 
         Args:
             data: Data holder for the MineralProperties class.
@@ -1370,14 +1445,30 @@ class _EOS_capv(_EOS):
         return super()._E_th_dT(2, data.R, T, theta_capv, E_th_capv)
 
     def _alpha(
-        self, data, T, k_v_capv, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
+        self, data, T, k_v_capv, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0,
+        E_th_capv_dv
     ):
+        """Calculates the thermal expansion coefficient of Calcio Perovskite.
+
+        It corresponds to the sixth equation in (B5) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            T: Considered temperature. [K]
+            k_v_capv: Bulk modulus of CaPv at ambient temperature. [GPa]
+            theta_capv: Debye temperature of CaPv at the considered conditions. [K]
+            gamma_capv: Gruneisen parameter of CaPv at the considered conditions.
+            v_capv: Volume of CaPv at considered conditions. [cm^3/mol]
+            E_th_capv: Vibrational energy of CaPv at the considered conditions.
+                       [cm^3 GPa mol^−1]
+            E_th_capv_0: Vibrational energy of CaPv at ambient conditions.
+                         [cm^3 GPa mol^−1]
+            E_th_capv_dv: Partial derivative of the vibrational energy with respect to
+                          temperature for CaPv. [cm^3 GPa mol^−1 K^-1]
+
+        Returns:
+            Float64: Thermal expansion coefficient of CaPv. [K^-1]
         """
-        """
-        # Partial derivative of the vibrational energy with respect to volume
-        E_th_capv_dv = self._E_th_dv(
-            data, T, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
-        )
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_capv_dT = self._E_th_dT(data, T, theta_capv, E_th_capv)
         return super()._alpha(
@@ -1460,7 +1551,24 @@ class _EOS_capv(_EOS):
     def _k_t(
         self, data, k_v_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0, E_th_capv_dv
     ):
-        """
+        """Calculates the isothermal bulk modulus for Calcio Perovskite.
+
+        It corresponds to the fifth equation in (B5) of Jackson and Rigden (1996).
+
+        Args:
+            data: Data holder for the MineralProperties class.
+            k_v_capv: Isothermal bulk modulus of CaPv at ambient temperature. [GPa]
+            gamma_capv: Gruneisen parameter of CaPv at the considered conditions.
+            v_capv: Volume of CaPv at considered conditions. [cm^3/mol]
+            E_th_capv: Vibrational energy of CaPv at the considered conditions.
+                       [cm^3 GPa mol^−1]
+            E_th_capv_0: Vibrational energy of CaPv at ambient conditions.
+                         [cm^3 GPa mol^−1]
+            E_th_capv_dv: Partial derivative of the vibrational energy with respect to
+                          temperature for CaPv. [cm^3 GPa mol^−1 K^-1]
+
+        Returns:
+            Float64: Isothermal bulk modulus of CaPv. [GPa]
         """
         return super()._k_t(
             k_v_capv, gamma_capv, data.q_capv, v_capv, E_th_capv, E_th_capv_0,
@@ -1470,13 +1578,7 @@ class _EOS_capv(_EOS):
     def _k_s(self, data, T, v_capv):
         """Calculates the isentropic bulk modulus of Calcio Perovskite.
 
-        The expression of the isentropic bulk modulus corresponds to the twelfth
-        equation in (B5) of Jackson and Rigden (1996), while the expression of the
-        isothermal bulk modulus corresponds to the fifth equation in (B5).
-        The expression for the bulk modulus at ambient temperature is not given in
-        Jackson and Rigden (1996), but it can be calculated from the third-order
-        Birch–Murnaghan isothermal equation of state and the definition of the
-        isothermal bulk modulus.
+        It corresponds to the twelfth equation in (B5) of Jackson and Rigden (1996).
 
         Args:
             data: Data holder for the MineralProperties class.
