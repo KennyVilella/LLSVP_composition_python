@@ -160,7 +160,8 @@ def _calc_seismic_properties(
 
     In addition to the calculation described in _mineral_composition, this requires the
     calculation of the shear modulus and the isentropic bulk modulus.
-    The calculation of the shear modulus is a combination of eqs. (21) and (38) of Bina     and Helffrich (1992).
+    The calculation of the shear modulus is a combination of eqs. (21) and (38) of Bina 
+    and Helffrich (1992).
     The calculation of the isentropic bulk modulus is a combination of multiple
     equations described mostly in (B5) and (B6) of Jackson and Rigden (1996).
 
