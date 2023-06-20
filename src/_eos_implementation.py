@@ -492,13 +492,11 @@ class _EOS_fp(_EOS):
         """
         return super()._E_th_dT(2, data.R, T, theta_fp, E_th_fp)
 
-    def _alpha(self, data, T, k_v_fp, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0):
+    def _alpha(
+        self, data, T, k_v_fp, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv
+    ):
         """
         """
-        # Partial derivative of the vibrational energy with respect to volume
-        E_th_fp_dv = self._E_th_dv(
-            data, T, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0
-        )
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_fp_dT = self._E_th_dT(data, T, theta_fp, E_th_fp)
         return super()._alpha(
@@ -600,7 +598,7 @@ class _EOS_fp(_EOS):
         )
         # Thermal expansion
         alpha_fp = self._alpha(
-            data, T, k_v_fp, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0
+            data, T, k_v_fp, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv
         )
         return super()._k_s(T, k_t_fp, alpha_fp, gamma_fp)
 
@@ -851,13 +849,11 @@ class _EOS_bm(_EOS):
         """
         return super()._E_th_dT(2, data.R, T, theta_bm, E_th_bm)
 
-    def _alpha(self, data, T, k_v_bm, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0):
+    def _alpha(
+        self, data, T, k_v_bm, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv
+    ):
         """
         """
-        # Partial derivative of the vibrational energy with respect to volume
-        E_th_bm_dv = self._E_th_dv(
-            data, T, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0
-        )
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_bm_dT = self._E_th_dT(data, T, theta_bm, E_th_bm)
         return super()._alpha(
@@ -972,7 +968,7 @@ class _EOS_bm(_EOS):
         )
         # Thermal expansion
         alpha_bm = self._alpha(
-            data, T, k_bm_0, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0
+            data, T, k_bm_0, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv
         )
         return super()._k_s(T, k_t_bm, alpha_bm, gamma_bm)
 
@@ -1089,14 +1085,11 @@ class _EOS_capv(_EOS):
         return super()._E_th_dT(2, data.R, T, theta_capv, E_th_capv)
 
     def _alpha(
-        self, data, T, k_v_capv, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
+        self, data, T, k_v_capv, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0,
+        E_th_capv_dv
     ):
         """
         """
-        # Partial derivative of the vibrational energy with respect to volume
-        E_th_capv_dv = self._E_th_dv(
-            data, T, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
-        )
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_capv_dT = self._E_th_dT(data, T, theta_capv, E_th_capv)
         return super()._alpha(
@@ -1185,6 +1178,7 @@ class _EOS_capv(_EOS):
         )
         # Thermal expansion
         alpha_capv = self._alpha(
-            data, T, k_v_capv, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
+            data, T, k_v_capv, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0,
+            E_th_capv_dv
         )
         return super()._k_s(T, k_t_capv, alpha_capv, gamma_capv)
