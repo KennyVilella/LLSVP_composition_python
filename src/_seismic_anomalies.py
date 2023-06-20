@@ -89,7 +89,7 @@ def _calc_seismic_anomalies(self, spin_config, P_table):
     )
 
     for file in os.listdir(self.path):
-        if (not file.endswith(".csv")):
+        if (not file.endswith(".csv") or file.endswith("_processed.csv")):
             continue
         print("Starting to process file: `", file, "`")
 
@@ -123,7 +123,7 @@ def _calc_seismic_anomalies(self, spin_config, P_table):
 
                 if isclose(p_fp, 0.0, abs_tol=1e-4):
                     ### No Ferropericlase, changing density to avoid errors ###
-                    rho_fp = 1.0
+                    rho_fp = 5500.0
 
                 if (rho_bm == 0.0):
                     ### No results for this condition ###
@@ -208,7 +208,7 @@ def _calc_seismic_properties(
     solution = scipy.optimize.fsolve(
         lambda x: capv_eos._MGD(self, self.T_am + dT, self.P_am, x), 20.
     )
-    rho_capv = self.rho_capv_0 * solution[0]
+    rho_capv = self.rho_capv_0 * self.v_casio3_0 / solution[0]
 
     # Calculating the spin configuration
     index_x = np.argmin(np.abs(self.x_vec - x_feo_fp))
@@ -217,12 +217,12 @@ def _calc_seismic_properties(
     eta_ls = spin_config[index_T, index_P, index_x]
 
     # Calculating composition of Bridgmanite in term of components
-    al_excess = (feo * x_feo_bm < x_alo2_bm)
-    x_mgsio3 = 1 - x_alo2_bm - (2 - feo) * x_feo_bm
-    x_fesio3 = 2 * (1 - feo) * x_feo_bm
-    x_fealo3 = 2 * (1.0 - al_excess) * x_alo2_bm + 2 * al_excess * feo * x_feo_bm
-    x_fe2o3 = (1.0 - al_excess) * (feo * x_feo_bm - x_alo2_bm)
-    x_al2o3 = al_excess * (x_alo2_bm - feo * x_feo_bm)
+    al_excess = (ratio_fe * x_feo_bm < x_alo2_bm)
+    x_mgsio3 = 1 - x_alo2_bm - (2 - ratio_fe) * x_feo_bm
+    x_fesio3 = 2 * (1 - ratio_fe) * x_feo_bm
+    x_fealo3 = 2 * (1.0 - al_excess) * x_alo2_bm + 2 * al_excess * ratio_fe * x_feo_bm
+    x_fe2o3 = (1.0 - al_excess) * (ratio_fe * x_feo_bm - x_alo2_bm)
+    x_al2o3 = al_excess * (x_alo2_bm - ratio_fe * x_feo_bm)
 
     # Calculating molar mass of Fp and Bm
     m_fp = self.m_mgo * (1 - x_feo_fp) + self.m_feo * x_feo_fp

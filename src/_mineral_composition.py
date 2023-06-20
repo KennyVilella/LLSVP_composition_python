@@ -114,7 +114,7 @@ def _calc_mineral_composition(self, spin_config, P_table):
         solution = scipy.optimize.fsolve(
             lambda x: capv_eos._MGD(self, self.T_am + dT, self.P_am, x), 30.
         )
-        rho_capv = self.rho_capv_0 * solution[0]
+        rho_capv = self.rho_capv_0 * self.v_casio3_0 / solution[0]
 
         # Initializing starting condition
         x_init = [0.3, 0.1, 0.1, 5000.0, 5000.0]
