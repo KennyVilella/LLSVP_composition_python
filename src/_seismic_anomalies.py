@@ -69,7 +69,7 @@ def _calc_seismic_anomalies(self, spin_config, P_table):
     solution = scipy.optimize.fsolve(
         lambda x: capv_eos._MGD(self, self.T_am, self.P_am, x), 20.
     )
-    rho_capv_am = self.rho_capv_0 * solution[0]
+    rho_capv_am = self.rho_capv_0 * self.v_casio3_0 / solution[0]
 
     # Calculating the composition of the ambient mantle
     p_fp_am = 1 - self.p_capv_am - self.p_bm_am
