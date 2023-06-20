@@ -1294,7 +1294,7 @@ class _EOS_bm(_EOS):
         )
         # Thermal expansion coefficient
         alpha_bm = self._alpha(
-            data, T, k_bm_0, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0
+            data, T, k_bm_0, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv
         )
         return super()._k_s(T, k_t_bm, alpha_bm, gamma_bm)
 
@@ -1610,6 +1610,7 @@ class _EOS_capv(_EOS):
         )
         # Thermal expansion coefficient
         alpha_capv = self._alpha(
-            data, T, k_v_capv, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
+            data, T, k_v_capv, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0,
+            E_th_capv_dv
         )
         return super()._k_s(T, k_t_capv, alpha_capv, gamma_capv)
