@@ -48,7 +48,6 @@ jobs:
           - x64
     if: ${{ github.event_name == 'push' || !github.event.pull_request.draft }}
     steps:
-    steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
 
