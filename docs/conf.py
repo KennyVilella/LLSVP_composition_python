@@ -10,7 +10,17 @@ author = "Kenny Vilella"
 
 extensions = [
     "sphinx.ext.autodoc",
+    "sphinx_multiversion",
 ]
 
 templates_path = ["_templates"]
+html_sidebars = {
+    '**': [
+        'versioning.html',
+    ],
+}
 html_theme = "sphinx_rtd_theme"
+
+# Whitelist pattern for tags and branches used for multiversioning
+smv_tag_whitelist = r'^v\d+\.\d+$'
+smv_branch_whitelist = r'^(main)$'
