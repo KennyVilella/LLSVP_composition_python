@@ -21,5 +21,5 @@ Contents
 .. toctree::
 
    Home <self>
-   Quickstart guide
-   API
+   quickstart
+   General documentation <api>
