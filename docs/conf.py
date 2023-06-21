@@ -14,11 +14,6 @@ extensions = [
 ]
 
 templates_path = ["_templates"]
-html_sidebars = {
-    '**': [
-        'versioning.html',
-    ],
-}
 html_theme = "sphinx_rtd_theme"
 
 # Whitelist pattern for tags and branches used for multi-versioning
