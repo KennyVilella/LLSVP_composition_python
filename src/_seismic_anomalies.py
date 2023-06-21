@@ -34,8 +34,8 @@ from math import isclose
 import os
 import csv
 import scipy.optimize
-from _eos_implementation import _EOS_fp, _EOS_bm, _EOS_capv
-from _mineral_composition import _solve_mineral_composition
+from ._eos_implementation import _EOS_fp, _EOS_bm, _EOS_capv
+from ._mineral_composition import _solve_mineral_composition
 #======================================================================================#
 #                                                                                      #
 #     Starting implementation of functions used to calculate the seismic anomalies     #

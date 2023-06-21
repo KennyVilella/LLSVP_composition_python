@@ -22,7 +22,7 @@ Copyright, 2023,  Vilella Kenny.
 """
 import numpy as np
 import scipy.optimize
-from _eos_implementation import _EOS_fp
+from ._eos_implementation import _EOS_fp
 #======================================================================================#
 #                                                                                      #
 #    Starting implementation of functions used to calculate the spin configuration     #

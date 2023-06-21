@@ -42,7 +42,7 @@ import os
 import csv
 import random
 import scipy.optimize
-from _eos_implementation import _EOS_fp, _EOS_bm, _EOS_capv
+from ._eos_implementation import _EOS_fp, _EOS_bm, _EOS_capv
 #======================================================================================#
 #                                                                                      #
 #    Starting implementation of functions used to calculate the mineral composition    #

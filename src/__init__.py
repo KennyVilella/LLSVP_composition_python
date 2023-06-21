@@ -31,9 +31,9 @@ Typical usage example:
 Copyright, 2023,  Vilella Kenny.
 """
 import os
-from _spin_configuration import _calc_spin_configuration
-from _mineral_composition import _calc_mineral_composition
-from _seismic_anomalies import _calc_seismic_anomalies
+from ._spin_configuration import _calc_spin_configuration
+from ._mineral_composition import _calc_mineral_composition
+from ._seismic_anomalies import _calc_seismic_anomalies
 #======================================================================================#
 #                                                                                      #
 #                    Starting implementation of the simulator class                    #
