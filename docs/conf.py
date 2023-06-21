@@ -10,7 +10,6 @@ author = "Kenny Vilella"
 
 extensions = [
     "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
 ]
 
 templates_path = ["_templates"]

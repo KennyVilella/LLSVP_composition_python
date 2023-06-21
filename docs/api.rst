@@ -3,7 +3,5 @@
 API
 ===
 
-.. autosummary::
-   :toctree: generated
-
-   src
+.. automodule:: src
+    :members:
