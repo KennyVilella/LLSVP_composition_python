@@ -1,5 +1,7 @@
+import llsvp
+
 project = "LLSVP composition calculator"
-version = "0.0"
+version = "0.0.0"
 copyright = "2023,  Vilella Kenny"
 author = "Kenny Vilella"
 
