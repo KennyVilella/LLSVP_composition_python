@@ -65,6 +65,9 @@ jobs:
       - name: Build the documentation
         run: sphinx-multiversion docs docs/build/html
 
+      - name: Created index redirection
+        run: cp docs/_asset/index.html docs/build/html
+
       - name: Deploy the documentation
         uses: JamesIves/github-pages-deploy-action@v4
         with:
