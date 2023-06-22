@@ -48,7 +48,7 @@ from ._eos_implementation import _EOS_fp, _EOS_bm, _EOS_capv
 #    Starting implementation of functions used to calculate the mineral composition    #
 #                                                                                      #
 #======================================================================================#
-def _calc_mineral_composition(self, spin_config, P_table):
+def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray):
     """Calculates the mineral composition of a large range of rock assemblages.
 
     This function calculates the properties of a large range of mineral composition and
@@ -280,9 +280,10 @@ def _calc_mineral_composition(self, spin_config, P_table):
 
 
 def _solve_mineral_composition(
-    self, dT, p_capv, p_bm, feo, al, ratio_fe,
-    spin_config, P_table, rho_capv, p_fp, x_init
-):
+    self, dT: float, p_capv: float, p_bm: float, feo: float, al: float, ratio_fe: float,
+    spin_config: np.ndarray, P_table: np.ndarray, rho_capv: float, p_fp: float,
+    x_init: list
+) -> list:
     """Calculates the mineral composition of the provided rock assemblage.
 
     This function calculates five properties fully characterizing the composition of
@@ -325,11 +326,8 @@ def _solve_mineral_composition(
                 rescaled density of Fp.
 
     Returns:
-        Float64: The molar concentration of FeO in Bm.
-        Float64: The molar concentration of FeO in Fp.
-        Float64: The molar concentration of AlO2 in Bm.
-        Float64: The rescaled density of Bm.
-        Float64: The rescaled density of Fp.
+        A list composed of the molar concentration of FeO in Bm, FeO in Fp, AlO2 in Bm,
+        the density of Bm and Fp
     """
     # First guess on whether Al or Fe is in excess in Bm
     if (al < 0.75 * ratio_fe * feo):
@@ -462,9 +460,10 @@ def _solve_mineral_composition(
 
 
 def _solve_with_fp(
-    self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, spin_config, P_table,
-    rho_capv, p_fp, al_excess
-):
+    self, x_init: list, dT: float, p_capv: float, p_bm: float, feo: float, al: float,
+    ratio_fe: float, spin_config: np.ndarray, P_table: np.ndarray, rho_capv: float,
+    p_fp: float, al_excess: bool
+) -> list:
     """Implements the solver for the physics problem with Ferropericlase.
 
     This function implements a solver for the system of equations governing the physics
@@ -507,9 +506,8 @@ def _solve_with_fp(
         al_excess: Flag indicating whether alumina is assumed to be in excess in Bm.
 
     Returns:
-        Float64: The molar concentration of FeO in Fp.
-        Float64: The rescaled density of Bm.
-        Float64: The rescaled density of Fp.
+        A list composed of the molar concentration of FeO in Fp, the rescaled density
+        of Bm and Fp.
     """
     # Initialization
     n_iter = 0
@@ -537,13 +535,14 @@ def _solve_with_fp(
             x_init[2] = random.uniform(0.8, 1.8)
             n_iter += 1
 
-    return 0.0, 0.0, 0.0
+    return [0.0, 0.0, 0.0]
 
 
 def _set_eqs_with_fp(
-    self, var_in, dT, p_capv, p_bm, feo, al, ratio_fe, spin_config, P_table,
-    rho_capv, p_fp, al_excess, testing=False
-):
+    self, var_in: list, dT: float, p_capv: float, p_bm: float, feo: float, al: float,
+    ratio_fe: float, spin_config: np.ndarray, P_table: np.ndarray, rho_capv: float,
+    p_fp: float, al_excess: bool, testing: bool=False
+) -> list:
     """Calculates the equations for the physics problem with Ferropericlase.
 
     This function calculates the residue for the system of equations governing the
@@ -577,10 +576,9 @@ def _set_eqs_with_fp(
                  var_in lead to a consistent composition.
 
     Returns:
-        Float64: Residue of the equation of state for Bridgmanite.
-        Float64: Residue of the equation for the ratio of FeO and alumina content in
-                 Bridgmanite.
-        Float64: Residue of the equation for the alunina content in Bridgmanite.
+        A list composed of the residue for the equation of state for Ferropericlase, the
+        equation of state for Bridgmanite, and the equation for the alunina content in
+        Bridgmanite.
     """
     # Loading utility class for mineral properties calculation
     fp_eos = _EOS_fp()
@@ -692,12 +690,13 @@ def _set_eqs_with_fp(
             print("Calculated FeO content is `", sum_feo,
                 "` , while the actual value is `", feo, "`")
 
-    return eq_MGD_fp, eq_MGD_bm, eq_alo2
+    return [eq_MGD_fp, eq_MGD_bm, eq_alo2]
 
 
 def _oxides_content_in_bm(
-    self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe, rho_capv, p_fp
-):
+    self, x_feo_fp: float, rho_bm: float, rho_fp: float, p_capv: float, p_bm: float,
+    feo: float, al: float, ratio_fe: float, rho_capv: float, p_fp: float
+) -> list:
     """Calculates the molar concentration of FeO and AlO2 in Bridgmanite.
 
     This function calculates the molar concentration of FeO and AlO2 in Bridgmanite.
@@ -720,8 +719,7 @@ def _oxides_content_in_bm(
         p_fp: Proportion of Fp. [vol%]
 
     Returns:
-        Float64: The molar concentration of AlO2 in Bm.
-        Float64: The molar concentration of FeO in Bm.
+        A list composed of the molar concentration of AlO2 in Bm and FeO in Bm.
     """
     # Molar mass of Fp
     m_fp = self.m_mgo * (1 - x_feo_fp) + self.m_feo * x_feo_fp
@@ -739,12 +737,13 @@ def _oxides_content_in_bm(
     )
     x_feo_bm  = c_1 * x_alo2_bm
 
-    return x_alo2_bm, x_feo_bm
+    return [x_alo2_bm, x_feo_bm]
 
 
 def _solve_without_fp(
-    self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
-):
+    self, x_init: list, dT: float, p_capv: float, p_bm: float, feo: float, al: float,
+    ratio_fe: float, rho_capv: float, al_excess: bool
+) -> list:
     """Implements the solver for the physics problem without Ferropericlase.
 
     This function implement a solver for the system of equations governing the physics
@@ -782,9 +781,8 @@ def _solve_without_fp(
         al_excess: Flag indicating whether alumina is assumed to be in excess in Bm.
 
     Returns:
-        Float64: The molar concentration of FeO in Bm.
-        Float64: The molar concentration of AlO2 in Bm.
-        Float64: The rescaled density of Bm.
+        A list composed of the molar concentration of FeO in Bm, AlO2 in Bm, and the
+        rescaled density of Bm.
     """
     # Initialization
     n_iter = 0
@@ -812,12 +810,13 @@ def _solve_without_fp(
             x_init[2] = random.uniform(0.8, 1.8)
             n_iter += 1
 
-    return 0.0, 0.0, 0.0
+    return [0.0, 0.0, 0.0]
 
 
 def _set_eqs_without_fp(
-    self, var_in, dT, p_capv, p_bm, feo, al, ratio_fe, rho_capv, al_excess
-):
+    self, var_in: list, dT: float, p_capv: float, p_bm: float, feo: float, al: float,
+    ratio_fe: float, rho_capv: float, al_excess: bool
+) -> list:
     """Calculates the equations for the physics problem without Ferropericlase.
 
     This function calculates the residue for the system of equations governing the
@@ -847,10 +846,9 @@ def _set_eqs_without_fp(
         al_excess: Flag indicating whether alumina is assumed to be in excess in Bm.
 
     Returns:
-        Float64: Residue of the equation of state for Bridgmanite.
-        Float64: Residue of the equation for the ratio of FeO and alumina content in
-                 Bridgmanite.
-        Float64: Residue of the equation for the alunina content in Bridgmanite.
+        A list composed of the residue for the equation of state for Bridgmanite, the
+        equation for the ratio of FeO and alumina content in Bridgmanite, and the
+        equation for the alunina content in Bridgmanite.
     """
     # Loading utility class for mineral properties calculation
     bm_eos = _EOS_bm()
@@ -896,4 +894,4 @@ def _set_eqs_without_fp(
     # Equation from the alumina content
     eq_alo2 = -x_alo2_bm + m_bm * al / (self.m_al2o3 * x_m_bm)
 
-    return eq_MGD_bm, eq_feo_al, eq_alo2
+    return [eq_MGD_bm, eq_feo_al, eq_alo2]
