@@ -296,21 +296,24 @@ vibrational energy.</p>
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_MGD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BM3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E_th</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">E_th_0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#eos_implementation._EOS._MGD" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the Mie-Gruneisen-Debye equation of state.</p>
 <p>It corresponds to the eq. (33) of Jackson and Rigden (1996).</p>
-<blockquote>
-<div><dl>
-<dt>Args:</dt><dd><dl class="simple">
-<dt>BM3: Residue of the third-order Birch–Murnaghan isothermal</dt><dd><p>equation of state. [GPa]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>BM3</strong> – Residue of the third-order Birch–Murnaghan isothermal
+equation of state. [GPa]</p></li>
+<li><p><strong>gamma</strong> – Gruneisen parameter at the considered conditions.</p></li>
+<li><p><strong>v</strong> – Volume at considered conditions. [cm^3/mol]</p></li>
+<li><p><strong>E_th</strong> – Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]</p></li>
+<li><p><strong>E_th_0</strong> – Vibrational energy at ambient conditions. [cm^3 GPa mol^−1]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Residue of the Mie-Gruneisen-Debye equation of state. [GPa]</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Float64</p>
 </dd>
 </dl>
-<p>gamma: Gruneisen parameter at the considered conditions.
-v: Volume at considered conditions. [cm^3/mol]
-E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
-E_th_0: Vibrational energy at ambient conditions. [cm^3 GPa mol^−1]</p>
-</dd>
-<dt>Returns:</dt><dd><p>Float64: Residue of the Mie-Gruneisen-Debye equation of state. [GPa]</p>
-</dd>
-</dl>
-</div></blockquote>
 </dd></dl>
 
 <dl class="py method">
