@@ -41,7 +41,7 @@ from ._mineral_composition import _solve_mineral_composition
 #     Starting implementation of functions used to calculate the seismic anomalies     #
 #                                                                                      #
 #======================================================================================#
-def _calc_seismic_anomalies(self, spin_config, P_table):
+def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
     """"Calculates the seismic anomalies of a large range of rock assemblages.
 
     This function calculates the seismic anomalies of a large range of mineral
@@ -150,9 +150,10 @@ def _calc_seismic_anomalies(self, spin_config, P_table):
                     ])
 
 def _calc_seismic_properties(
-    self, spin_config, P_table, dT, p_capv, p_bm, p_fp, feo, al, ratio_fe, x_feo_bm,
-    x_feo_fp, x_alo2_bm, rho_bm, rho_fp
-):
+    self, spin_config: np.ndarray, P_table: np.ndarray, dT: float, p_capv: float,
+    p_bm: float, p_fp: float, feo: float, al: float, ratio_fe: float, x_feo_bm: float,
+    x_feo_fp: float, x_alo2_bm: float, rho_bm: float, rho_fp: float
+) -> list:
     """Calculates the seismic properties of a rock assemblage.
 
     This function calculates the density and seismic wave speeds of a given mineral
@@ -194,10 +195,8 @@ def _calc_seismic_properties(
         rho_fp: Density of Fp. [kg/m^3]
 
     Returns:
-        Float64: Density of the rock assemblage. [kg/m^3]
-        Float64: Bulk sound speed of the rock assemblage. [km/s]
-        Float64: S-wave velocity of the rock assemblage. [km/s]
-        Float64: P-wave velocity of the rock assemblage. [km/s]
+        A list composed of the density of the rock assemblage [kg/m^3], its bulk sound
+        speed [km/s], its S-wave velocity [km/s], and its P-wave velocity [km/s].
     """
     # Loading utility class for mineral properties calculation
     fp_eos = _EOS_fp()
@@ -268,4 +267,4 @@ def _calc_seismic_properties(
     v_s = ((g_tot * 10**9) / rho)**(1/2) / 1000
     v_p = np.sqrt(v_phi * v_phi + (4/3) * v_s * v_s)
 
-    return rho, v_phi, v_s, v_p
+    return [rho, v_phi, v_s, v_p]
