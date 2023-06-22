@@ -1,6 +1,5 @@
 API: MineralProperties class
 ============================
 
-.. automodule:: src
+.. autoclass:: __init__.MineralProperties
     :members:
-    :undoc-members:

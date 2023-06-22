@@ -1,6 +1,6 @@
 API: Calculation of seismic anomalies
 =====================================
 
-.. automodule:: _seismic_anomalies
-    :members:
-    :undoc-members:
+.. autofunction:: _seismic_anomalies._calc_seismic_anomalies
+
+.. autofunction:: _seismic_anomalies._calc_seismic_properties
