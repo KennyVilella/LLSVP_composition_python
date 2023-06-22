@@ -1,6 +1,8 @@
 API: Calculation of spin configuration
 ======================================
 
-.. automodule:: _spin_configuration
-    :members:
-    :undoc-members:
+.. autofunction::  _spin_configuration._calc_spin_configuration
+
+.. autofunction::  _spin_configuration._energy_equation
+
+.. autofunction::  _spin_configuration._splitting_energy
