@@ -28,7 +28,7 @@ from ._eos_implementation import _EOS_fp
 #    Starting implementation of functions used to calculate the spin configuration     #
 #                                                                                      #
 #======================================================================================#
-def _calc_spin_configuration(self):
+def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
     """Calculates the spin configuration of FeO in Ferropericlase.
 
     The theory behind this calculation is described in Vilella et al. (2015) and is
@@ -50,10 +50,9 @@ def _calc_spin_configuration(self):
     the actual solution is the one associated with the lowest value of F.
 
     Returns:
-        np.ndarray: Average spin state of FeO in Fp for a given value for the
-                    temperature, volume of Fp, and FeO content in Fp.
-        np.ndarray: Pressure for a given value for the temperature, volume of Fp, and
-                    FeO content in Fp.
+        A tuple of np.ndarray composed of the average spin state of FeO in Fp and the
+        pressure for a given value for the temperature, volume of Fp, and FeO content
+        in Fp.
     """
     # Loading utility class for mineral properties calculation
     fp_eos = _EOS_fp()
@@ -178,7 +177,7 @@ def _calc_spin_configuration(self):
     return spin_config, P_table
 
 
-def _energy_equation(self, spin_state, v_0, v):
+def _energy_equation(self, spin_state: int, v_0: float, v: float) -> float:
     """Calculates the energy level of Fe2+ associated with a given spin state.
 
     This function calculates the energy level associated with a given spin state (
@@ -197,7 +196,7 @@ def _energy_equation(self, spin_state, v_0, v):
         v: Volume of Ferropericlase at considered conditions. [A^3]
 
     Returns:
-        Float64: Energy of the spin state. [eV]
+        Energy of the spin state. [eV]
     """
     # Calculating energy required to pair electrons
     pairing_energy = self.delta_0 * (v_0 / self.v_trans)**self.xi
@@ -217,7 +216,7 @@ def _energy_equation(self, spin_state, v_0, v):
         return pairing_energy - 0.4 * delta_energy
 
 
-def _splitting_energy(self, x_fp, v_0, v):
+def _splitting_energy(self, x_fp: float, v_0: float, v: float) -> float:
     """Calculates the splitting energy.
 
     This function calculates the coupling energy between low spin state iron atoms
@@ -229,7 +228,7 @@ def _splitting_energy(self, x_fp, v_0, v):
         v: Volume of Ferropericlase at considered conditions. [A^3]
 
     Returns:
-        Float64: The splitting energy. [eV]
+        The splitting energy. [eV]
     """
     # Calculating energy difference between the two energy levels
     delta_energy = self.delta_0 * (v_0 / v)**self.xi
