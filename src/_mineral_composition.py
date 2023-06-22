@@ -700,11 +700,11 @@ def _oxides_content_in_bm(
 ):
     """Calculates the molar concentration of FeO and AlO2 in Bridgmanite.
 
-   This function calculates the molar concentration of FeO and AlO2 in Bridgmanite.
-   The calculation here is a combination of eqs. (1), (2), (4) and (13) in the
-   supplementary material of Vilella et al. (2021).
+    This function calculates the molar concentration of FeO and AlO2 in Bridgmanite.
+    The calculation here is a combination of eqs. (1), (2), (4) and (13) in the
+    supplementary material of Vilella et al. (2021).
 
-   Args:
+    Args:
         x_feo_fp: The molar concentration of FeO in Fp.
         rho_bm: Density of Bm for the considered conditions. Its value has been
                 rescaled by 5500. [kg/m^3]
