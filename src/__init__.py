@@ -194,7 +194,7 @@ class MineralProperties:
         delta_P: Step value for the pressure in the spin transition calculation.
                  Default to 2.0. [GPa]
     """
-    def __init__(self, prop={}):
+    def __init__(self, prop={}: dict):
         """Initializes all the mineral properties.
 
         All units are given in the class description.
@@ -312,7 +312,7 @@ class MineralProperties:
         self.rho_capv_0 = 1000. * self.m_capv / self.v_casio3_0
 
 
-    def _load_conditions(self, conditions={}):
+    def _load_conditions(self, conditions={}: dict):
         """Initializes the input conditions of the simulator.
 
         Default values are chosen in order to reproduce the results presented in
@@ -355,7 +355,7 @@ class MineralProperties:
         self.delta_P = conditions.get("delta_P", 2.0)
 
 
-    def calc_mineral_properties(self, conditions={}):
+    def calc_mineral_properties(self, conditions={}: dict):
         """Work in progress.
         """
         # Loading simulation conditions
