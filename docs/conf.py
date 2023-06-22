@@ -7,10 +7,6 @@ _srcdir = os.path.abspath(os.path.join(_filedir, '../src'))
 sys.path.insert(0, _rootdir)
 sys.path.insert(0, _srcdir)
 import src
-#import src._eos_implementation
-#import src._spin_configuration
-#import src._mineral_composition
-#import src._seismic_anomalies
 
 project = "LLSVP composition calculator"
 version = "0.0.0"
@@ -34,5 +30,4 @@ html_theme = "sphinx_rtd_theme"
 
 # Whitelist pattern for tags and branches used for multi-versioning
 smv_tag_whitelist = r'^v\d+\.\d+\.\d+$'
-#smv_branch_whitelist = r'^(main)$'
-smv_branch_whitelist = r'^.*$'
+smv_branch_whitelist = r'^(main)$'
