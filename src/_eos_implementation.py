@@ -216,7 +216,7 @@ class _EOS(ABC):
     def _MGD(self, BM3, gamma, v, E_th, E_th_0):
         """Calculates the Mie-Gruneisen-Debye equation of state.
 
-       It corresponds to the eq. (33) of Jackson and Rigden (1996).
+        It corresponds to the eq. (33) of Jackson and Rigden (1996).
 
         Args:
             BM3: Residue of the third-order Birch–Murnaghan isothermal
