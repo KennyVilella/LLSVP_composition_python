@@ -1,7 +1,13 @@
 import os
 import sys
-sys.path.insert(0, os.path.abspath('..'))
+# Importing path
+_filedir = os.path.dirname(__file__)
+_rootdir = os.path.abspath(os.path.join(_filedir, '..'))
+_srcdir = os.path.abspath(os.path.join(_filedir, '../src'))
+sys.path.insert(0, _rootdir)
+sys.path.insert(0, _srcdir)
 import src
+import src._eos_implementation
 import src._spin_configuration
 import src._mineral_composition
 import src._seismic_anomalies
