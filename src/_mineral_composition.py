@@ -586,7 +586,7 @@ def _set_eqs_with_fp(
     x_feo_fp, rho_bm, rho_fp = var_in
 
     # Checking that input conditions makes sense
-    if ((rho_fp < 0.1) or (rho_bm < 0.1) or (x_feo_fp < 0.0)):
+    if ((rho_fp < 0.1) or (rho_bm < 0.1) or (x_feo_fp < 0.0) or (x_feo_fp > 1.0)):
         return None
 
     # Average spin state of FeO
@@ -856,7 +856,10 @@ def _set_eqs_without_fp(
     x_feo_bm, x_alo2_bm, rho_bm = var_in
 
     # Checking that input conditions makes sense
-    if ((rho_bm < 0.1) or (x_feo_bm < 0.0) or (x_alo2_bm < 0.0)):
+    if (
+        (rho_bm < 0.1) or (x_feo_bm < 0.0) or (x_feo_bm > 1.0) or
+        (x_alo2_bm < 0.0) or (x_alo2_bm > 1.0)
+    ):
         return None
 
     if (al_excess):
