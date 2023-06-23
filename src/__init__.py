@@ -1,4 +1,4 @@
-"""Calculates mineral properties of potential lower mantle compositions.
+"""Calculates seismic anomalies of potential lower mantle compositions.
 
 This file is associated with the article:
 "Constraints on the composition and temperature of LLSVPs from seismic properties of
@@ -371,7 +371,34 @@ class MineralProperties:
 
 
     def calc_mineral_properties(self, conditions: dict={}):
-        """Work in progress.
+        """Calculates the seismic anomalies of a wide range of mineral compositions.
+
+        This function is the main function of the class and its purpose is to calculate
+        the density and seismic wave velocities of various rock assemblages. This is
+        achieved through a three-step process. As a first step, the average spin
+        configuration of FeO in Ferropericlase (Fp) is calculated as a function of
+        temperature, pressure, and volume. As a second step, the density of Fp and
+        Bridgmanite (Bm) as well as the molar concentration of FeO in Fp, FeO in Bm,
+        and AlO2 in Bm are calculated. As a third step, these five properties are used
+        to determine the density and seismic wave velocities of the rock assemblage.
+
+        The results are written into two sets of files. The first set is composed of the
+        mineral compositions of the rock assemblages and are named after the considered
+        temperature contrast. The second set is composed of the sesimic anomalies of the
+        rock assemblages and are named following the first set of files with
+        "_processed" appended.
+
+        The first set of files can be used to resume the simulation if stopped, while
+        the second set of files can be used to analyze the results.
+
+        The input conditions for the range of mineral compositions investigated can
+        be changed by providing an input dictionary. Default values are chosen in order
+        to reproduce the results presented in Vilella et al. (2021). Note however that
+        the calculation time is long (over a week).
+
+        Args:
+            conditions: A dictionary providing the values for input conditions.
+                        Default to empty dictionary.
         """
         # Loading simulation conditions
         self._load_conditions(conditions)
