@@ -510,7 +510,7 @@ def _solve_with_fp(
     # Initialization
     n_iter = 0
 
-    while (n_iter < 1000):
+    while (n_iter < 100):
         ### Solution has not yet been found ###
         try:
             ### Solution has been found ###
@@ -783,7 +783,7 @@ def _solve_without_fp(
     # Initialization
     n_iter = 0
 
-    while (n_iter < 1000):
+    while (n_iter < 100):
         ### Solution has not yet been found ###
         try:
             ### Solution has been found ###
