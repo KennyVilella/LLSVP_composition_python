@@ -1,27 +1,30 @@
-"""Calculates the mineral properties of potential lower mantle compositions.
+"""Calculates mineral properties of potential lower mantle compositions.
 
 This file is associated with the article:
 "Constraints on the composition and temperature of LLSVPs from seismic properties of
 lower mantle minerals" by K. Vilella, T. Bodin, C.-E. Boukare, F. Deschamps, J. Badro,
 M. D. Ballmer, and Y. Li
 
-This class calculates the properties of a large range of mineral composition at
-pressure and temperature conditions appropriate for the lowermost mantle. These
-compositions are assumed to be close to a typical pyrolitic composition.
-The ultimate goal of this program is to calculate the density and seismic wave
+The purpose of this class is to calculate the properties of a wide range of mineral
+compositions, assumed to be close to a typical pyrolitic composition, under pressure
+and temperature conditions suitable for the lowermost mantle.
+
+The main objective of this program is to determine the density and seismic wave
 velocities of various rock assemblages in order to identify potential compositions for
-the LLSVPs. As a result, the outputs of this class are the density of ferropericlase
-(Fp) and bridgmanite (Bm) as well as the molar concentration of FeO in Fp, FeO in Bm,
-and AlO2 in Bm. These five properties fully characterize the rock assemblage and allow
-for easy calculation of their seismic wave velocities.
+the Large Low Shear Velocity Provinces (LLSVPs). This is achieved through a three-step
+process. As a first step, the average spin configuration of FeO in Ferropericlase (Fp)
+is calculated as a function of temperature, pressure, and volume. As a second step, the
+density of Fp and Bridgmanite (Bm) as well as the molar concentration of FeO in Fp, FeO
+in Bm, and AlO2 in Bm are calculated. As a third step, these five properties are used
+to determine the density and seismic wave velocities of the rock assemblage.
 
-The next step is to calculate the associated seismic wave velocities, and optionally
-analyze the obtained results.
+These calculations rely on the Mie-Gruneisen-Debye equation of state (EOS), extensively
+described in Jackson and Rigden (1996). The iron spin transition calculation is based on
+Sturhahn et al. (2005), while the seismic wave speed calculation follows the model of
+Bina and Helffrich (1992). Additional information can be found in Vilella et al. (2015)
+and Vilella et al. (2021).
 
-The formalism for the Mie-Gruneisen-Debye equation of state (EOS) used in this class can
-be found in Jackson and Rigden (1996). The calculation of the iron spin transition is
-described in Sturhahn et al. (2005). Additionnal information is provided in
-Vilella et al. (2015) and Vilella et al. (2021).
+The results are written into files and can be subsequently analyzed.
 
 Typical usage example:
 
@@ -52,10 +55,10 @@ class MineralProperties:
     from the provided references. Alternatively, the user can override the default
     values by providing a dictionary.
 
-    The class method `calc_mineral_properties` calculates the mineral properties for
-    a large range of compositions. A dictionary can be provided to specify the desired
-    range for each input property (CaPv proportion, Bm proportion, FeO content,
-    Al2O3 content, oxidation state, temperature contrast).
+    The class method `calc_mineral_properties` calculates the seismic anomalies
+    associated to a large range of compositions. A dictionary can be provided to specify
+    the desired range for each input property (CaPv proportion, Bm proportion,
+    FeO content, Al2O3 content, oxidation state, temperature contrast).
 
     Attributes:
         path: Absolute path to results directory. Default to the `results` folder in the
@@ -73,44 +76,51 @@ class MineralProperties:
         al_content_am: Al2O3 content in the ambient mantle. Default to 0.036. [mol%]
         kd_ref_am: Fe partioning coefficient in the ambient mantle. Default to 0.5.
         ratio_fe_bm_am: Oxidation state in Bm. Default to 0.5.
-        k0t_prime_bm: Pressure derivative of the bulk modulus for Bm.
+        k0t_prime_bm: Pressure derivative of the isothermal bulk modulus for Bm.
                       Default to 3.7.
         theta_bm_0: Debye temperature for Bm at ambient conditions. Default to 1100. [K]
         gamma_bm_0: Gruneisen parameter for Bm at ambient conditions. Default to 1.4.
         q_bm: Exponent of the Gruneisen parameter for Bm. Default to 1.4.
-        k0t_prime_fp: Pressure derivative of the bulk modulus for Fp.
+        k0t_prime_fp: Pressure derivative of the isothermal bulk modulus for Fp.
                       Default to 4.0.
         theta_fp_0: Debye temperature for Fp at ambient conditions. Default to 673. [K]
         gamma_fp_0: Gruneisen parameter for Fp at ambient conditions. Default to 1.41.
         q_fp: Exponent of the Gruneisen parameter for Fp. Default to 1.3.
-        k0t_prime_capv: Pressure derivative of the bulk modulus for CaPv.
+        k0t_prime_capv: Pressure derivative of the isothermal bulk modulus for CaPv.
                         Default to 3.9.
         theta_capv_0: Debye temperature for CaPv at ambient conditions.
                       Default to 1000. [K]
         gamma_capv_0: Gruneisen parameter for CaPv at ambient conditions.
                       Default to 1.92.
         q_capv: Exponent of the Gruneisen parameter for CaPv. Default to 0.6.
-        k_mgo_0: Bulk modulus of MgO at ambient conditions. Default to 160. [GPa]
+        k_mgo_0: Isothermal bulk modulus of MgO at ambient conditions.
+                 Default to 160. [GPa]
         v_mgo_0: Volume of MgO at ambient conditions. Default to 11.25. [cm^3/mol]
-        k_feo_ls_0: Bulk modulus of FeO in the low spin state at ambient conditions.
-                    Default to 150. [GPa] 
+        k_feo_ls_0: Isothermal bulk modulus of FeO in the low spin state at ambient
+                    conditions. Default to 150. [GPa] 
         v_feo_ls_0: Volume of FeO in the low spin state at ambient conditions.
                     Default to 10.82. [cm^3/mol]
-        k_feo_hs_0: Bulk modulus of FeO in the high spin state at ambient conditions.
-                    Default to 150. [GPa]
+        k_feo_hs_0: Isothermal bulk modulus of FeO in the high spin state at ambient
+                    conditions. Default to 150. [GPa]
         v_feo_hs_0: Volume of FeO in the high spin state at ambient conditions.
                     Default to 12.18. [cm^3/mol]
-        k_mgsio3_0: Bulk modulus of MgSiO3 at ambient conditions. Default to 261. [GPa]
+        k_mgsio3_0: Isothermal bulk modulus of MgSiO3 at ambient conditions.
+                    Default to 261. [GPa]
         v_mgsio3_0: Volume of MgSiO3 at ambient conditions. Default to 24.43. [cm^3/mol]
-        k_fesio3_0: Bulk modulus of FeSiO3 at ambient conditions. Default to 248. [GPa]
+        k_fesio3_0: Isothermal bulk modulus of FeSiO3 at ambient conditions.
+                    Default to 248. [GPa]
         v_fesio3_0: Volume of FeSiO3 at ambient conditions. Default to 25.44. [cm^3/mol]
-        k_fe2o3_0: Bulk modulus of Fe2O3 at ambient conditions. Default to 95. [GPa]
+        k_fe2o3_0: Isothermal bulk modulus of Fe2O3 at ambient conditions.
+                   Default to 95. [GPa]
         v_fe2o3_0: Volume of Fe2O3 at ambient conditions. Default to 30.6. [cm^3/mol]
-        k_fealo3_0: Bulk modulus of FeAlO3 at ambient conditions. Default to 271. [GPa]
+        k_fealo3_0: Isothermal bulk modulus of FeAlO3 at ambient conditions.
+                    Default to 271. [GPa]
         v_fealo3_0: Volume of FeAlO3 at ambient conditions. Default to 28.21. [cm^3/mol]
-        k_al2o3_0: Bulk modulus of Al2O3 at ambient conditions. Default to 137. [GPa]
+        k_al2o3_0: Isothermal bulk modulus of Al2O3 at ambient conditions.
+                   Default to 137. [GPa]
         v_al2o3_0: Volume of Al2O3 at ambient conditions. Default to 26.74. [cm^3/mol]
-        k_casio3_0: Bulk modulus of CaSiO3 at ambient conditions. Default to 236. [GPa]
+        k_casio3_0: Isothermal bulk modulus of CaSiO3 at ambient conditions.
+                    Default to 236. [GPa]
         v_casio3_0: Volume of CaSiO3 at ambient conditions. Default to 27.45. [cm^3/mol]
         g_mgo_0: Shear modulus of MgO at ambient conditions. Default to 131. [GPa]
         g_prime_mgo: Pressure derivative of the shear modulus for MgO. Default to 1.92.
@@ -194,19 +204,23 @@ class MineralProperties:
         delta_P: Step value for the pressure in the spin transition calculation.
                  Default to 2.0. [GPa]
     """
-    def __init__(self, prop={}):
-        """Initializes all the mineral properties.
+    def __init__(self, prop: dict={}):
+        """Initializes mineral properties.
 
-        All units are given in the class description.
-        Note volumes are converted from the unit cell volume given in the
-        reference to the cm3 unit used in this simulator.
-        The conversion is done as follows
+        This function initializes all the properties required for the simulator. Default
+        values are used, unless a different value is provided in the input dictionary.
+        It is however not recommended to provide values in the input dictionary. The
+        unit of each parameter is specified in the class description.
+
+        Note that volumes are converted from the unit cell volume given in the
+        reference to the cm3 unit used in this simulator. The conversion is performed
+        as follows:
 
             V     =   V  *    10^-24   *  6.02*10^23   /      4        =   V*0.15055
          cm^3/mol    A^3    A^3->cm^3       ->mol        number atoms
 
-        The number 4 corresponds to the number of atoms in the primitive cell of Fp
-        and Bm.
+        The number 4 corresponds to the number of atoms in the primitive cell of Fp, Bm
+        and CaPv.
 
         More information is provided in Vilella et al. (2015) and Vilella et al. (2021).
 
@@ -312,11 +326,12 @@ class MineralProperties:
         self.rho_capv_0 = 1000. * self.m_capv / self.v_casio3_0
 
 
-    def _load_conditions(self, conditions={}):
-        """Initializes the input conditions of the simulator.
+    def _load_conditions(self, conditions: dict={}):
+        """Initializes input conditions.
 
-        Default values are chosen in order to reproduce the results presented in
-        Vilella et al. (2021).
+        This function initializes the input conditions for the simulator. Default values
+        are chosen in order to reproduce the results presented in Vilella et al. (2021).
+        These conditions can however be changed by providing an input dictionary.
 
         Args:
             conditions: A dictionary providing the values for input conditions.
@@ -355,7 +370,7 @@ class MineralProperties:
         self.delta_P = conditions.get("delta_P", 2.0)
 
 
-    def calc_mineral_properties(self, conditions={}):
+    def calc_mineral_properties(self, conditions: dict={}):
         """Work in progress.
         """
         # Loading simulation conditions
