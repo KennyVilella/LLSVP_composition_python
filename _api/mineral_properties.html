@@ -105,10 +105,10 @@ close to a typical pyrolitic composition.</p>
 References are provided for each default value. Note that some values are derived
 from the provided references. Alternatively, the user can override the default
 values by providing a dictionary.</p>
-<p>The class method <cite>calc_mineral_properties</cite> calculates the mineral properties for
-a large range of compositions. A dictionary can be provided to specify the desired
-range for each input property (CaPv proportion, Bm proportion, FeO content,
-Al2O3 content, oxidation state, temperature contrast).</p>
+<p>The class method <cite>calc_mineral_properties</cite> calculates the seismic anomalies
+associated to a large range of compositions. A dictionary can be provided to specify
+the desired range for each input property (CaPv proportion, Bm proportion,
+FeO content, Al2O3 content, oxidation state, temperature contrast).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -253,9 +253,10 @@ Default to 2.0. [GPa]</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="src.__init__.MineralProperties._load_conditions">
 <span class="sig-name descname"><span class="pre">_load_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conditions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.__init__.MineralProperties._load_conditions" title="Permalink to this definition"></a></dt>
-<dd><p>Initializes the input conditions of the simulator.</p>
-<p>Default values are chosen in order to reproduce the results presented in
-Vilella et al. (2021).</p>
+<dd><p>Initializes input conditions.</p>
+<p>This function initializes the input conditions for the simulator. Default values
+are chosen in order to reproduce the results presented in Vilella et al. (2021).
+These conditions can however be changed by providing an input dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>conditions</strong> – A dictionary providing the values for input conditions.
