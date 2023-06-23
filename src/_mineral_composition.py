@@ -585,6 +585,10 @@ def _set_eqs_with_fp(
     # Unpacking input variables
     x_feo_fp, rho_bm, rho_fp = var_in
 
+    # Checking that input conditions makes sense
+    if ((rho_fp < 0.1) or (rho_bm < 0.1) or (x_feo_fp < 0.0)):
+        return None
+
     # Average spin state of FeO
     index_x = np.argmin(np.abs(self.x_vec - x_feo_fp))
     index_T = np.argmin(np.abs(self.T_vec - (self.T_am + dT)))
@@ -850,6 +854,10 @@ def _set_eqs_without_fp(
 
     # Unpacking input variables
     x_feo_bm, x_alo2_bm, rho_bm = var_in
+
+    # Checking that input conditions makes sense
+    if ((rho_bm < 0.1) or (x_feo_bm < 0.0) or (x_alo2_bm < 0.0)):
+        return None
 
     if (al_excess):
         ### Al is asssumed to be in excess ###
