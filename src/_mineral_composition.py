@@ -191,7 +191,7 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray)
                             if (x_init[0] < 0.0):
                                 ### Starting condition is incorrect ###
                                 ll_iter = ll
-                                while (x_init[0] < 0.0):
+                                while ((x_init[0] < 0.0) and (ll_iter > 0)):
                                     ll_iter -= 1
                                 x_init = [
                                     x_feo_bm_ii[jj, kk, ll_iter, mm, nn],
