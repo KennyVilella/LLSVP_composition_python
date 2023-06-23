@@ -76,44 +76,51 @@ class MineralProperties:
         al_content_am: Al2O3 content in the ambient mantle. Default to 0.036. [mol%]
         kd_ref_am: Fe partioning coefficient in the ambient mantle. Default to 0.5.
         ratio_fe_bm_am: Oxidation state in Bm. Default to 0.5.
-        k0t_prime_bm: Pressure derivative of the bulk modulus for Bm.
+        k0t_prime_bm: Pressure derivative of the isothermal bulk modulus for Bm.
                       Default to 3.7.
         theta_bm_0: Debye temperature for Bm at ambient conditions. Default to 1100. [K]
         gamma_bm_0: Gruneisen parameter for Bm at ambient conditions. Default to 1.4.
         q_bm: Exponent of the Gruneisen parameter for Bm. Default to 1.4.
-        k0t_prime_fp: Pressure derivative of the bulk modulus for Fp.
+        k0t_prime_fp: Pressure derivative of the isothermal bulk modulus for Fp.
                       Default to 4.0.
         theta_fp_0: Debye temperature for Fp at ambient conditions. Default to 673. [K]
         gamma_fp_0: Gruneisen parameter for Fp at ambient conditions. Default to 1.41.
         q_fp: Exponent of the Gruneisen parameter for Fp. Default to 1.3.
-        k0t_prime_capv: Pressure derivative of the bulk modulus for CaPv.
+        k0t_prime_capv: Pressure derivative of the isothermal bulk modulus for CaPv.
                         Default to 3.9.
         theta_capv_0: Debye temperature for CaPv at ambient conditions.
                       Default to 1000. [K]
         gamma_capv_0: Gruneisen parameter for CaPv at ambient conditions.
                       Default to 1.92.
         q_capv: Exponent of the Gruneisen parameter for CaPv. Default to 0.6.
-        k_mgo_0: Bulk modulus of MgO at ambient conditions. Default to 160. [GPa]
+        k_mgo_0: Isothermal bulk modulus of MgO at ambient conditions.
+                 Default to 160. [GPa]
         v_mgo_0: Volume of MgO at ambient conditions. Default to 11.25. [cm^3/mol]
-        k_feo_ls_0: Bulk modulus of FeO in the low spin state at ambient conditions.
-                    Default to 150. [GPa] 
+        k_feo_ls_0: Isothermal bulk modulus of FeO in the low spin state at ambient
+                    conditions. Default to 150. [GPa] 
         v_feo_ls_0: Volume of FeO in the low spin state at ambient conditions.
                     Default to 10.82. [cm^3/mol]
-        k_feo_hs_0: Bulk modulus of FeO in the high spin state at ambient conditions.
-                    Default to 150. [GPa]
+        k_feo_hs_0: Isothermal bulk modulus of FeO in the high spin state at ambient
+                    conditions. Default to 150. [GPa]
         v_feo_hs_0: Volume of FeO in the high spin state at ambient conditions.
                     Default to 12.18. [cm^3/mol]
-        k_mgsio3_0: Bulk modulus of MgSiO3 at ambient conditions. Default to 261. [GPa]
+        k_mgsio3_0: Isothermal bulk modulus of MgSiO3 at ambient conditions.
+                    Default to 261. [GPa]
         v_mgsio3_0: Volume of MgSiO3 at ambient conditions. Default to 24.43. [cm^3/mol]
-        k_fesio3_0: Bulk modulus of FeSiO3 at ambient conditions. Default to 248. [GPa]
+        k_fesio3_0: Isothermal bulk modulus of FeSiO3 at ambient conditions.
+                    Default to 248. [GPa]
         v_fesio3_0: Volume of FeSiO3 at ambient conditions. Default to 25.44. [cm^3/mol]
-        k_fe2o3_0: Bulk modulus of Fe2O3 at ambient conditions. Default to 95. [GPa]
+        k_fe2o3_0: Isothermal bulk modulus of Fe2O3 at ambient conditions.
+                   Default to 95. [GPa]
         v_fe2o3_0: Volume of Fe2O3 at ambient conditions. Default to 30.6. [cm^3/mol]
-        k_fealo3_0: Bulk modulus of FeAlO3 at ambient conditions. Default to 271. [GPa]
+        k_fealo3_0: Isothermal bulk modulus of FeAlO3 at ambient conditions.
+                    Default to 271. [GPa]
         v_fealo3_0: Volume of FeAlO3 at ambient conditions. Default to 28.21. [cm^3/mol]
-        k_al2o3_0: Bulk modulus of Al2O3 at ambient conditions. Default to 137. [GPa]
+        k_al2o3_0: Isothermal bulk modulus of Al2O3 at ambient conditions.
+                   Default to 137. [GPa]
         v_al2o3_0: Volume of Al2O3 at ambient conditions. Default to 26.74. [cm^3/mol]
-        k_casio3_0: Bulk modulus of CaSiO3 at ambient conditions. Default to 236. [GPa]
+        k_casio3_0: Isothermal bulk modulus of CaSiO3 at ambient conditions.
+                    Default to 236. [GPa]
         v_casio3_0: Volume of CaSiO3 at ambient conditions. Default to 27.45. [cm^3/mol]
         g_mgo_0: Shear modulus of MgO at ambient conditions. Default to 131. [GPa]
         g_prime_mgo: Pressure derivative of the shear modulus for MgO. Default to 1.92.

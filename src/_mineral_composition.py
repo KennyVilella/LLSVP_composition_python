@@ -596,7 +596,7 @@ def _set_eqs_with_fp(
     v_fp_0 = fp_eos._v_fp_0(self, eta_ls, x_feo_fp)
     v_fp = 1000 * m_fp / (5500 * rho_fp)
 
-    # Bulk modulus of Fp
+    # Isothermal bulk modulus of Fp
     k_fp_0 = fp_eos._k_fp_0_VRH_average(self, eta_ls, x_feo_fp)
 
     # Mineral composition of Bm

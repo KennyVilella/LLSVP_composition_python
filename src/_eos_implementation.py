@@ -95,10 +95,11 @@ class _EOS(ABC):
 
         Args:
             P: Considered pressure. [GPa]
-            k_0: Bulk modulus at ambient conditions. [GPa]
+            k_0: Isothermal bulk modulus at ambient conditions. [GPa]
             v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
                      and V the volume at the considered conditions.
-            k0t_prime: Pressure derivative of the bulk modulus at ambient conditions.
+            k0t_prime: Pressure derivative of the isothermal bulk modulus at ambient
+                       conditions.
 
         Returns:
             Residue of the third-order Birch–Murnaghan isothermal equation of state.
@@ -221,7 +222,7 @@ class _EOS(ABC):
         It corresponds to the sixth equation in (B5) of Jackson and Rigden (1996).
 
         Args:
-            k_v: Bulk modulus at ambient temperature. [GPa]
+            k_v: Isothermal bulk modulus at ambient temperature. [GPa]
             gamma: Gruneisen parameter at the considered conditions.
             q: Exponent of the Gruneisen parameter.
             v: Volume at considered conditions. [cm^3/mol]
@@ -275,7 +276,7 @@ class _EOS(ABC):
         Args:
             g_0: Shear modulus at ambient conditions. [GPa]
             g_prime: Pressure derivative of the shear modulus.
-            k_0: Bulk modulus at ambient conditions. [GPa]
+            k_0: Isothermal bulk modulus at ambient conditions. [GPa]
             v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
                      and V the volume at the considered conditions.
 
@@ -291,14 +292,15 @@ class _EOS(ABC):
 
         This function calculates the isothermal bulk modulus at ambient temperature.
 
-        The expression for the bulk modulus at ambient temperature is not given in
-        Jackson and Rigden (1996), but it can be calculated from the third-order
-        Birch–Murnaghan isothermal equation of state (B1) and the definition of the
-        isothermal bulk modulus (eq. 5).
+        The expression for the isothermal bulk modulus at ambient temperature is not
+        given in Jackson and Rigden (1996), but it can be calculated from the
+        third-order Birch–Murnaghan isothermal equation of state (B1) and the definition
+        of the isothermal bulk modulus (eq. 5).
 
         Args:
-            k_0: Bulk modulus at ambient conditions. [GPa]
-            k0t_prime: Pressure derivative of the bulk modulus at ambient conditions.
+            k_0: Isothermal bulk modulus at ambient conditions. [GPa]
+            k0t_prime: Pressure derivative of the isothermal bulk modulus at ambient
+                       conditions.
             v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
                      and V the volume at the considered conditions.
 
@@ -510,7 +512,7 @@ class _EOS_fp(_EOS):
         """
         # Volume of FeO at ambient conditions
         v_feo_0 = self._v_feo_0(data, eta_ls)
-        # Bulk modulus of FeO at ambient conditions
+        # Isothermal bulk modulus of FeO at ambient conditions
         k_feo_0 = self._k_feo_0_VRH_average(data, eta_ls)
         return self._VRH_average(
             x_fp, v_feo_0, k_feo_0, data.v_mgo_0, data.k_mgo_0
@@ -612,7 +614,7 @@ class _EOS_fp(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             P: Considered pressure. [GPa]
-            k_fp_0: Bulk modulus of Fp at ambient conditions. [GPa]
+            k_fp_0: Isothermal bulk modulus of Fp at ambient conditions. [GPa]
             v_ratio: Volume ratio V0 / V of Fp, where V0 is the volume of Fp at ambient
                      conditions and V the volume of Fp at the considered conditions.
 
@@ -715,7 +717,7 @@ class _EOS_fp(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             T: Considered temperature. [K]
-            k_v_fp: Bulk modulus of Fp at ambient temperature. [GPa]
+            k_v_fp: Isothermal bulk modulus of Fp at ambient temperature. [GPa]
             theta_fp: Debye temperature of Fp at the considered conditions. [K]
             gamma_fp: Gruneisen parameter of Fp at the considered conditions.
             v_fp: Volume of Fp at considered conditions. [cm^3/mol]
@@ -758,7 +760,7 @@ class _EOS_fp(_EOS):
         Returns:
             Residue of the Mie-Gruneisen-Debye EOS for Fp. [GPa]
         """
-        # Bulk modulus of Fp at ambient conditions
+        # Isothermal bulk modulus of Fp at ambient conditions
         k_fp_0 = self._k_fp_0_VRH_average(data, eta_ls, x_fp)
         # Volume of Fp at ambient conditions
         v_fp_0 = self._v_fp_0(data, eta_ls, x_fp)
@@ -796,7 +798,7 @@ class _EOS_fp(_EOS):
         v_fp_0 = self._v_fp_0(data, eta_ls, x_fp)
         # Volume ratio
         v_ratio = v_fp_0 / v_fp
-        # Bulk modulus of Fp at ambient conditions
+        # Isothermal bulk modulus of Fp at ambient conditions
         k_fp_0 = self._k_fp_0_VRH_average(data, eta_ls, x_fp)
         # Shear modulus of Fp at ambient conditions
         g_fp_0 = self._g_fp_0_VRH_average(data, eta_ls, x_fp)
@@ -885,7 +887,7 @@ class _EOS_fp(_EOS):
         gamma_fp = self._gamma(data, v_ratio)
         # Debye temperature
         theta_fp = self._theta(data, v_ratio)
-        # Bulk modulus of Fp at ambient conditions
+        # Isothermal bulk modulus of Fp at ambient conditions
         k_fp_0 = self._k_fp_0_VRH_average(data, eta_ls, x_fp)
         # Vibrational energy at T
         E_th_fp = self._E_th(data, T, v_ratio)
@@ -956,7 +958,7 @@ class _EOS_bm(_EOS):
         self, data, x_mgsio3: float, x_fesio3: float, x_fealo3: float, x_fe2o3: float,
         x_al2o3: float, v_tot: float
     ) -> float:
-        """Calculates the bulk modulus of Bridgmanite at ambient conditions.
+        """Calculates the isothermal bulk modulus of Bridgmanite at ambient conditions.
 
         This function calculates the isothermal bulk modulus of Bridgmanite (Bm) at
         ambient conditions using the Voigt-Reuss-Hill average. Bm is assumed to be a
@@ -1118,7 +1120,7 @@ class _EOS_bm(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             P: Considered pressure. [GPa]
-            k_bm_0: Bulk modulus of Bm at ambient conditions. [GPa]
+            k_bm_0: Isothermal bulk modulus of Bm at ambient conditions. [GPa]
             v_ratio: Volume ratio V0 / V of Bm, where V0 is the volume of Bm at ambient
                      conditions and V the volume of Bm at the considered conditions.
 
@@ -1221,7 +1223,7 @@ class _EOS_bm(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             T: Considered temperature. [K]
-            k_v_bm: Bulk modulus of Bm at ambient temperature. [GPa]
+            k_v_bm: Isothermal bulk modulus of Bm at ambient temperature. [GPa]
             theta_bm: Debye temperature of Bm at the considered conditions. [K]
             gamma_bm: Gruneisen parameter of Bm at the considered conditions.
             v_bm: Volume of Bm at considered conditions. [cm^3/mol]
@@ -1272,7 +1274,7 @@ class _EOS_bm(_EOS):
         v_bm_0 = self._v_bm_0(data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3)
         # Volume ratio
         v_ratio = v_bm_0 / v_bm
-        # Bulk modulus of Bm at ambient conditions
+        # Isothermal bulk modulus of Bm at ambient conditions
         k_bm_0 = self._k_bm_0_VRH_average(
             data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3, v_bm_0
         )
@@ -1314,7 +1316,7 @@ class _EOS_bm(_EOS):
         v_bm_0 = self._v_bm_0(data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3)
         # Volume ratio
         v_ratio = v_bm_0 / v_bm
-        # Bulk modulus of Bm at ambient conditions
+        # Isothermal bulk modulus of Bm at ambient conditions
         k_bm_0 = self._k_bm_0_VRH_average(
             data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3, v_bm_0
         )
@@ -1421,7 +1423,7 @@ class _EOS_bm(_EOS):
         gamma_bm = self._gamma(data, v_ratio)
         # Debye temperature
         theta_bm = self._theta(data, v_ratio)
-        # Bulk modulus of Bm at ambient conditions
+        # Isothermal bulk modulus of Bm at ambient conditions
         k_bm_0 = self._k_bm_0_VRH_average(
             data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3, v_bm_0
         )
@@ -1622,7 +1624,7 @@ class _EOS_capv(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             T: Considered temperature. [K]
-            k_v_capv: Bulk modulus of CaPv at ambient temperature. [GPa]
+            k_v_capv: Isothermal bulk modulus of CaPv at ambient temperature. [GPa]
             theta_capv: Debye temperature of CaPv at the considered conditions. [K]
             gamma_capv: Gruneisen parameter of CaPv at the considered conditions.
             v_capv: Volume of CaPv at considered conditions. [cm^3/mol]
