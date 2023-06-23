@@ -1,20 +1,21 @@
-"""Provides utility functions to calculate the properties of the considered minerals.
+"""Provides utility functions to calculate the properties of considered minerals.
 
 This file is associated with the article:
 "Constraints on the composition and temperature of LLSVPs from seismic properties of
 lower mantle minerals" by K. Vilella, T. Bodin, C.-E. Boukare, F. Deschamps, J. Badro,
 M. D. Ballmer, and Y. Li
 
-This file provides a class for each considered minerals (Ferropericlase, Bridgmanite,
-Calcio Perovskite) containing all the utility functions required to calculate their
-properties.
+This file includes a base class that implements the basic formulas for calculating the
+mineral properties required for this simulator. These base utilities are then applied to
+each considered mineral in separate derived classes.
 
-These functions are mainly derived from the Mie-Gruneisen-Debye equation of state (EOS).
-A thorough description of this EOS can be found in Jackson and Rigden (1996) and in the
-supplementary material of Vilella et al. (2021). The shear modulus calculation follows
-the model presented in Bina and Helffrich (1992).
+The functions in this file are primarily based on the Mie-Gruneisen-Debye equation of
+state (EOS), with additional considerations for shear modulus based on the model
+presented in Bina and Helffrich (1992). A detailed description of the EOS can be found
+in Jackson and Rigden (1996) and in the supplementary material of Vilella et al. (2021).
 
-These functions should not be used outside the class MineralProperties.
+Note that these functions are intended for use within the MineralProperties class and
+should not be used outside of it.
 
 Typical usage example:
 
@@ -38,16 +39,18 @@ class _EOS(ABC):
     This class provides the basic functionality required to implement the
     Mie-Gruneisen-Debye equation of state and to calculate the shear modulus.
 
-    The abstract methods are then applied to each mineral in their corresponding derived
-    class.
+    The abstract methods defined in this class are intended to be implemented in the
+    derived classes corresponding to each specific mineral.
 
     The formalism for the Mie-Gruneisen-Debye equation of state used in this class can
-    be found in Jackson and Rigden (1996), while the shear modulus calculation can be
-    found in Bina and Helffrich (1992).
+    be found in the work of Jackson and Rigden (1996). The calculation of the shear
+    modulus follows the model presented by Bina and Helffrich (1992).
     """
     @abstractmethod
     def _gamma(self, gamma_0: float, v_ratio: float, q: float) -> float:
         """Calculates the Gruneisen parameter.
+
+        This function calculates the Gruneisen parameter at the considered conditions.
 
         It corresponds to the eq. (31) of Jackson and Rigden (1996).
 
@@ -66,6 +69,8 @@ class _EOS(ABC):
     def _theta(self, theta_0: float, gamma_0: float, gamma: float, q: float) -> float:
         """Calculates the Debye temperature.
 
+        This function calculates the Debye temperature at the considered conditions.
+
         It corresponds to the eq. (32) of Jackson and Rigden (1996).
 
         Args:
@@ -82,6 +87,9 @@ class _EOS(ABC):
     @abstractmethod
     def _BM3(self, P: float, k_0: float, v_ratio: float, k0t_prime: float) -> float:
         """Calculates the third-order Birch–Murnaghan isothermal equation of state.
+
+        This function calculates the residue of the third-order Birch–Murnaghan
+        isothermal equation of state at the consideredconditions.
 
         It corresponds to the eq. (B1) of Jackson and Rigden (1996).
 
@@ -105,9 +113,10 @@ class _EOS(ABC):
     def _E_th(self, n: int, R: float, T: float, theta: float, int_part: float) -> float:
         """Calculates the vibrational energy.
 
-        The integral part of the expression is calculated separately because the method 
-        scipy.integrate.quad returns both the value and the error, while only the value
-        is needed.
+        This function calculates the vibrational energy at the considered conditions.
+        The integral part of the expression is calculated separately by the function
+        _integral_vibrational_energy because the method scipy.integrate.quad returns
+        both the value and the error, while only the value is needed.
 
         It corresponds to the eq. (30) of Jackson and Rigden (1996).
 
@@ -129,6 +138,9 @@ class _EOS(ABC):
         E_th: float, E_th_0: float
     ) -> float:
         """Calculates the derivative of the vibrational energy with respect to volume.
+
+        This function calculates the derivative of the vibrational energy with respect
+        to volume at the considered conditions.
 
         It corresponds to the fourth equation in (B6) of Jackson and Rigden (1996).
         Alternatively, it can be directly calculated from the expression of the
@@ -157,6 +169,9 @@ class _EOS(ABC):
     def _E_th_dT(self, n: int, R: float, T: float, theta: float, E_th: float) -> float:
         """Calculates the derivative of vibrational energy with respect to temperature.
 
+        This function calculates the derivative of the vibrational energy with respect
+        to temperature at the considered conditions.
+
         It corresponds to the third equation in (B6) of Jackson and Rigden (1996).
         Alternatively, it can be directly calculated from the expression of the
         vibrational energy.
@@ -177,6 +192,9 @@ class _EOS(ABC):
     def _integral_vibrational_energy(self, x_max: float) -> float:
         """Calculates the integral part of the vibrational energy.
 
+        This function calculates the integral part of the vibrational energy at the
+        considered conditions.
+
         It corresponds to the eq. (30) of Jackson and Rigden (1996).
 
         Args:
@@ -196,6 +214,9 @@ class _EOS(ABC):
         E_th_dv: float, E_th_dT: float
     ) -> float:
         """Calculates the thermal expansion coefficient.
+
+        This function calculates the thermal expansion coefficient at the considered
+        conditions.
 
         It corresponds to the sixth equation in (B5) of Jackson and Rigden (1996).
 
@@ -222,7 +243,10 @@ class _EOS(ABC):
     def _MGD(
         self, BM3: float, gamma: float, v: float, E_th: float, E_th_0: float
     ) -> float:
-        """Calculates the Mie-Gruneisen-Debye equation of state.
+        """Calculates the residue of the Mie-Gruneisen-Debye equation of state.
+
+        This function calculates the residue of the Mie-Gruneisen-Debye equation of
+        state applied at the considered conditions.
 
         It corresponds to the eq. (33) of Jackson and Rigden (1996).
 
@@ -243,6 +267,8 @@ class _EOS(ABC):
     def _g_t0(self, g_0: float, g_prime: float, k_0: float, v_ratio: float) -> float:
         """Calculates the shear modulus at ambient temperature.
 
+        This function calculates the shear modulus at ambient temperature.
+
         It corresponds to the eq. (21) of Bina and Helffrich (1992) when assuming that
         the second-order terms can be neglected.
 
@@ -262,6 +288,8 @@ class _EOS(ABC):
 
     def _k_v(self, k_0: float, k0t_prime: float, v_ratio: float) -> float:
         """Calculates the isothermal bulk modulus at ambient temperature.
+
+        This function calculates the isothermal bulk modulus at ambient temperature.
 
         The expression for the bulk modulus at ambient temperature is not given in
         Jackson and Rigden (1996), but it can be calculated from the third-order
@@ -290,6 +318,9 @@ class _EOS(ABC):
     ) -> float:
         """Calculates the isothermal bulk modulus.
 
+        This function calculates the isothermal bulk modulus at the considered
+        conditions.
+
         It corresponds to the fifth equation in (B5) of Jackson and Rigden (1996).
 
         Args:
@@ -310,6 +341,9 @@ class _EOS(ABC):
     @abstractmethod
     def _k_s(self, T: float, k_t: float, alpha: float, gamma: float) -> float:
         """Calculates the isentropic bulk modulus.
+
+        This function calculates the isentropic bulk modulus at the considered
+        conditions.
 
         It corresponds to the twelfth equation in (B5) of Jackson and Rigden (1996).
 
@@ -339,10 +373,15 @@ class _EOS_fp(_EOS):
     be found in Jackson and Rigden (1996), while the shear modulus calculation can be
     found in Bina and Helffrich (1992).
 
-    This class should not be used outside the class MineralProperties.
+    Note that these functions are intended for use within the MineralProperties class
+    and should not be used outside of it.
     """
     def _v_feo_0(self, data, eta_ls: float) -> float:
         """Calculates the volume of FeO at ambient conditions.
+
+        This function calculates the volume of FeO in Ferropericlase (Fp) at ambient
+        conditions. FeO in Fp is assumed to be a mixture of FeO in a low spin state and
+        FeO in a high spin state.
 
         Args:
             data: Data holder for the MineralProperties class.
@@ -355,6 +394,9 @@ class _EOS_fp(_EOS):
 
     def _v_fp_0(self, data, eta_ls: float, x_fp: float) -> float:
         """Calculates the volume of Ferropericlase at ambient conditions.
+
+        This function calculates the volume of Ferropericlase (Fp) at ambient
+        conditions. Fp is assumed to be a mixture of FeO and MgO.
 
         Args:
             data: Data holder for the MineralProperties class.
@@ -372,10 +414,10 @@ class _EOS_fp(_EOS):
     ) -> float:
         """Calculates the Voigt-Reuss-Hill average.
 
-        Implement the Voigt-Reuss-Hill average for a mixture of two components. This is
-        traditionally used to calculate the elasticity of polycrystal from the
-        elasticity of its individual components. Here, it is used to calculate the bulk
-        modulus or shear modulus of Ferropericlase.
+        This function implements the Voigt-Reuss-Hill average for a mixture of two
+        components. This is traditionally used to calculate the elasticity of
+        polycrystal from the elasticity of its individual components. Here, it is used
+        to calculate the bulk modulus or shear modulus of Ferropericlase (Fp).
 
         Note that the volume can be given in any unit as long as the two volumes are
         given in the same unit.
@@ -399,16 +441,16 @@ class _EOS_fp(_EOS):
     def _k_feo_0_VRH_average(self, data, eta_ls: float) -> float:
         """Calculates the bulk modulus of FeO in Ferropericlase at ambient conditions.
 
-        This function calculates the bulk modulus of FeO at ambient conditions using
-        the Voigt-Reuss-Hill average. It is assumed that the FeO in Ferropericlase is a
-        mixture of FeO in a low spin state and FeO in a high spin state.
+        This function calculates the isothermal bulk modulus of FeO at ambient
+        conditions using the Voigt-Reuss-Hill average. FeO in Ferropericlase (Fp) is
+        assumed to be a mixture of FeO in a low spin state and FeO in a high spin state.
 
         Args:
             data: Data holder for the MineralProperties class.
             eta_ls: Average proportion of FeO in the low spin state.
 
         Returns:
-            Bulk modulus of FeO in Fp at ambient conditions. [GPa]
+            Isothermal bulk modulus of FeO in Fp at ambient conditions. [GPa]
         """
         return self._VRH_average(
             eta_ls, data.v_feo_ls_0, data.k_feo_ls_0, data.v_feo_hs_0, data.k_feo_hs_0
@@ -418,7 +460,7 @@ class _EOS_fp(_EOS):
         """Calculates the shear modulus of FeO in Ferropericlase at ambient conditions.
 
         This function calculates the shear modulus of FeO at ambient conditions using
-        the Voigt-Reuss-Hill average. It is assumed that the FeO in Ferropericlase is a
+        the Voigt-Reuss-Hill average. FeO in Ferropericlase (Fp) is assumed to be a
         mixture of FeO in a low spin state and FeO in a high spin state.
 
         Args:
@@ -436,8 +478,8 @@ class _EOS_fp(_EOS):
         """Calculates the pressure derivative of the shear modulus for FeO in Fp.
 
         This function calculates the pressure derivative of the shear modulus for FeO
-        using the Voigt-Reuss-Hill average. It is assumed that the FeO in Ferropericlase
-        is a mixture of FeO in a low spin state and FeO in a high spin state.
+        using the Voigt-Reuss-Hill average. FeO in Ferropericlase (Fp) is assumed to be
+        a mixture of FeO in a low spin state and FeO in a high spin state.
 
         Args:
             data: Data holder for the MineralProperties class.
@@ -454,8 +496,9 @@ class _EOS_fp(_EOS):
     def _k_fp_0_VRH_average(self, data, eta_ls: float, x_fp: float) -> float:
         """Calculates the bulk modulus of Ferropericlase at ambient conditions.
 
-        This function calculates the bulk modulus of Fp at ambient conditions using
-        the Voigt-Reuss-Hill average. It is assumed that Fp is a mixture of FeO and MgO.
+        This function calculates the isothermal bulk modulus of Ferropericlase (Fp) at
+        ambient conditions using the Voigt-Reuss-Hill average. Fp is assumed to be a
+        mixture of FeO and MgO.
 
         Args:
             data: Data holder for the MineralProperties class.
@@ -463,7 +506,7 @@ class _EOS_fp(_EOS):
             x_fp: Molar concentration of FeO in Fp.
 
         Returns:
-            Bulk modulus of Fp at ambient conditions. [GPa]
+            Isothermal bulk modulus of Fp at ambient conditions. [GPa]
         """
         # Volume of FeO at ambient conditions
         v_feo_0 = self._v_feo_0(data, eta_ls)
@@ -476,8 +519,9 @@ class _EOS_fp(_EOS):
     def _g_fp_0_VRH_average(self, data, eta_ls: float, x_fp: float) -> float:
         """Calculates the shear modulus of Ferropericlase at ambient conditions.
 
-        This function calculates the shear modulus of Fp at ambient conditions using
-        the Voigt-Reuss-Hill average. It is assumed that Fp is a mixture of FeO and MgO.
+        This function calculates the shear modulus of Ferropericlase (Fp) at ambient
+        conditions using the Voigt-Reuss-Hill average. Fp is assumed to be a mixture of
+        FeO and MgO.
 
         Args:
             data: Data holder for the MineralProperties class.
@@ -498,9 +542,9 @@ class _EOS_fp(_EOS):
     def _g_prime_fp_VRH_average(self, data, eta_ls: float, x_fp: float) -> float:
         """Calculates the pressure derivative of the shear modulus for Ferropericlase.
 
-        This function calculates the pressure derivative of the shear modulus for Fp
-        using the Voigt-Reuss-Hill average. It is assumed that Fp is a mixture of FeO
-        and MgO.
+        This function calculates the pressure derivative of the shear modulus for
+        Ferropericlase (Fp) using the Voigt-Reuss-Hill average. Fp is assumed to be a
+        mixture of FeO and MgO.
 
         Args:
             data: Data holder for the MineralProperties class.
@@ -521,6 +565,9 @@ class _EOS_fp(_EOS):
     def _gamma(self, data, v_ratio: float) -> float:
         """Calculates the Gruneisen parameter of Ferropericlase.
 
+        This function calculates the Gruneisen parameter of Ferropericlase (Fp) at the
+        considered conditions.
+
         It corresponds to the eq. (31) of Jackson and Rigden (1996).
 
         Args:
@@ -535,6 +582,9 @@ class _EOS_fp(_EOS):
 
     def _theta(self, data, v_ratio: float) -> float:
         """Calculates the Debye temperature of Ferropericlase.
+
+        This function calculates the Debye temperature of Ferropericlase (Fp) at the
+        considered conditions.
 
         It corresponds to the eq. (32) of Jackson and Rigden (1996).
 
@@ -554,7 +604,8 @@ class _EOS_fp(_EOS):
         """Implements the third-order Birch–Murnaghan isothermal EOS for Ferropericlase.
 
         This function calculates the residue of the third-order Birch–Murnaghan
-        isothermal equation of state applied to Ferroepriclase (Fp).
+        isothermal equation of state applied to Ferroepriclase (Fp) at the considered
+        conditions.
 
         It corresponds to the eq. (B1) of Jackson and Rigden (1996).
 
@@ -574,9 +625,10 @@ class _EOS_fp(_EOS):
     def _E_th(self, data, T: float, v_ratio: float) -> float:
         """Calculates the vibrational energy of Ferropericlase.
 
-        The integral part of the expression is calculated separately because the method 
-        scipy.integrate.quad returns both the value and the error, while only the value
-        is needed.
+        This function calculates the vibrational energy of Ferropericlase (Fp) at the
+        considered conditions. The integral part of the expression is calculated
+        separately because the method scipy.integrate.quad returns both the value and
+        the error, while only the value is needed.
 
         It corresponds to the eq. (30) of Jackson and Rigden (1996).
 
@@ -600,6 +652,9 @@ class _EOS_fp(_EOS):
         E_th_fp: float, E_th_fp_0: float
     ) -> float:
         """Calculates derivative of vibrational energy with respect to volume for Fp.
+
+        This function calculates the derivative of the vibrational energy with respect
+        to volume for Ferropericlase (Fp) at the considered conditions.
 
         It corresponds to the fourth equation in (B6) of Jackson and Rigden (1996).
         Alternatively, it can be directly calculated from the expression of the
@@ -626,6 +681,9 @@ class _EOS_fp(_EOS):
     def _E_th_dT(self, data, T: float, theta_fp: float, E_th_fp: float) -> float:
         """Calculates the derivative of the vibrational energy wrt temperature for Fp.
 
+        This function calculates the derivative of the vibrational energy with respect
+        to temperature for Ferropericlase (Fp) at the considered conditions.
+
         It corresponds to the third equation in (B6) of Jackson and Rigden (1996).
         Alternatively, it can be directly calculated from the expression of the
         vibrational energy.
@@ -648,6 +706,9 @@ class _EOS_fp(_EOS):
         v_fp: float, E_th_fp: float, E_th_fp_0: float, E_th_fp_dv: float
     ) -> float:
         """Calculates the thermal expansion coefficient of Ferropericlase.
+
+        This function calculates the thermal expansion coefficient of Ferropericlase
+        (Fp) at the considered conditions.
 
         It corresponds to the sixth equation in (B5) of Jackson and Rigden (1996).
 
@@ -680,8 +741,9 @@ class _EOS_fp(_EOS):
         """Implements the Mie-Gruneisen-Debye EOS for Ferropericlase.
 
         This function calculates the residue of the Mie-Gruneisen-Debye equation of
-        state applied to Ferroepriclase (Fp). It can be used to obtain one of the
-        conditions among the pressure, temperature, volume, knowing the remaining two.
+        state applied to Ferroepriclase (Fp) at the considered conditions. It can be
+        used to obtain one of the conditions among the pressure, temperature, volume,
+        knowing the remaining two.
 
         It corresponds to the eq. (33) of Jackson and Rigden (1996).
 
@@ -715,6 +777,9 @@ class _EOS_fp(_EOS):
     def _g_t0(self, data, v_fp: float, eta_ls: float, x_fp: float) -> float:
         """Calculates the shear modulus of Ferropericlase at ambient temperature.
 
+        This function calculates the shear modulus of Ferropericlase (Fp) at ambient
+        temperature.
+
         It corresponds to the eq. (21) of Bina and Helffrich (1992) when assuming that
         the second-order terms can be neglected.
 
@@ -742,6 +807,9 @@ class _EOS_fp(_EOS):
     def _g(self, data, T: float, v_fp: float, eta_ls: float, x_fp: float) -> float:
         """Calculates the shear modulus of Ferropericlase.
 
+        This function calculates the shear modulus of Ferropericlase (Fp) at the
+        considered conditions.
+
         Following eq. (38) of Bina and Helffrich (1992), the temperature dependence
         of the shear modulus is assumed to be constant, so that it can be simply
         calculated from its temperature derivative.
@@ -766,7 +834,10 @@ class _EOS_fp(_EOS):
         self, data, k_v_fp: float, gamma_fp: float, v_fp: float, E_th_fp: float,
         E_th_fp_0: float, E_th_fp_dv: float
     ) -> float:
-        """Calculates the isothermal bulk modulus for Ferropericlase.
+        """Calculates the isothermal bulk modulus of Ferropericlase.
+
+        This function calculates the isothermal bulk modulus of Ferropericlase (Fp) at
+        the considered conditions.
 
         It corresponds to the fifth equation in (B5) of Jackson and Rigden (1996).
 
@@ -790,6 +861,9 @@ class _EOS_fp(_EOS):
 
     def _k_s(self, data, T: float, v_fp: float, eta_ls: float, x_fp: float) -> float:
         """Calculates the isentropic bulk modulus of Ferropericlase.
+
+        This function calculates the isentropic bulk modulus of Ferropericlase (Fp) at
+        the considered conditions.
 
         It corresponds to the twelfth equation in (B5) of Jackson and Rigden (1996).
 
@@ -848,13 +922,17 @@ class _EOS_bm(_EOS):
     be found in Jackson and Rigden (1996) while the shear modulus calculation can be
     found in Bina and Helffrich (1992).
 
-    This class should not be used outside the class MineralProperties.
+    Note that these functions are intended for use within the MineralProperties class
+    and should not be used outside of it.
     """
     def _v_bm_0(
         self, data, x_mgsio3: float, x_fesio3: float, x_fealo3: float, x_fe2o3: float,
         x_al2o3: float
     ) -> float:
         """Calculates the volume of Bridgmanite at ambient conditions.
+
+        This function calculates the volume of Bridgmanite (Bm) at ambient conditions.
+        Bm is assumed to be a mixture of MgSiO3, FeSiO3, FeAlO3, Fe2O3, and Al2O3.
 
         Args:
             data: Data holder for the MineralProperties class.
@@ -880,11 +958,9 @@ class _EOS_bm(_EOS):
     ) -> float:
         """Calculates the bulk modulus of Bridgmanite at ambient conditions.
 
-        This function calculates the bulk modulus of Bm at ambient conditions using
-        the Voigt-Reuss-Hill average. The Voigt-Reuss-Hill average is traditionally
-        used to calculate the elasticity of polycrystal from the elasticity of its
-        individual components. Here, it is assumed that Bm is a mixture of MgSiO3, 
-        FeSiO3, FeAlO3, Fe2O3, and Al2O3.
+        This function calculates the isothermal bulk modulus of Bridgmanite (Bm) at
+        ambient conditions using the Voigt-Reuss-Hill average. Bm is assumed to be a
+        mixture of MgSiO3, FeSiO3, FeAlO3, Fe2O3, and Al2O3.
 
         Args:
             data: Data holder for the MineralProperties class.
@@ -896,7 +972,7 @@ class _EOS_bm(_EOS):
             v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
 
         Returns:
-            Bulk modulus of Bm at ambient conditions. [GPa]
+            Isothermal bulk modulus of Bm at ambient conditions. [GPa]
         """
         k_v = (
             x_mgsio3 * data.v_mgsio3_0 * data.k_mgsio3_0 +
@@ -920,11 +996,9 @@ class _EOS_bm(_EOS):
     ) -> float:
         """Calculates the shear modulus of Bridgmanite at ambient conditions.
 
-        This function calculates the shear modulus of Bm at ambient conditions using
-        the Voigt-Reuss-Hill average. The Voigt-Reuss-Hill average is traditionally
-        used to calculate the elasticity of polycrystal from the elasticity of its
-        individual components. Here, it is assumed that Bm is a mixture of MgSiO3, 
-        FeSiO3, FeAlO3, Fe2O3, and Al2O3.
+        This function calculates the shear modulus of Bridgmanite (Bm) at ambient
+        conditions using the Voigt-Reuss-Hill average. Bm is assumed to be a mixture of
+        MgSiO3, FeSiO3, FeAlO3, Fe2O3, and Al2O3.
 
         Args:
             data: Data holder for the MineralProperties class.
@@ -960,10 +1034,8 @@ class _EOS_bm(_EOS):
     ) -> float:
         """Calculates the pressure derivative of the shear modulus for Bridgmanite.
 
-        This function calculates the pressure derivative of the shear modulus for Bm
-        using the Voigt-Reuss-Hill average. The Voigt-Reuss-Hill average is
-        traditionally used to calculate the elasticity of polycrystal from the
-        elasticity of its individual components. Here, it is assumed that Bm is a
+        This function calculates the pressure derivative of the shear modulus for
+        Bridgmanite (Bm) using the Voigt-Reuss-Hill average. Bm is assumed to be a
         mixture of MgSiO3, FeSiO3, FeAlO3, Fe2O3, and Al2O3.
 
         Args:
@@ -997,6 +1069,9 @@ class _EOS_bm(_EOS):
     def _gamma(self, data, v_ratio: float) -> float:
         """Calculates the Gruneisen parameter of Bridgmanite.
 
+        This function calculates the Gruneisen parameter of Bridgmanite (Bm) at the
+        considered conditions.
+
         It corresponds to the eq. (31) of Jackson and Rigden (1996).
 
         Args:
@@ -1011,6 +1086,9 @@ class _EOS_bm(_EOS):
 
     def _theta(self, data, v_ratio: float) -> float:
         """Calculates the Debye temperature of Bridgmanite.
+
+        This function calculates the Debye temperature of Bridgmanite (Bm) at the
+        considered conditions.
 
         It corresponds to the eq. (32) of Jackson and Rigden (1996).
 
@@ -1032,7 +1110,8 @@ class _EOS_bm(_EOS):
         """Implements the third-order Birch–Murnaghan isothermal EOS for Bridgmanite.
 
         This function calculates the residue of the third-order Birch–Murnaghan
-        isothermal equation of state applied to Bridgmanite (Bm).
+        isothermal equation of state applied to Bridgmanite (Bm) at the considered
+        conditions.
 
         It corresponds to the eq. (B1) of Jackson and Rigden (1996).
 
@@ -1052,9 +1131,10 @@ class _EOS_bm(_EOS):
     def _E_th(self, data, T: float, v_ratio: float) -> float:
         """Calculates the vibrational energy of Bridgmanite.
 
-        The integral part of the expression is calculated separately because the method 
-        scipy.integrate.quad returns both the value and the error, while only the value
-        is needed.
+        This function calculates the vibrational energy of Bridgmanite (Bm) at the
+        considered conditions. The integral part of the expression is calculated
+        separately because the method scipy.integrate.quad returns both the value and
+        the error, while only the value is needed.
 
         It corresponds to the eq. (30) of Jackson and Rigden (1996).
 
@@ -1078,6 +1158,9 @@ class _EOS_bm(_EOS):
         E_th_bm: float, E_th_bm_0: float
     ) -> float:
         """Calculates derivative of vibrational energy with respect to volume for Bm.
+
+        This function calculates the derivative of the vibrational energy with respect
+        to volume for Bridgmanite (Bm) at the considered conditions.
 
         It corresponds to the fourth equation in (B6) of Jackson and Rigden (1996).
         Alternatively, it can be directly calculated from the expression of the
@@ -1104,6 +1187,9 @@ class _EOS_bm(_EOS):
     def _E_th_dT(self, data, T: float, theta_bm: float, E_th_bm: float) -> float:
         """Calculates the derivative of the vibrational energy wrt temperature for Bm.
 
+        This function calculates the derivative of the vibrational energy with respect
+        to temperature for Bridgmanite (Bm) at the considered conditions.
+
         It corresponds to the third equation in (B6) of Jackson and Rigden (1996).
         Alternatively, it can be directly calculated from the expression of the
         vibrational energy.
@@ -1126,6 +1212,9 @@ class _EOS_bm(_EOS):
         v_bm: float, E_th_bm: float, E_th_bm_0: float, E_th_bm_dv: float
     ) -> float:
         """Calculates the thermal expansion coefficient of Bridgmanite.
+
+        This function calculates the thermal expansion coefficient of Bridgmanite (Bm)
+        at the considered conditions.
 
         It corresponds to the sixth equation in (B5) of Jackson and Rigden (1996).
 
@@ -1159,8 +1248,9 @@ class _EOS_bm(_EOS):
         """Implements the Mie-Gruneisen-Debye EOS for Bridgmanite.
 
         This function calculates the residue of the Mie-Gruneisen-Debye equation of
-        state applied to Bridgmanite (Bm). It can be used to obtain one of the
-        conditions among the pressure, temperature, volume, knowing the remaining two.
+        state applied to Bridgmanite (Bm) at the considered conditions. It can be used
+        to obtain one of the conditions among the pressure, temperature, volume,
+        knowing the remaining two.
 
         It corresponds to the eq. (33) of Jackson and Rigden (1996).
 
@@ -1202,6 +1292,9 @@ class _EOS_bm(_EOS):
     ) -> float:
         """Calculates the shear modulus of Bridgmanite at ambient temperature.
 
+        This function calculates the shear modulus of Bridgmanite (Bm) at ambient
+        temperature.
+
         It corresponds to the eq. (21) of Bina and Helffrich (1992) when assuming that
         the second-order terms can be neglected.
 
@@ -1241,6 +1334,9 @@ class _EOS_bm(_EOS):
     ) -> float:
         """Calculates the shear modulus of Bridgmanite.
 
+        This function calculates the shear modulus of Bridgmanite (Bm) at the
+        considered conditions.
+
         Following eq. (38) of Bina and Helffrich (1992), the temperature dependence
         of the shear modulus is assumed to be constant, so that it can be simply
         calculated from its temperature derivative.
@@ -1268,7 +1364,10 @@ class _EOS_bm(_EOS):
         self, data, k_v_bm: float, gamma_bm: float, v_bm: float, E_th_bm: float,
         E_th_bm_0: float, E_th_bm_dv: float
     ) -> float:
-        """Calculates the isothermal bulk modulus for Bridgmanite.
+        """Calculates the isothermal bulk modulus of Bridgmanite.
+
+        This function calculates the isothermal bulk modulus of Bridgmanite (Bm) at
+        the considered conditions.
 
         It corresponds to the fifth equation in (B5) of Jackson and Rigden (1996).
 
@@ -1295,6 +1394,9 @@ class _EOS_bm(_EOS):
         x_fealo3: float, x_fe2o3: float, x_al2o3: float
     ) -> float:
         """Calculates the isentropic bulk modulus of Bridgmanite.
+
+        This function calculates the isentropic bulk modulus of Bridgmanite (Bm) at
+        the considered conditions.
 
         It corresponds to the twelfth equation in (B5) of Jackson and Rigden (1996).
 
@@ -1358,10 +1460,14 @@ class _EOS_capv(_EOS):
     be found in Jackson and Rigden (1996) while the shear modulus calculation can be
     found in Bina and Helffrich (1992).
 
-    This class should not be used outside the class MineralProperties.
+    Note that these functions are intended for use within the MineralProperties class
+    and should not be used outside of it.
     """
     def _gamma(self, data, v_ratio: float) -> float:
         """Calculates the Gruneisen parameter of Calcio Perovskite.
+
+        This function calculates the Gruneisen parameter of Calcio Perovskite (CaPv) at
+        the considered conditions.
 
         It corresponds to the eq. (31) of Jackson and Rigden (1996).
 
@@ -1378,6 +1484,9 @@ class _EOS_capv(_EOS):
 
     def _theta(self, data, v_ratio: float) -> float:
         """Calculates the Debye temperature of Calcio Perovskite.
+
+        This function calculates the Debye temperature of Calcio Perovskite (CaPv) at
+        the considered conditions.
 
         It corresponds to the eq. (32) of Jackson and Rigden (1996).
 
@@ -1400,7 +1509,8 @@ class _EOS_capv(_EOS):
         """Implements the third-order Birch–Murnaghan EOS for Calcio Perovskite.
 
         This function calculates the residue of the third-order Birch–Murnaghan
-        isothermal equation of state applied to Calcio Perovskite (CaPv).
+        isothermal equation of state applied to Calcio Perovskite (CaPv) at the
+        considered conditions.
 
         It corresponds to the eq. (B1) of Jackson and Rigden (1996).
 
@@ -1420,9 +1530,10 @@ class _EOS_capv(_EOS):
     def _E_th(self, data, T: float, v_ratio: float) -> float:
         """Calculates the vibrational energy of Calcio Perovskite.
 
-        The integral part of the expression is calculated separately because the method 
-        scipy.integrate.quad returns both the value and the error, while only the value
-        is needed.
+        This function calculates the vibrational energy of Calcio Perovskite (CaPv) at
+        the considered conditions. The integral part of the expression is calculated
+        separately because the method scipy.integrate.quad returns both the value and
+        the error, while only the value is needed.
 
         It corresponds to the eq. (30) of Jackson and Rigden (1996).
 
@@ -1447,6 +1558,9 @@ class _EOS_capv(_EOS):
         E_th_capv: float, E_th_capv_0: float
     ) -> float:
         """Calculates derivative of vibrational energy with respect to volume for CaPv.
+
+        This function calculates the derivative of the vibrational energy with respect
+        to volume for Calcio Perovskite (CaPv) at the considered conditions.
 
         It corresponds to the fourth equation in (B6) of Jackson and Rigden (1996).
         Alternatively, it can be directly calculated from the expression of the
@@ -1474,6 +1588,9 @@ class _EOS_capv(_EOS):
     def _E_th_dT(self, data, T: float, theta_capv: float, E_th_capv: float) -> float:
         """Calculates the derivative of the vibrational energy wrt temperature for CaPv.
 
+        This function calculates the derivative of the vibrational energy with respect
+        to temperature for Calcio Perovskite (CaPv) at the considered conditions.
+
         It corresponds to the third equation in (B6) of Jackson and Rigden (1996).
         Alternatively, it can be directly calculated from the expression of the
         vibrational energy.
@@ -1496,6 +1613,9 @@ class _EOS_capv(_EOS):
         v_capv: float, E_th_capv: float, E_th_capv_0: float, E_th_capv_dv: float
     ) -> float:
         """Calculates the thermal expansion coefficient of Calcio Perovskite.
+
+        This function calculates the thermal expansion coefficient of Calcio Perovskite
+        (CaPv) at the considered conditions.
 
         It corresponds to the sixth equation in (B5) of Jackson and Rigden (1996).
 
@@ -1527,8 +1647,9 @@ class _EOS_capv(_EOS):
         """Implements the Mie-Gruneisen-Debye EOS for Calcio Perovskite.
 
         This function calculates the residue of the Mie-Gruneisen-Debye equation of
-        state applied to Calcio Perovskite (CaPv). It can be used to obtain one of the
-        conditions among the pressure, temperature, volume, knowing the remaining two.
+        state applied to Calcio Perovskite (CaPv) at the considered conditions. It can
+        be used to obtain one of the conditions among the pressure, temperature, volume,
+        knowing the remaining two.
 
         It corresponds to the eq. (33) of Jackson and Rigden (1996).
 
@@ -1556,6 +1677,9 @@ class _EOS_capv(_EOS):
     def _g_t0(self, data, v_ratio: float) -> float:
         """Calculates the shear modulus of Calcio Perovskite at ambient temperature.
 
+        This function calculates the shear modulus of Calcio Perovskite (CaPv) at
+        ambient temperature.
+
         It corresponds to the eq. (21) of Bina and Helffrich (1992) when assuming that
         the second-order terms can be neglected.
 
@@ -1574,6 +1698,9 @@ class _EOS_capv(_EOS):
 
     def _g(self, data, T: float, v_capv: float) -> float:
         """Calculates the shear modulus of Calcio Perovskite.
+
+        This function calculates the shear modulus of Calcio Perovskite (CaPv) at the
+        considered conditions.
 
         Following eq. (38) of Bina and Helffrich (1992), the temperature dependence
         of the shear modulus is assumed to be constant, so that it can be simply
@@ -1599,7 +1726,10 @@ class _EOS_capv(_EOS):
         self, data, k_v_capv: float, gamma_capv: float, v_capv: float,
         E_th_capv: float, E_th_capv_0: float, E_th_capv_dv: float
     ) -> float:
-        """Calculates the isothermal bulk modulus for Calcio Perovskite.
+        """Calculates the isothermal bulk modulus of Calcio Perovskite.
+
+        This function calculates the isothermal bulk modulus of Calcio Perovskite (CaPv)
+        at the considered conditions.
 
         It corresponds to the fifth equation in (B5) of Jackson and Rigden (1996).
 
@@ -1625,6 +1755,9 @@ class _EOS_capv(_EOS):
 
     def _k_s(self, data, T: float, v_capv: float) -> float:
         """Calculates the isentropic bulk modulus of Calcio Perovskite.
+
+        This function calculates the isentropic bulk modulus of Calcio Perovskite (CaPv)
+        at the considered conditions.
 
         It corresponds to the twelfth equation in (B5) of Jackson and Rigden (1996).
 
