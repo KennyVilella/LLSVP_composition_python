@@ -63,7 +63,7 @@ jobs:
         run: python -m pip install .[docs]
 
       - name: Build the documentation
-        run: sphinx-build docs docs/build/html
+        run: sphinx-multiversion docs docs/build/html
 
       - name: Created index redirection
         run: cp docs/_asset/index.html docs/build/html
