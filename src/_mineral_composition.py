@@ -347,13 +347,15 @@ def _solve_mineral_composition(
             rho_capv, p_fp, al_excess
         )
 
-        # Getting extra outputs
-        x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
-            self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe, rho_capv,
-            p_fp
-        )
+        if (x_feo_fp != 0.0):
+            ### A solution has been found ###
+            # Getting extra outputs
+            x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
+                self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
+                rho_capv, p_fp
+            )
 
-        if ((not al_excess) and (ratio_fe * x_feo_bm < x_alo2_bm)):
+        if ((not al_excess) and (x_feo_fp == 0.0 or ratio_fe * x_feo_bm < x_alo2_bm)):
             ### First guess for al_excess is incorrect ###
             # Trying to solve the system of equation with al_excess
             al_excess = True
@@ -363,11 +365,13 @@ def _solve_mineral_composition(
                 P_table, rho_capv, p_fp, al_excess
             )
 
-            # Getting extra outputs
-            x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
-                self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
-                rho_capv, p_fp
-            )
+            if (x_feo_fp != 0.0):
+                ### A solution has been found ###
+                # Getting extra outputs
+                x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
+                    self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
+                    rho_capv, p_fp
+                )
 
             # Checking that solution is indeed correct
             if (ratio_fe * x_feo_bm > x_alo2_bm):
@@ -378,7 +382,7 @@ def _solve_mineral_composition(
                 print("p_bm = ", p_bm, " p_capv = ", p_capv," feo = ", feo,
                     " al = ", al, " ratio_fe = ", ratio_fe, " dT = ", dT)
                 print("Skip this condition")
-        elif ((al_excess) and (ratio_fe * x_feo_bm > x_alo2_bm)):
+        elif ((al_excess) and (x_feo_fp == 0.0 or ratio_fe * x_feo_bm > x_alo2_bm)):
             ### First guess for al_excess is incorrect ###
             # Trying to solve the system of equation without al_excess
             al_excess = False
@@ -388,11 +392,13 @@ def _solve_mineral_composition(
                 P_table, rho_capv, p_fp, al_excess
             )
 
-            # Getting extra outputs
-            x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
-                self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
-                rho_capv, p_fp
-            )
+            if (x_feo_fp != 0.0):
+                ### A solution has been found ###
+                # Getting extra outputs
+                x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
+                    self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
+                    rho_capv, p_fp
+                )
 
             # Checking that solution is indeed correct
             if (ratio_fe * x_feo_bm < x_alo2_bm):
@@ -608,6 +614,10 @@ def _set_eqs_with_fp(
         self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe, rho_capv, p_fp
     )
 
+    # Checking that the oxides content makes sense
+    if ((x_alo2_bm < 0.0) or (x_alo2_bm > 1.0) or (x_feo_bm < 0.0) or (x_feo_bm > 1.0)):
+        return None
+
     if (al_excess):
         ### Al is asssumed to be in excess ###
         # Calculating molar proportion of the different components of Bm
@@ -655,7 +665,8 @@ def _set_eqs_with_fp(
         if (abs(P_table[index_T, index_P, index_x] - self.P_am) > self.delta_P):
             print("Error on P for the spin transition is large")
             print("Pressure for the spin configuration: `",
-                P_table[index_T, index_P, index_x], "` actual pressure: `", self.P_am, "`")
+                P_table[index_T, index_P, index_x], "` actual pressure: `", self.P_am,
+                "`")
         elif ((self.x_vec[index_x] - x_feo_fp) > self.x_vec[1] - self.x_vec[0]):
             print("Error on x for the spin transition is large")
             print("FeO content for the spin configuration: `",
