@@ -1,17 +1,17 @@
-"""Provides functions used to calculate the average spin state of FeO in Ferropericlase.
+"""Calculates the average spin state of FeO in Ferropericlase.
 
 This file is associated with the article:
 "Constraints on the composition and temperature of LLSVPs from seismic properties of
 lower mantle minerals" by K. Vilella, T. Bodin, C.-E. Boukare, F. Deschamps, J. Badro,
 M. D. Ballmer, and Y. Li
 
-This file provides all the functions used to calculate the average spin state of FeO
+The purpose of the functions in this file is to calculate the average spin state of FeO
 in Ferropericlase (Fp) depending on temperature, pressure, and mineral composition.
 The model is based on the work of Sturhahn et al. (2005) and this specific version is
 described in Vilella et al. (2015).
 
-The Mie-Gruneisen-Debye equation of state is used to calculate the properties of Fp.
-These functions should not be used outside the class MineralProperties.
+Note that these functions are intended for use within the MineralProperties class and
+should not be used outside of it.
 
 Typical usage example:
 
@@ -31,23 +31,23 @@ from ._eos_implementation import _EOS_fp
 def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
     """Calculates the spin configuration of FeO in Ferropericlase.
 
-    The theory behind this calculation is described in Vilella et al. (2015) and is
-    based on a model developed in Sturhahn et al. (2005).
+    This function calculates the average spin state of FeO in Ferropericlase (Fp). The
+    spin state of FeO in Fp changes with varying pressure and temperature. In particular,
+    at ambient conditions, FeO is in a high spin state, while in the lowermost part of
+    the Earth's mantle, FeO is in a low spin state. This transition from high spin state
+    to low spin state is known as the spin state transition and is associated with an
+    increase in density.
 
-    As a brief summary, the spin state of FeO in the Ferropericlase (Fp) mineral
-    changed with varying pressure and temperature. In particular, at ambient
-    conditions, FeO is in a high spin state, while in the lowermost part of the
-    Earth's mantle, FeO is in a low spin state.
-    This transition from high spin state to low spin state is commonly referred to
-    as the spin state transition and is associated with an increase in density.
+    In this model, the proportion of FeO in a low spin state (eta_ls) is determined by
+    finding the value of eta_ls that minimizes the Helmholtz free energy (F), this state
+    corresponding to the most stable configuration. More specifically, the function
+    searches for values of eta_ls giving a derivative of F with respect to eta_ls equal
+    to zero. Since multiple local minima can exist, the calculation is repeated with
+    three different initial conditions, and the solution with the lowest F value is
+    selected.
 
-    In this function, the average spin state of Fp (eta_ls) is determined by
-    searching for the value of eta_ls minimizing the Helmholtz free energy (F), that
-    is the most stable configuration. In practice, this is done by searching for
-    the values of eta_ls leading to a derivative of F with respect to eta_ls equals
-    to zero. However, this is challenging as several local minima may exist. As a
-    result, the calculation is done using three different initial conditions, and
-    the actual solution is the one associated with the lowest value of F.
+    The model used in this function is based on the work of Sturhahn et al. (2005) and
+    is described in detail in Vilella et al. (2015).
 
     Returns:
         A tuple of np.ndarray composed of the average spin state of FeO in Fp and the
@@ -180,13 +180,16 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
 def _energy_equation(self, spin_state: int, v_0: float, v: float) -> float:
     """Calculates the energy level of Fe2+ associated with a given spin state.
 
-    This function calculates the energy level associated with a given spin state (
-    low spin state, mixed spin state, or high spin state), as shown in the Fig. 1
-    of Sturhahn et al. (2005).
+    This function calculates the energy level of Fe2+ in Ferropericlase (Fp) for a given
+    spin state (low spin state, mixed spin state, or high spin state), as shown in the
+    Fig. 1 of Sturhahn et al. (2005).
 
     The energy level has two main contributions:
     - The energy difference between the two electronic levels (delta_energy).
     - The energy required to pair two electrons (pairing_energy).
+
+    Note that the mixed spin state is considered to be unstable and is not used in
+    the simulator.
 
     Args:
         spin_state: Indicates the spin state considered.
@@ -220,7 +223,7 @@ def _splitting_energy(self, x_fp: float, v_0: float, v: float) -> float:
     """Calculates the splitting energy.
 
     This function calculates the coupling energy between low spin state iron atoms
-    in Ferropericlase.
+    in Ferropericlase (Fp).
 
     Args:
         x_fp: FeO content in ferropericlase.
