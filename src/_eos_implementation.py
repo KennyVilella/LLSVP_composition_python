@@ -85,7 +85,7 @@ class _EOS(ABC):
         return theta_0 * np.exp((gamma_0 - gamma) / q)
 
     @abstractmethod
-    def _BM3(self, P: float, k_0: float, v_ratio: float, k0t_prime: float) -> float:
+    def _BM3(self, P: float, v_ratio: float, k_0: float, k0t_prime: float) -> float:
         """Calculates the third-order Birch–Murnaghan isothermal equation of state.
 
         This function calculates the residue of the third-order Birch–Murnaghan
@@ -95,9 +95,9 @@ class _EOS(ABC):
 
         Args:
             P: Considered pressure. [GPa]
-            k_0: Isothermal bulk modulus at ambient conditions. [GPa]
             v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
                      and V the volume at the considered conditions.
+            k_0: Isothermal bulk modulus at ambient conditions. [GPa]
             k0t_prime: Pressure derivative of the isothermal bulk modulus at ambient
                        conditions.
 
@@ -622,7 +622,7 @@ class _EOS_fp(_EOS):
             Residue of the third-order Birch–Murnaghan isothermal equation of state
             for Fp. [GPa]
         """
-        return super()._BM3(P, k_fp_0, v_ratio, data.k0t_prime_fp)
+        return super()._BM3(P, v_ratio, k_fp_0, data.k0t_prime_fp)
 
     def _E_th(self, data, T: float, v_ratio: float) -> float:
         """Calculates the vibrational energy of Ferropericlase.
@@ -1128,7 +1128,7 @@ class _EOS_bm(_EOS):
             Residue of the third-order Birch–Murnaghan isothermal equation of state
             for Bm. [GPa]
         """
-        return super()._BM3(P, k_bm_0, v_ratio, data.k0t_prime_bm)
+        return super()._BM3(P, v_ratio, k_bm_0, data.k0t_prime_bm)
 
     def _E_th(self, data, T: float, v_ratio: float) -> float:
         """Calculates the vibrational energy of Bridgmanite.
@@ -1527,7 +1527,7 @@ class _EOS_capv(_EOS):
             Residue of the third-order Birch–Murnaghan isothermal equation of state
             for CaPv. [GPa]
         """
-        return super()._BM3(P, data.k_casio3_0, v_ratio, data.k0t_prime_capv)
+        return super()._BM3(P, v_ratio, data.k_casio3_0, data.k0t_prime_capv)
 
     def _E_th(self, data, T: float, v_ratio: float) -> float:
         """Calculates the vibrational energy of Calcio Perovskite.
