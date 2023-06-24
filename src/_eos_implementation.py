@@ -167,7 +167,7 @@ class _EOS(ABC):
         return (gamma * theta / v) * (3 * (E_th - E_th_0) / theta - d_int_part)
 
     @abstractmethod
-    def _E_th_dT(self, n: int, R: float, T: float, theta: float, E_th: float) -> float:
+    def _E_th_dT(self, T: float, theta: float, E_th: float, n: int, R: float) -> float:
         """Calculates the derivative of vibrational energy with respect to temperature.
 
         This function calculates the derivative of the vibrational energy with respect
@@ -178,11 +178,11 @@ class _EOS(ABC):
         vibrational energy.
 
         Args:
-            n: Number of atoms per formula unit.
-            R: Gas constant. [cm^3 GPa K^−1 mol^−1]
             T: Considered temperature. [K]
             theta: Debye temperature at the considered conditions. [K]
             E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
+            n: Number of atoms per formula unit.
+            R: Gas constant. [cm^3 GPa K^−1 mol^−1]
 
         Returns:
             Partial derivative of the vibrational energy with respect to temperature.
@@ -701,7 +701,7 @@ class _EOS_fp(_EOS):
             Partial derivative of the vibrational energy with respect to temperature
             for Fp. [cm^3 GPa mol^−1 K^-1]
         """
-        return super()._E_th_dT(2, data.R, T, theta_fp, E_th_fp)
+        return super()._E_th_dT(T, theta_fp, E_th_fp, 2, data.R)
 
     def _alpha(
         self, data, T: float, k_v_fp: float, theta_fp: float, gamma_fp: float,
@@ -1207,7 +1207,7 @@ class _EOS_bm(_EOS):
             Partial derivative of the vibrational energy with respect to temperature
             for Bm. [cm^3 GPa mol^−1 K^-1]
         """
-        return super()._E_th_dT(5, data.R, T, theta_bm, E_th_bm)
+        return super()._E_th_dT(T, theta_bm, E_th_bm, 5, data.R)
 
     def _alpha(
         self, data, T: float, k_v_bm: float, theta_bm: float, gamma_bm: float,
@@ -1608,7 +1608,7 @@ class _EOS_capv(_EOS):
             Partial derivative of the vibrational energy with respect to temperature
             for CaPv. [cm^3 GPa mol^−1 K^-1]
         """
-        return super()._E_th_dT(5, data.R, T, theta_capv, E_th_capv)
+        return super()._E_th_dT(T, theta_capv, E_th_capv, 5, data.R)
 
     def _alpha(
         self, data, T: float, k_v_capv: float, theta_capv: float, gamma_capv: float,
