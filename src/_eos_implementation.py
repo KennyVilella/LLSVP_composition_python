@@ -47,7 +47,7 @@ class _EOS(ABC):
     modulus follows the model presented by Bina and Helffrich (1992).
     """
     @abstractmethod
-    def _gamma(self, gamma_0: float, v_ratio: float, q: float) -> float:
+    def _gamma(self, v_ratio: float, gamma_0: float, q: float) -> float:
         """Calculates the Gruneisen parameter.
 
         This function calculates the Gruneisen parameter at the considered conditions.
@@ -55,9 +55,9 @@ class _EOS(ABC):
         It corresponds to the eq. (31) of Jackson and Rigden (1996).
 
         Args:
-            gamma_0: Gruneisen parameter at ambient conditions.
             v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
                      and V the volume at the considered conditions.
+            gamma_0: Gruneisen parameter at ambient conditions.
             q: Exponent of the Gruneisen parameter.
 
         Returns:
@@ -580,7 +580,7 @@ class _EOS_fp(_EOS):
         Returns:
             Gruneisen parameter of Fp at the considered conditions.
         """
-        return super()._gamma(data.gamma_fp_0, v_ratio, data.q_fp)
+        return super()._gamma(v_ratio, data.gamma_fp_0, data.q_fp)
 
     def _theta(self, data, v_ratio: float) -> float:
         """Calculates the Debye temperature of Ferropericlase.
@@ -1084,7 +1084,7 @@ class _EOS_bm(_EOS):
         Returns:
             Gruneisen parameter of Bm at the considered conditions.
         """
-        return super()._gamma(data.gamma_bm_0, v_ratio, data.q_bm)
+        return super()._gamma(v_ratio, data.gamma_bm_0, data.q_bm)
 
     def _theta(self, data, v_ratio: float) -> float:
         """Calculates the Debye temperature of Bridgmanite.
@@ -1482,7 +1482,7 @@ class _EOS_capv(_EOS):
         Returns:
             Gruneisen parameter of CaPv at the considered conditions.
         """
-        return super()._gamma(data.gamma_capv_0, v_ratio, data.q_capv)
+        return super()._gamma(v_ratio, data.gamma_capv_0, data.q_capv)
 
     def _theta(self, data, v_ratio: float) -> float:
         """Calculates the Debye temperature of Calcio Perovskite.
