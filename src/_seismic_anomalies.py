@@ -37,7 +37,6 @@ Copyright, 2023,  Vilella Kenny.
 import numpy as np
 from math import isclose
 import os
-import csv
 import scipy.optimize
 from ._eos_implementation import _EOS_fp, _EOS_bm, _EOS_capv
 from ._mineral_composition import _solve_mineral_composition
@@ -115,21 +114,13 @@ def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
             print("Deleting old file")
             os.remove(processed_filename)
 
-        with open(os.path.join(self.path, file), newline='') as csvfile:
-            data = csv.reader(csvfile, delimiter=' ')
+        with open(os.path.join(self.path, file), newline='') as f:
+            data = f.readlines()
             for row in data:
                 # Loading the data
-                dT = float(row[0])
-                p_capv = float(row[1])
-                p_bm = float(row[2])
-                feo = float(row[3])
-                al = float(row[4])
-                ratio_fe = float(row[5])
-                x_feo_bm = float(row[6])
-                x_feo_fp = float(row[7])
-                x_alo2_bm = float(row[8])
-                rho_bm = float(row[9])
-                rho_fp = float(row[10])
+                processed_row = [float(s) for s in row.split()]
+                dT, p_capv, p_bm, feo, al, ratio_fe = processed_row[:6]
+                x_feo_bm, x_feo_fp, x_alo2_bm, rho_bm, rho_fp = processed_row[6:]
                 p_fp = 1 - p_bm - p_capv
 
                 if isclose(p_fp, 0.0, abs_tol=1e-4):
@@ -153,12 +144,12 @@ def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
                 delta_v_p = 100 * (v_p - v_p_ref) / v_p
 
                 # Writting the data
-                with open(processed_filename, 'a', newline='') as csvfile:
-                    data_writer = csv.writer(csvfile, delimiter=' ')
-                    data_writer.writerow([
-                        dT, p_capv, p_bm, feo, al, ratio_fe, delta_rho, delta_v_phi,
-                        delta_v_s, delta_v_p
-                    ])
+                with open(processed_filename, 'a', newline='') as f:
+                    f.write(
+                        f"{dT:.0f}\t{p_capv:.2f}\t{p_bm:.2f}\t{feo:.3f}\t{al:.3f}\t" +
+                        f"{ratio_fe:.1f}\t{delta_rho:.3f}\t{delta_v_phi:.3f}\t" +
+                        f"{delta_v_s:.3f}\t{delta_v_p:.0f}\n"
+                    )
 
 def _calc_seismic_properties(
     self, spin_config: np.ndarray, P_table: np.ndarray, dT: float, p_capv: float,

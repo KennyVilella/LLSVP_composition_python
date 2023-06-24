@@ -39,7 +39,6 @@ Copyright, 2023,  Vilella Kenny.
 import numpy as np
 from math import isclose
 import os
-import csv
 import random
 import scipy.optimize
 from ._eos_implementation import _EOS_fp, _EOS_bm, _EOS_capv
@@ -124,29 +123,30 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray)
             ### A file already exists ###
             print("File detected")
             print("Resuming the simulation")
-            with open(filename, newline='') as csvfile:
-                data = csv.reader(csvfile, delimiter=' ')
+            with open(filename, newline='') as f:
+                data = f.readlines()
                 for row in data:
                     # Calculating the corresponding indices
-                    jj = round((float(row[1]) - self.p_capv_min) / self.delta_capv)
-                    kk = round((float(row[2]) - self.p_bm_min) / self.delta_bm)
+                    processed_row = [float(s) for s in row.split()]
+                    jj = round((processed_row[1] - self.p_capv_min) / self.delta_capv)
+                    kk = round((processed_row[2] - self.p_bm_min) / self.delta_bm)
                     ll = round(
-                        (float(row[3]) - self.iron_content_min) /
+                        (processed_row[3] - self.iron_content_min) /
                         self.delta_iron_content
                     )
                     mm = round(
-                        (float(row[4]) - self.al_content_min) / self.delta_al
+                        (processed_row[4] - self.al_content_min) / self.delta_al
                     )
                     nn = round(
-                        (float(row[5]) - self.ratio_fe_bm_min) / self.delta_ratio_fe
+                        (processed_row[5] - self.ratio_fe_bm_min) / self.delta_ratio_fe
                     )
 
                     # Loading the data
-                    x_feo_bm_ii[jj, kk, ll, mm, nn] = row[6]
-                    x_feo_fp_ii[jj, kk, ll, mm, nn] = row[7]
-                    x_alo2_bm_ii[jj, kk, ll, mm, nn] = row[8]
-                    rho_bm_ii[jj, kk, ll, mm, nn] = row[9]
-                    rho_fp_ii[jj, kk, ll, mm, nn] = row[10]
+                    x_feo_bm_ii[jj, kk, ll, mm, nn] = processed_row[6]
+                    x_feo_fp_ii[jj, kk, ll, mm, nn] = processed_row[7]
+                    x_alo2_bm_ii[jj, kk, ll, mm, nn] = processed_row[8]
+                    rho_bm_ii[jj, kk, ll, mm, nn] = processed_row[9]
+                    rho_fp_ii[jj, kk, ll, mm, nn] = processed_row[10]
 
             # Initializing the loop
             jj_start = jj
@@ -191,7 +191,7 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray)
                             if (x_init[0] < 0.0):
                                 ### Starting condition is incorrect ###
                                 ll_iter = ll
-                                while (x_init[0] < 0.0):
+                                while ((x_init[0] < 0.0) and (ll_iter > 0)):
                                     ll_iter -= 1
                                 x_init = [
                                     x_feo_bm_ii[jj, kk, ll_iter, mm, nn],
@@ -215,12 +215,13 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray)
                             rho_fp_ii[jj, kk, ll, mm, nn] = x_result[4]
 
                             # Writting the data
-                            with open(filename, 'a', newline='') as csvfile:
-                                data_writer = csv.writer(csvfile, delimiter=' ')
-                                data_writer.writerow([
-                                    dT, p_capv, p_bm, feo, al, ratio_fe, x_result[0],
-                                    x_result[1], x_result[2], x_result[3], x_result[4]
-                                ])
+                            with open(filename, 'a', newline='') as f:
+                                f.write(
+                                    f"{dT:.0f}\t{p_capv:.2f}\t{p_bm:.2f}\t{feo:.3f}\t" +
+                                    f"{al:.3f}\t{ratio_fe:.1f}\t{x_result[0]:.3f}\t" +
+                                    f"{x_result[1]:.3f}\t{x_result[2]:.3f}\t" +
+                                    f"{x_result[3]:.0f}\t{x_result[4]:.0f}\n"
+                                )
                             p_capv_ii[jj, kk, ll, mm, nn] = p_capv
                             p_bm_ii[jj, kk, ll, mm, nn] = p_bm
                             feo_ii[jj, kk, ll, mm, nn] = feo
@@ -347,13 +348,15 @@ def _solve_mineral_composition(
             rho_capv, p_fp, al_excess
         )
 
-        # Getting extra outputs
-        x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
-            self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe, rho_capv,
-            p_fp
-        )
+        if (x_feo_fp != 0.0):
+            ### A solution has been found ###
+            # Getting extra outputs
+            x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
+                self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
+                rho_capv, p_fp
+            )
 
-        if ((not al_excess) and (ratio_fe * x_feo_bm < x_alo2_bm)):
+        if ((not al_excess) and (x_feo_fp == 0.0 or ratio_fe * x_feo_bm < x_alo2_bm)):
             ### First guess for al_excess is incorrect ###
             # Trying to solve the system of equation with al_excess
             al_excess = True
@@ -363,11 +366,13 @@ def _solve_mineral_composition(
                 P_table, rho_capv, p_fp, al_excess
             )
 
-            # Getting extra outputs
-            x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
-                self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
-                rho_capv, p_fp
-            )
+            if (x_feo_fp != 0.0):
+                ### A solution has been found ###
+                # Getting extra outputs
+                x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
+                    self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
+                    rho_capv, p_fp
+                )
 
             # Checking that solution is indeed correct
             if (ratio_fe * x_feo_bm > x_alo2_bm):
@@ -378,7 +383,7 @@ def _solve_mineral_composition(
                 print("p_bm = ", p_bm, " p_capv = ", p_capv," feo = ", feo,
                     " al = ", al, " ratio_fe = ", ratio_fe, " dT = ", dT)
                 print("Skip this condition")
-        elif ((al_excess) and (ratio_fe * x_feo_bm > x_alo2_bm)):
+        elif ((al_excess) and (x_feo_fp == 0.0 or ratio_fe * x_feo_bm > x_alo2_bm)):
             ### First guess for al_excess is incorrect ###
             # Trying to solve the system of equation without al_excess
             al_excess = False
@@ -388,11 +393,13 @@ def _solve_mineral_composition(
                 P_table, rho_capv, p_fp, al_excess
             )
 
-            # Getting extra outputs
-            x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
-                self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
-                rho_capv, p_fp
-            )
+            if (x_feo_fp != 0.0):
+                ### A solution has been found ###
+                # Getting extra outputs
+                x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
+                    self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
+                    rho_capv, p_fp
+                )
 
             # Checking that solution is indeed correct
             if (ratio_fe * x_feo_bm < x_alo2_bm):
@@ -474,7 +481,7 @@ def _solve_with_fp(
     To address this challenge, the function first attempts to find a solution using the
     provided starting conditions. If a solution cannot be found, the starting conditions
     are randomly sampled within predetermined ranges until a solution is obtained or the
-    number of attempts exceeds 1000. If a solution cannot be found under these
+    number of attempts exceeds 10. If a solution cannot be found under these
     conditions, a value of 0.0 is returned for each property.
 
     If finding a solution remains difficult, the user may manually increase the maximum
@@ -510,7 +517,7 @@ def _solve_with_fp(
     # Initialization
     n_iter = 0
 
-    while (n_iter < 1000):
+    while (n_iter < 10):
         ### Solution has not yet been found ###
         try:
             ### Solution has been found ###
@@ -585,6 +592,10 @@ def _set_eqs_with_fp(
     # Unpacking input variables
     x_feo_fp, rho_bm, rho_fp = var_in
 
+    # Checking that input conditions makes sense
+    if ((rho_fp < 0.1) or (rho_bm < 0.1) or (x_feo_fp < 0.0) or (x_feo_fp > 1.0)):
+        return None
+
     # Average spin state of FeO
     index_x = np.argmin(np.abs(self.x_vec - x_feo_fp))
     index_T = np.argmin(np.abs(self.T_vec - (self.T_am + dT)))
@@ -603,6 +614,10 @@ def _set_eqs_with_fp(
     x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
         self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe, rho_capv, p_fp
     )
+
+    # Checking that the oxides content makes sense
+    if ((x_alo2_bm < 0.0) or (x_alo2_bm > 1.0) or (x_feo_bm < 0.0) or (x_feo_bm > 1.0)):
+        return None
 
     if (al_excess):
         ### Al is asssumed to be in excess ###
@@ -651,7 +666,8 @@ def _set_eqs_with_fp(
         if (abs(P_table[index_T, index_P, index_x] - self.P_am) > self.delta_P):
             print("Error on P for the spin transition is large")
             print("Pressure for the spin configuration: `",
-                P_table[index_T, index_P, index_x], "` actual pressure: `", self.P_am, "`")
+                P_table[index_T, index_P, index_x], "` actual pressure: `", self.P_am,
+                "`")
         elif ((self.x_vec[index_x] - x_feo_fp) > self.x_vec[1] - self.x_vec[0]):
             print("Error on x for the spin transition is large")
             print("FeO content for the spin configuration: `",
@@ -752,7 +768,7 @@ def _solve_without_fp(
     To address this challenge, the function first attempts to find a solution using the
     provided starting conditions. If a solution cannot be found, the starting conditions
     are randomly sampled within predetermined ranges until a solution is obtained or the
-    number of attempts exceeds 1000. If a solution cannot be found under these
+    number of attempts exceeds 10. If a solution cannot be found under these
     conditions, a value of 0.0 is returned for each property.
 
     If finding a solution remains difficult, the user may manually increase the maximum
@@ -783,7 +799,7 @@ def _solve_without_fp(
     # Initialization
     n_iter = 0
 
-    while (n_iter < 1000):
+    while (n_iter < 10):
         ### Solution has not yet been found ###
         try:
             ### Solution has been found ###
@@ -850,6 +866,13 @@ def _set_eqs_without_fp(
 
     # Unpacking input variables
     x_feo_bm, x_alo2_bm, rho_bm = var_in
+
+    # Checking that input conditions makes sense
+    if (
+        (rho_bm < 0.1) or (x_feo_bm < 0.0) or (x_feo_bm > 1.0) or
+        (x_alo2_bm < 0.0) or (x_alo2_bm > 1.0)
+    ):
+        return None
 
     if (al_excess):
         ### Al is asssumed to be in excess ###
