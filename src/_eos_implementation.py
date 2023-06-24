@@ -111,7 +111,7 @@ class _EOS(ABC):
         )
 
     @abstractmethod
-    def _E_th(self, n: int, R: float, T: float, theta: float, int_part: float) -> float:
+    def _E_th(self, T: float, theta: float, int_part: float, n: int, R: float) -> float:
         """Calculates the vibrational energy.
 
         This function calculates the vibrational energy at the considered conditions.
@@ -122,11 +122,11 @@ class _EOS(ABC):
         It corresponds to the eq. (30) of Jackson and Rigden (1996).
 
         Args:
-            n: Number of atoms per formula unit.
-            R: Gas constant. [cm^3 GPa K^−1 mol^−1]
             T: Considered temperature. [K]
             theta: Debye temperature at the considered conditions. [K]
             int_part: Integral part of the vibrational energy.
+            n: Number of atoms per formula unit.
+            R: Gas constant. [cm^3 GPa K^−1 mol^−1]
 
         Returns:
             Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
@@ -647,7 +647,7 @@ class _EOS_fp(_EOS):
         theta_fp = self._theta(data, v_ratio)
         # Integral part of the vibrational energy
         int_part_fp = super()._integral_vibrational_energy(theta_fp / T)
-        return super()._E_th(2, data.R, T, theta_fp, int_part_fp)
+        return super()._E_th(T, theta_fp, int_part_fp, 2, data.R)
 
     def _E_th_dv(
         self, data, T: float, theta_fp: float, gamma_fp: float, v_fp: float,
@@ -1153,7 +1153,7 @@ class _EOS_bm(_EOS):
         theta_bm = self._theta(data, v_ratio)
         # Integral part of the vibrational energy
         int_part_bm = super()._integral_vibrational_energy(theta_bm / T)
-        return super()._E_th(5, data.R, T, theta_bm, int_part_bm)
+        return super()._E_th(T, theta_bm, int_part_bm, 5, data.R)
 
     def _E_th_dv(
         self, data, T: float, theta_bm: float, gamma_bm: float, v_bm: float,
@@ -1553,7 +1553,7 @@ class _EOS_capv(_EOS):
         theta_capv = self._theta(data, v_ratio)
         # Integral part of the vibrational energy
         int_part_capv = super()._integral_vibrational_energy(theta_capv / T)
-        return super()._E_th(5, data.R, T, theta_capv, int_part_capv)
+        return super()._E_th(T, theta_capv, int_part_capv, 5, data.R)
 
     def _E_th_dv(
         self, data, T: float, theta_capv: float, gamma_capv: float, v_capv: float,
