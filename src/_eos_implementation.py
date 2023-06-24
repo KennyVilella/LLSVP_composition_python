@@ -135,8 +135,8 @@ class _EOS(ABC):
 
     @abstractmethod
     def _E_th_dv(
-        self, n: int, R: float, T: float, theta: float, gamma: float, v: float,
-        E_th: float, E_th_0: float
+        self, T: float, v: float, theta: float, gamma: float, E_th_0: float,
+        E_th: float, n: int, R: float
     ) -> float:
         """Calculates the derivative of the vibrational energy with respect to volume.
 
@@ -148,14 +148,14 @@ class _EOS(ABC):
         vibrational energy.
 
         Args:
-            n: Number of atoms per formula unit.
-            R: Gas constant. [cm^3 GPa K^−1 mol^−1]
             T: Considered temperature. [K]
+            v: Volume at considered conditions. [cm^3/mol]
             theta: Debye temperature at the considered conditions. [K]
             gamma: Gruneisen parameter at the considered conditions.
-            v: Volume at considered conditions. [cm^3/mol]
-            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
             E_th_0: Vibrational energy at ambient conditions. [cm^3 GPa mol^−1]
+            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
+            n: Number of atoms per formula unit.
+            R: Gas constant. [cm^3 GPa K^−1 mol^−1]
 
         Returns:
             Partial derivative of the vibrational energy with respect to temperature.
@@ -677,7 +677,7 @@ class _EOS_fp(_EOS):
             for Fp. [cm^3 GPa mol^−1 K^-1]
         """
         return super()._E_th_dv(
-            2, data.R, T, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0
+            T, v_fp, theta_fp, gamma_fp, E_th_fp_0, E_th_fp, 2, data.R
         )
 
     def _E_th_dT(self, data, T: float, theta_fp: float, E_th_fp: float) -> float:
@@ -1183,7 +1183,7 @@ class _EOS_bm(_EOS):
             for Bm. [cm^3 GPa mol^−1 K^-1]
         """
         return super()._E_th_dv(
-            5, data.R, T, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0
+            T, v_bm, theta_bm, gamma_bm, E_th_bm_0, E_th_bm, 5, data.R
         )
 
     def _E_th_dT(self, data, T: float, theta_bm: float, E_th_bm: float) -> float:
@@ -1584,7 +1584,7 @@ class _EOS_capv(_EOS):
             for CaPv. [cm^3 GPa mol^−1 K^-1]
         """
         return super()._E_th_dv(
-            5, data.R, T, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
+            T, v_capv, theta_capv, gamma_capv, E_th_capv_0, E_th_capv, 5, data.R
         )
 
     def _E_th_dT(self, data, T: float, theta_capv: float, E_th_capv: float) -> float:
