@@ -211,8 +211,8 @@ class _EOS(ABC):
 
     @abstractmethod
     def _alpha(
-        self, k_v: float, gamma: float, q: float, v: float, E_th: float, E_th_0: float,
-        E_th_dv: float, E_th_dT: float
+        self, v: float, gamma: float, k_v: float, E_th_0: float, E_th: float,
+        E_th_dv: float, E_th_dT: float, q: float
     ) -> float:
         """Calculates the thermal expansion coefficient.
 
@@ -222,16 +222,16 @@ class _EOS(ABC):
         It corresponds to the sixth equation in (B5) of Jackson and Rigden (1996).
 
         Args:
-            k_v: Isothermal bulk modulus at ambient temperature. [GPa]
-            gamma: Gruneisen parameter at the considered conditions.
-            q: Exponent of the Gruneisen parameter.
             v: Volume at considered conditions. [cm^3/mol]
-            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
+            gamma: Gruneisen parameter at the considered conditions.
+            k_v: Isothermal bulk modulus at ambient temperature. [GPa]
             E_th_0: Vibrational energy at ambient conditions. [cm^3 GPa mol^−1]
+            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
             E_th_dv: Partial derivative of the vibrational energy with respect to
                      temperature. [cm^3 GPa mol^−1 K^-1]
             E_th_dT: Partial derivative of the vibrational energy with respect to
                      temperature. [cm^3 GPa mol^−1 K^-1]
+            q: Exponent of the Gruneisen parameter.
 
         Returns:
             Thermal expansion coefficient. [K^-1]
@@ -733,8 +733,8 @@ class _EOS_fp(_EOS):
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_fp_dT = self._E_th_dT(data, T, theta_fp, E_th_fp)
         return super()._alpha(
-            k_v_fp, gamma_fp, data.q_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv,
-            E_th_fp_dT
+            v_fp, gamma_fp, k_v_fp, E_th_fp_0, E_th_fp, E_th_fp_dv, E_th_fp_dT
+            data.q_fp
         )
 
     def _MGD(
@@ -1239,8 +1239,8 @@ class _EOS_bm(_EOS):
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_bm_dT = self._E_th_dT(data, T, theta_bm, E_th_bm)
         return super()._alpha(
-            k_v_bm, gamma_bm, data.q_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv,
-            E_th_bm_dT
+            v_bm, gamma_bm, k_v_bm, E_th_bm_0, E_th_bm, E_th_bm_dv, E_th_bm_dT,
+            data.q_bm
         )
 
     def _MGD(
@@ -1641,8 +1641,8 @@ class _EOS_capv(_EOS):
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_capv_dT = self._E_th_dT(data, T, theta_capv, E_th_capv)
         return super()._alpha(
-            k_v_capv, gamma_capv, data.q_capv, v_capv, E_th_capv, E_th_capv_0,
-            E_th_capv_dv, E_th_capv_dT
+            v_capv, gamma_capv, k_v_capv, E_th_capv_0, E_th_capv, E_th_capv_dv,
+            E_th_capv_dT, data.q_capv
         )
 
     def _MGD(self, data, T: float, P: float, v_capv: float) -> float:
