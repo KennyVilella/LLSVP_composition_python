@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API: MineralProperties class &mdash; LLSVP composition calculator  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API: Classes implementing the equation of state for each mineral" href="eos_implementation.html" />
+    <link rel="prev" title="API" href="../api.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            LLSVP composition calculator
+          </a>
+              <div class="version">
+                0.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">General documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Home</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">class MineralProperties</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src.__init__.MineralProperties"><code class="docutils literal notranslate"><span class="pre">MineralProperties</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#src.__init__.MineralProperties._load_conditions"><code class="docutils literal notranslate"><span class="pre">MineralProperties._load_conditions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#src.__init__.MineralProperties.calc_mineral_properties"><code class="docutils literal notranslate"><span class="pre">MineralProperties.calc_mineral_properties()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="eos_implementation.html">EOS implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spin_configuration.html">Spin configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mineral_composition.html">Mineral composition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="seismic_anomalies.html">Seismic anomalies</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LLSVP composition calculator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API</a></li>
+      <li class="breadcrumb-item active">API: MineralProperties class</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_api/mineral_properties.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-mineralproperties-class">
+<h1>API: MineralProperties class<a class="headerlink" href="#api-mineralproperties-class" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="src.__init__.MineralProperties">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.__init__.</span></span><span class="sig-name descname"><span class="pre">MineralProperties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prop</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.__init__.MineralProperties" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates mineral properties of lower mantle compositions.</p>
+<p>This class provides the functionality required to calculate mineral properties for
+a wide range of mineral compositions under pressure and temperature conditions
+suitable for the lowermost mantle. It is assumed that the desired compositions are
+close to a typical pyrolitic composition.</p>
+<p>During class initialization, a default value is assigned to each mineral property.
+References are provided for each default value. Note that some values are derived
+from the provided references. Alternatively, the user can override the default
+values by providing a dictionary.</p>
+<p>The class method <cite>calc_mineral_properties</cite> calculates the seismic anomalies
+associated to a large range of compositions. A dictionary can be provided to specify
+the desired range for each input property (CaPv proportion, Bm proportion,
+FeO content, Al2O3 content, oxidation state, temperature contrast).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> – Absolute path to results directory. Default to the <cite>results</cite> folder in the
+repository root.</p></li>
+<li><p><strong>R</strong> – Gas constant. [cm^3 GPa K^−1 mol^−1]</p></li>
+<li><p><strong>xi</strong> – Scaling of the volume dependence of the crystal-field splitting used for the
+calculation of the spin transition. Default to 1.5.</p></li>
+<li><p><strong>delta_0</strong> – Crystal-field splitting at ambient condition used for the calculation
+of the spin transition. Default to 1.35. [eV]</p></li>
+<li><p><strong>v_trans</strong> – Volume of FeO at which the spin transition occurs. Default to 59. [A^3]</p></li>
+<li><p><strong>p_capv_am</strong> – Proportion of CaPv in the ambient lower mantle.
+Default to 0.07. [vol%]</p></li>
+<li><p><strong>iron_content_am</strong> – FeO content in the ambient mantle. Default to 0.08. [wt%]</p></li>
+<li><p><strong>p_bm_am</strong> – Proportion of Bm in the ambient lower mantle. Default to 0.75. [vol%]</p></li>
+<li><p><strong>al_content_am</strong> – Al2O3 content in the ambient mantle. Default to 0.036. [mol%]</p></li>
+<li><p><strong>kd_ref_am</strong> – Fe partioning coefficient in the ambient mantle. Default to 0.5.</p></li>
+<li><p><strong>ratio_fe_bm_am</strong> – Oxidation state in Bm. Default to 0.5.</p></li>
+<li><p><strong>k0t_prime_bm</strong> – Pressure derivative of the isothermal bulk modulus for Bm.
+Default to 3.7.</p></li>
+<li><p><strong>theta_bm_0</strong> – Debye temperature for Bm at ambient conditions. Default to 1100. [K]</p></li>
+<li><p><strong>gamma_bm_0</strong> – Gruneisen parameter for Bm at ambient conditions. Default to 1.4.</p></li>
+<li><p><strong>q_bm</strong> – Exponent of the Gruneisen parameter for Bm. Default to 1.4.</p></li>
+<li><p><strong>k0t_prime_fp</strong> – Pressure derivative of the isothermal bulk modulus for Fp.
+Default to 4.0.</p></li>
+<li><p><strong>theta_fp_0</strong> – Debye temperature for Fp at ambient conditions. Default to 673. [K]</p></li>
+<li><p><strong>gamma_fp_0</strong> – Gruneisen parameter for Fp at ambient conditions. Default to 1.41.</p></li>
+<li><p><strong>q_fp</strong> – Exponent of the Gruneisen parameter for Fp. Default to 1.3.</p></li>
+<li><p><strong>k0t_prime_capv</strong> – Pressure derivative of the isothermal bulk modulus for CaPv.
+Default to 3.9.</p></li>
+<li><p><strong>theta_capv_0</strong> – Debye temperature for CaPv at ambient conditions.
+Default to 1000. [K]</p></li>
+<li><p><strong>gamma_capv_0</strong> – Gruneisen parameter for CaPv at ambient conditions.
+Default to 1.92.</p></li>
+<li><p><strong>q_capv</strong> – Exponent of the Gruneisen parameter for CaPv. Default to 0.6.</p></li>
+<li><p><strong>k_mgo_0</strong> – Isothermal bulk modulus of MgO at ambient conditions.
+Default to 160. [GPa]</p></li>
+<li><p><strong>v_mgo_0</strong> – Volume of MgO at ambient conditions. Default to 11.25. [cm^3/mol]</p></li>
+<li><p><strong>k_feo_ls_0</strong> – Isothermal bulk modulus of FeO in the low spin state at ambient
+conditions. Default to 150. [GPa]</p></li>
+<li><p><strong>v_feo_ls_0</strong> – Volume of FeO in the low spin state at ambient conditions.
+Default to 10.82. [cm^3/mol]</p></li>
+<li><p><strong>k_feo_hs_0</strong> – Isothermal bulk modulus of FeO in the high spin state at ambient
+conditions. Default to 150. [GPa]</p></li>
+<li><p><strong>v_feo_hs_0</strong> – Volume of FeO in the high spin state at ambient conditions.
+Default to 12.18. [cm^3/mol]</p></li>
+<li><p><strong>k_mgsio3_0</strong> – Isothermal bulk modulus of MgSiO3 at ambient conditions.
+Default to 261. [GPa]</p></li>
+<li><p><strong>v_mgsio3_0</strong> – Volume of MgSiO3 at ambient conditions. Default to 24.43. [cm^3/mol]</p></li>
+<li><p><strong>k_fesio3_0</strong> – Isothermal bulk modulus of FeSiO3 at ambient conditions.
+Default to 248. [GPa]</p></li>
+<li><p><strong>v_fesio3_0</strong> – Volume of FeSiO3 at ambient conditions. Default to 25.44. [cm^3/mol]</p></li>
+<li><p><strong>k_fe2o3_0</strong> – Isothermal bulk modulus of Fe2O3 at ambient conditions.
+Default to 95. [GPa]</p></li>
+<li><p><strong>v_fe2o3_0</strong> – Volume of Fe2O3 at ambient conditions. Default to 30.6. [cm^3/mol]</p></li>
+<li><p><strong>k_fealo3_0</strong> – Isothermal bulk modulus of FeAlO3 at ambient conditions.
+Default to 271. [GPa]</p></li>
+<li><p><strong>v_fealo3_0</strong> – Volume of FeAlO3 at ambient conditions. Default to 28.21. [cm^3/mol]</p></li>
+<li><p><strong>k_al2o3_0</strong> – Isothermal bulk modulus of Al2O3 at ambient conditions.
+Default to 137. [GPa]</p></li>
+<li><p><strong>v_al2o3_0</strong> – Volume of Al2O3 at ambient conditions. Default to 26.74. [cm^3/mol]</p></li>
+<li><p><strong>k_casio3_0</strong> – Isothermal bulk modulus of CaSiO3 at ambient conditions.
+Default to 236. [GPa]</p></li>
+<li><p><strong>v_casio3_0</strong> – Volume of CaSiO3 at ambient conditions. Default to 27.45. [cm^3/mol]</p></li>
+<li><p><strong>g_mgo_0</strong> – Shear modulus of MgO at ambient conditions. Default to 131. [GPa]</p></li>
+<li><p><strong>g_prime_mgo</strong> – Pressure derivative of the shear modulus for MgO. Default to 1.92.</p></li>
+<li><p><strong>g_feo_hs_0</strong> – Shear modulus of FeO in the high spin state at ambient conditions.
+Default to 29.9. [GPa]</p></li>
+<li><p><strong>g_prime_feo_hs</strong> – Pressure derivative of the shear modulus for FeO in the high
+spin state. Default to 6.26.</p></li>
+<li><p><strong>g_feo_ls_0</strong> – Shear modulus of FeO in the low spin state at ambient conditions.
+Default to 119. [GPa]</p></li>
+<li><p><strong>g_prime_feo_ls</strong> – Pressure derivative of the shear modulus for FeO in the high
+spin state. Default to 3.9.</p></li>
+<li><p><strong>g_casio3_0</strong> – Shear modulus of CaSiO3 at ambient conditions. Default to 135. [GPa]</p></li>
+<li><p><strong>g_prime_casio3</strong> – Pressure derivative of the shear modulus for CaSiO3.
+Default to 1.57.</p></li>
+<li><p><strong>g_mgsio3_0</strong> – Shear modulus of MgSiO3 at ambient conditions.
+Default to 168.2. [GPa]</p></li>
+<li><p><strong>g_prime_mgsio3</strong> – Pressure derivative of the shear modulus for MgSiO3.
+Default to 1.79.</p></li>
+<li><p><strong>g_fesio3_0</strong> – Shear modulus of FeSiO3 at ambient conditions.
+Default to 145.7. [GPa]</p></li>
+<li><p><strong>g_prime_fesio3</strong> – Pressure derivative of the shear modulus for FeSiO3.
+Default to 1.87.</p></li>
+<li><p><strong>g_fealo3_0</strong> – Shear modulus of FeAlO3 at ambient conditions.
+Default to 95.3. [GPa]</p></li>
+<li><p><strong>g_prime_fealo3</strong> – Pressure derivative of the shear modulus for FeAlO3.
+Default to 2.13.</p></li>
+<li><p><strong>g_fe2o3_0</strong> – Shear modulus of Fe2O3 at ambient conditions. Default to 53.2. [GPa]</p></li>
+<li><p><strong>g_prime_fe2o3</strong> – Pressure derivative of the shear modulus for Fe2O3.
+Default to 2.63.</p></li>
+<li><p><strong>g_al2o3_0</strong> – Shear modulus of Al2O3 at ambient conditions. Default to 129.2. [GPa]</p></li>
+<li><p><strong>g_prime_al2o3</strong> – Pressure derivative of the shear modulus for Al2O3.
+Default to 2.32.</p></li>
+<li><p><strong>g_dot_bm</strong> – Temperature derivative of the shear modulus for Bm.
+Default to -0.02. [GPa/K]</p></li>
+<li><p><strong>g_dot_fp</strong> – Temperature derivative of the shear modulus for Fp.
+Default to -0.02. [GPa/K]</p></li>
+<li><p><strong>g_dot_capv</strong> – Temperature derivative of the shear modulus for CaPv.
+Default to -0.002. [GPa/K]</p></li>
+<li><p><strong>m_mgo</strong> – Molar mass of MgO. [g/mol]</p></li>
+<li><p><strong>m_feo</strong> – Molar mass of FeO. [g/mol]</p></li>
+<li><p><strong>m_mgsio3</strong> – Molar mass of MgSiO3. [g/mol]</p></li>
+<li><p><strong>m_fesio3</strong> – Molar mass of FeSiO3. [g/mol]</p></li>
+<li><p><strong>m_fealo3</strong> – Molar mass of FeAlO3. [g/mol]</p></li>
+<li><p><strong>m_fe2o3</strong> – Molar mass of Fe2O3. [g/mol]</p></li>
+<li><p><strong>m_al2o3</strong> – Molar mass of Al2O3. [g/mol]</p></li>
+<li><p><strong>m_capv</strong> – Molar mass of CaSiO3. [g/mol]</p></li>
+<li><p><strong>rho_capv_0</strong> – Density of CaPv at ambient conditions. [kg/m^3]</p></li>
+<li><p><strong>P_am</strong> – Pressure of the ambient mantle. Default to 130. [GPa]</p></li>
+<li><p><strong>T_am</strong> – Temperature of the ambient mantle. Default to 3000. [K]</p></li>
+<li><p><strong>p_capv_min</strong> – Minimum proportion of CaPv assumed for the considered compositions.
+Default to 0. [vol%]</p></li>
+<li><p><strong>p_capv_max</strong> – Maximum proportion of CaPv assumed for the considered compositions.
+Default to 0.40. [vol%]</p></li>
+<li><p><strong>delta_capv</strong> – Step value for the proportion of CaPv. Default to 0.01. [vol%]</p></li>
+<li><p><strong>p_bm_min</strong> – Minimum proportion of Bm assumed for the considered compositions.
+Default to 0.60. [vol%]</p></li>
+<li><p><strong>delta_bm</strong> – Step value for the proportion of Bm. Default to 0.01. [vol%]</p></li>
+<li><p><strong>dT_min</strong> – Minimum temperature contrast against the ambient mantle assumed for the
+considered compositions. Default to 0. [K]</p></li>
+<li><p><strong>dT_max</strong> – Maximum temperature contrast against the ambient mantle assumed for the
+considered compositions. Default to 1000. [K]</p></li>
+<li><p><strong>delta_dT</strong> – Step value for the temperature contrast against the ambient mantle.
+Default to 100. [K]</p></li>
+<li><p><strong>iron_content_min</strong> – Minimum FeO content assumed for the considered compositions.
+Default to 0.08. [wt%]</p></li>
+<li><p><strong>iron_content_max</strong> – Maximum FeO content assumed for the considered compositions.
+Default to 0.28. [wt%]</p></li>
+<li><p><strong>delta_iron_content</strong> – Step value for the FeO content. Default to 0.01. [wt%]</p></li>
+<li><p><strong>al_content_min</strong> – Minimum Al2O3 content assumed for the considered compositions.
+Default to 0.01. [wt%]</p></li>
+<li><p><strong>al_content_max</strong> – Maximum Al2O3 content assumed for the considered compositions.
+Default to 0.19. [wt%]</p></li>
+<li><p><strong>delta_al</strong> – Step value for the Al2O3 content. Default to 0.005. [wt%]</p></li>
+<li><p><strong>ratio_fe_bm_min</strong> – Minimum oxidation state in Bm assumed for the considered
+compositions. Default to 0.</p></li>
+<li><p><strong>ratio_fe_bm_max</strong> – Maximum oxidation state in Bm assumed for the considered
+compositions. Default to 1.</p></li>
+<li><p><strong>delta_ratio_fe</strong> – Step value for the oxidation state in Bm. Default to 0.1.</p></li>
+<li><p><strong>delta_v</strong> – Step value for the volume in the spin transition calculation.
+Default to 0.05. [A^3]</p></li>
+<li><p><strong>delta_P</strong> – Step value for the pressure in the spin transition calculation.
+Default to 2.0. [GPa]</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="src.__init__.MineralProperties._load_conditions">
+<span class="sig-name descname"><span class="pre">_load_conditions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conditions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.__init__.MineralProperties._load_conditions" title="Permalink to this definition"></a></dt>
+<dd><p>Initializes input conditions.</p>
+<p>This function initializes the input conditions for the simulator. Default values
+are chosen in order to reproduce the results presented in Vilella et al. (2021).
+These conditions can however be changed by providing an input dictionary.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>conditions</strong> – A dictionary providing the values for input conditions.
+Default to empty dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="src.__init__.MineralProperties.calc_mineral_properties">
+<span class="sig-name descname"><span class="pre">calc_mineral_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">conditions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.__init__.MineralProperties.calc_mineral_properties" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the seismic anomalies of a wide range of mineral compositions.</p>
+<p>This function is the main function of the class and its purpose is to calculate
+the density and seismic wave velocities of various rock assemblages. This is
+achieved through a three-step process. As a first step, the average spin
+configuration of FeO in Ferropericlase (Fp) is calculated as a function of
+temperature, pressure, and volume. As a second step, the density of Fp and
+Bridgmanite (Bm) as well as the molar concentration of FeO in Fp, FeO in Bm,
+and AlO2 in Bm are calculated. As a third step, these five properties are used
+to determine the density and seismic wave velocities of the rock assemblage.</p>
+<p>The results are written into two sets of files. The first set is composed of the
+mineral compositions of the rock assemblages and are named after the considered
+temperature contrast. The second set is composed of the sesimic anomalies of the
+rock assemblages and are named following the first set of files with
+“_processed” appended.</p>
+<p>The first set of files can be used to resume the simulation if stopped, while
+the second set of files can be used to analyze the results.</p>
+<p>The input conditions for the range of mineral compositions investigated can
+be changed by providing an input dictionary. Default values are chosen in order
+to reproduce the results presented in Vilella et al. (2021). Note however that
+the calculation time is long (over a week).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>conditions</strong> – A dictionary providing the values for input conditions.
+Default to empty dictionary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../api.html" class="btn btn-neutral float-left" title="API" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="eos_implementation.html" class="btn btn-neutral float-right" title="API: Classes implementing the equation of state for each mineral" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023,  Vilella Kenny.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v0.0.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    
+    <dl>
+      <dt>Versions</dt>
+      <dd><a href="mineral_properties.html">v0.0.0</a></dd>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

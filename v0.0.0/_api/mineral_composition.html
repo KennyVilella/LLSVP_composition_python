@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API: Calculation of mineral composition &mdash; LLSVP composition calculator  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="API: Calculation of seismic anomalies" href="seismic_anomalies.html" />
+    <link rel="prev" title="API: Calculation of spin configuration" href="spin_configuration.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            LLSVP composition calculator
+          </a>
+              <div class="version">
+                0.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">General documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Home</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mineral_properties.html">class MineralProperties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eos_implementation.html">EOS implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spin_configuration.html">Spin configuration</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Mineral composition</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src._mineral_composition._calc_mineral_composition"><code class="docutils literal notranslate"><span class="pre">_calc_mineral_composition()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src._mineral_composition._solve_mineral_composition"><code class="docutils literal notranslate"><span class="pre">_solve_mineral_composition()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src._mineral_composition._solve_with_fp"><code class="docutils literal notranslate"><span class="pre">_solve_with_fp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src._mineral_composition._set_eqs_with_fp"><code class="docutils literal notranslate"><span class="pre">_set_eqs_with_fp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src._mineral_composition._oxides_content_in_bm"><code class="docutils literal notranslate"><span class="pre">_oxides_content_in_bm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src._mineral_composition._solve_without_fp"><code class="docutils literal notranslate"><span class="pre">_solve_without_fp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src._mineral_composition._set_eqs_without_fp"><code class="docutils literal notranslate"><span class="pre">_set_eqs_without_fp()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="seismic_anomalies.html">Seismic anomalies</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LLSVP composition calculator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API</a></li>
+      <li class="breadcrumb-item active">API: Calculation of mineral composition</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_api/mineral_composition.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-calculation-of-mineral-composition">
+<h1>API: Calculation of mineral composition<a class="headerlink" href="#api-calculation-of-mineral-composition" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="src._mineral_composition._calc_mineral_composition">
+<span class="sig-prename descclassname"><span class="pre">src._mineral_composition.</span></span><span class="sig-name descname"><span class="pre">_calc_mineral_composition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src._mineral_composition._calc_mineral_composition" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the mineral composition of a wide range of rock assemblages.</p>
+<p>This function calculates the properties of a large range of mineral composition and
+write the results into files.
+The calculated properties are the molar concentration of FeO in Bm, the molar
+concentration of FeO in Fp, the molar concentration of AlO2 in Bm, the density of
+Bm, and the density of Fp.</p>
+<p>The range of mineral compositions investigated are provided to the class
+MineralProperties as an optional input.</p>
+<p>The directory where the results are saved is given by the <cite>path</cite> attribute of the
+class MineralProperties. The name of the file corresponds to the value of the
+temperature contrast against the ambient mantle.
+The simulation can be resumed if exsiting files are already present. As a result, it
+is necessary to remove old files from the results folder before launching a new set
+of simulations.</p>
+<p>An attempt is made to use a previous solution as starting conditions for the solver,
+but if no previous solution with close enough composition is available, default
+starting conditions are used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spin_config</strong> – Average spin state of FeO in Fp for a given value for the
+temperature, volume of Fp, and FeO content in Fp.</p></li>
+<li><p><strong>P_table</strong> – Pressure for a given value for the temperature, volume of Fp, and
+FeO content in Fp.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src._mineral_composition._solve_mineral_composition">
+<span class="sig-prename descclassname"><span class="pre">src._mineral_composition.</span></span><span class="sig-name descname"><span class="pre">_solve_mineral_composition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dT</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_capv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_bm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">al</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio_fe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_capv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src._mineral_composition._solve_mineral_composition" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the mineral composition of the provided rock assemblage.</p>
+<p>This function calculates five properties that fully characterize the composition of
+the rock assemblage: molar concentration of FeO in Bridgmanite (Bm), molar
+concentration of FeO in Ferropericlase (Fp), molar concentration of AlO2 in Bm,
+density of Bm, and density of Fp. These properties are determined based on the
+values of six input parameters: temperature contrast against the ambient mantle,
+proportion of Calcio Perovskite (CaPv), proportion of Bm, FeO content,
+alumina content, and oxidation state in Bm.</p>
+<p>Because of the complexity of the calculation, several techniques are used to make
+the physics problem easier to solve. Firstly, all densities are divided by 5500 to
+prevent the generation of large numbers during the solving step. Secondly, an
+initial empirical guess is made regarding the composition of Bm, whether it contains
+Fe2O3 or Al2O3. The consistency of the initial solution is then checked, and the
+guess is reversed if inconsistencies arise. Lastly, the physics problem is divided
+into two cases: with and without the presence of Fp. This separation is necessary
+because the system of equations to solve differs between these two cases.</p>
+<p>Note that, if no solution can be found, a value of 0.0 is returned for each
+property.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dT</strong> – Temperature contrast against the ambient mantle. [K]</p></li>
+<li><p><strong>p_capv</strong> – Proportion of CaPv. [vol%]</p></li>
+<li><p><strong>p_bm</strong> – Proportion of Bm. [vol%]</p></li>
+<li><p><strong>feo</strong> – FeO content in the rock assemblage. [wt%]</p></li>
+<li><p><strong>al</strong> – Al2O3 content in the rock assemblage. [wt%]</p></li>
+<li><p><strong>ratio_fe</strong> – Oxidation state in Bm.</p></li>
+<li><p><strong>spin_config</strong> – Average spin state of FeO in Fp for a given value for the
+temperature, volume of Fp, and FeO content in Fp.</p></li>
+<li><p><strong>P_table</strong> – Pressure for a given value for the temperature, volume of Fp, and
+FeO content in Fp.</p></li>
+<li><p><strong>rho_capv</strong> – Density of CaPv for the considered conditions. Its value has been
+rescaled by 5500. [kg/m^3]</p></li>
+<li><p><strong>p_fp</strong> – Proportion of Fp. [vol%]</p></li>
+<li><p><strong>x_init</strong> – Starting conditions for the physics problem, that is, the molar
+concentration of FeO in Bm, the molar concentration of FeO in Fp, the
+molar concentration of AlO2 in Bm, the rescaled density of Bm, and the
+rescaled density of Fp.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list containing the molar concentration of FeO in Bm, FeO in Fp, AlO2 in Bm,
+the density of Bm and Fp</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src._mineral_composition._solve_with_fp">
+<span class="sig-prename descclassname"><span class="pre">src._mineral_composition.</span></span><span class="sig-name descname"><span class="pre">_solve_with_fp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dT</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_capv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_bm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">al</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio_fe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_capv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">al_excess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src._mineral_composition._solve_with_fp" title="Permalink to this definition"></a></dt>
+<dd><p>Solves the physics problem with Ferropericlase.</p>
+<p>This function implements a solver for the system of equations governing the physics
+problem when Ferropericlase (Fp) is present. Solving this highly non-linear problem
+is challenging, especially when a good initial guess is not available, such as at
+the beginning of the simulation loop.</p>
+<p>To address this challenge, the function first attempts to find a solution using the
+provided starting conditions. If a solution cannot be found, the starting conditions
+are randomly sampled within predetermined ranges until a solution is obtained or the
+number of attempts exceeds 10. If a solution cannot be found under these
+conditions, a value of 0.0 is returned for each property.</p>
+<p>If finding a solution remains difficult, the user may manually increase the maximum
+number of attempts or the maximum number of iterations (maxiter) in the solver call.</p>
+<p>It is important to note that various solvers from the scipy.optimize library have
+been tested (e.g., minimize, fsolve, least_squares), but they did not yield
+satisfactory results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_init</strong> – Starting conditions for the physics problem, that is, the molar
+concentration of FeO in Fp, the rescaled density of Bm, and the
+rescaled density of Fp.</p></li>
+<li><p><strong>dT</strong> – Temperature contrast against the ambient mantle. [K]</p></li>
+<li><p><strong>p_capv</strong> – Proportion of CaPv. [vol%]</p></li>
+<li><p><strong>p_bm</strong> – Proportion of Bm. [vol%]</p></li>
+<li><p><strong>feo</strong> – FeO content in the rock assemblage. [wt%]</p></li>
+<li><p><strong>al</strong> – Al2O3 content in the rock assemblage. [wt%]</p></li>
+<li><p><strong>ratio_fe</strong> – Oxidation state in Bm.</p></li>
+<li><p><strong>spin_config</strong> – Average spin state of FeO in Fp for a given value for the
+temperature, volume of Fp, and FeO content in Fp.</p></li>
+<li><p><strong>P_table</strong> – Pressure for a given value for the temperature, volume of Fp, and
+FeO content in Fp.</p></li>
+<li><p><strong>rho_capv</strong> – Density of CaPv for the considered conditions. Its value has been
+rescaled by 5500. [kg/m^3]</p></li>
+<li><p><strong>p_fp</strong> – Proportion of Fp. [vol%]</p></li>
+<li><p><strong>al_excess</strong> – Flag indicating whether alumina is assumed to be in excess in Bm.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list containing the molar concentration of FeO in Fp, the rescaled density
+of Bm and Fp.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src._mineral_composition._set_eqs_with_fp">
+<span class="sig-prename descclassname"><span class="pre">src._mineral_composition.</span></span><span class="sig-name descname"><span class="pre">_set_eqs_with_fp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dT</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_capv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_bm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">al</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio_fe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_capv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">al_excess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">testing</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src._mineral_composition._set_eqs_with_fp" title="Permalink to this definition"></a></dt>
+<dd><p>Implements the equations for the physics problem with Ferropericlase.</p>
+<p>This function calculates the residue for the system of equations governing the
+physics problem when Ferropericlase (Fp) is present.</p>
+<p>The first and second equation come from the equation of state for Fp and
+Bridgmanite (Bm), respectively. More specifically, the Mie-Gruneisen-Debye equation
+of state, which corresponds to the eq. (33) of Jackson and Rigden (1996).
+The third equation comes from the alumina content in Bm. It corresponds to the
+eq. (13) in the supplementary material of Vilella et al. (2021).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>var_in</strong> – Vector composed of the equation unknowns, that is, the molar
+concentration of FeO in Fp, the rescaled density of Bm, and the
+rescaled density of Fp.</p></li>
+<li><p><strong>dT</strong> – Temperature contrast against the ambient mantle. [K]</p></li>
+<li><p><strong>p_capv</strong> – Proportion of CaPv. [vol%]</p></li>
+<li><p><strong>p_bm</strong> – Proportion of Bm. [vol%]</p></li>
+<li><p><strong>feo</strong> – FeO content in the rock assemblage. [wt%]</p></li>
+<li><p><strong>al</strong> – Al2O3 content in the rock assemblage. [wt%]</p></li>
+<li><p><strong>ratio_fe</strong> – Oxidation state in Bm.</p></li>
+<li><p><strong>spin_config</strong> – Average spin state of FeO in Fp for a given value for the
+temperature, volume of Fp, and FeO content in Fp.</p></li>
+<li><p><strong>P_table</strong> – Pressure for a given value for the temperature, volume of Fp, and
+FeO content in Fp.</p></li>
+<li><p><strong>rho_capv</strong> – Density of CaPv for the considered conditions. Its value has been
+rescaled by 5500. [kg/m^3]</p></li>
+<li><p><strong>p_fp</strong> – Proportion of Fp. [vol%]</p></li>
+<li><p><strong>al_excess</strong> – Flag indicating whether alumina is assumed to be in excess in Bm.</p></li>
+<li><p><strong>testing</strong> – Whether tests are conducted to make sure that the provided values of
+var_in lead to a consistent composition.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list containing the residue for the equation of state for Ferropericlase, the
+equation of state for Bridgmanite, and the equation for the alunina content in
+Bridgmanite.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src._mineral_composition._oxides_content_in_bm">
+<span class="sig-prename descclassname"><span class="pre">src._mineral_composition.</span></span><span class="sig-name descname"><span class="pre">_oxides_content_in_bm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_feo_fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_bm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_capv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_bm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">al</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio_fe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_capv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src._mineral_composition._oxides_content_in_bm" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the molar concentration of FeO and AlO2 in Bridgmanite.</p>
+<p>This function calculates the molar concentration of FeO and AlO2 in Bridgmanite.
+The calculation is a combination of eqs. (1), (2), (4) and (13) in the
+supplementary material of Vilella et al. (2021).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_feo_fp</strong> – The molar concentration of FeO in Fp.</p></li>
+<li><p><strong>rho_bm</strong> – Density of Bm for the considered conditions. Its value has been
+rescaled by 5500. [kg/m^3]</p></li>
+<li><p><strong>rho_fp</strong> – Density of Fp for the considered conditions. Its value has been
+rescaled by 5500. [kg/m^3]</p></li>
+<li><p><strong>p_capv</strong> – Proportion of CaPv. [vol%]</p></li>
+<li><p><strong>p_bm</strong> – Proportion of Bm. [vol%]</p></li>
+<li><p><strong>feo</strong> – FeO content in the rock assemblage. [wt%]</p></li>
+<li><p><strong>al</strong> – Al2O3 content in the rock assemblage. [wt%]</p></li>
+<li><p><strong>ratio_fe</strong> – Oxidation state in Bm.</p></li>
+<li><p><strong>rho_capv</strong> – Density of CaPv for the considered conditions. Its value has been
+rescaled by 5500. [kg/m^3]</p></li>
+<li><p><strong>p_fp</strong> – Proportion of Fp. [vol%]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list containing the molar concentration of AlO2 in Bm and FeO in Bm.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src._mineral_composition._solve_without_fp">
+<span class="sig-prename descclassname"><span class="pre">src._mineral_composition.</span></span><span class="sig-name descname"><span class="pre">_solve_without_fp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_init</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dT</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_capv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_bm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">al</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio_fe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_capv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">al_excess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src._mineral_composition._solve_without_fp" title="Permalink to this definition"></a></dt>
+<dd><p>Solves the physics problem without Ferropericlase.</p>
+<p>This function implements a solver for the system of equations governing the physics
+problem when no Ferropericlase (Fp) is present. Solving this highly non-linear
+problem is challenging, especially when a good initial guess is not available,
+such as at the beginning of the simulation loop.</p>
+<p>To address this challenge, the function first attempts to find a solution using the
+provided starting conditions. If a solution cannot be found, the starting conditions
+are randomly sampled within predetermined ranges until a solution is obtained or the
+number of attempts exceeds 10. If a solution cannot be found under these
+conditions, a value of 0.0 is returned for each property.</p>
+<p>If finding a solution remains difficult, the user may manually increase the maximum
+number of attempts or the maximum number of iterations (maxiter) in the solver call.</p>
+<p>It is important to note that various solvers from the scipy.optimize library have
+been tested (e.g., minimize, fsolve, least_squares), but they did not yield
+satisfactory results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_init</strong> – Starting conditions for the physics problem, that is, the molar
+concentration of FeO in Bm, the molar concentration of AlO2 in Bm, and
+the rescaled density of Bm.</p></li>
+<li><p><strong>dT</strong> – Temperature contrast against the ambient mantle. [K]</p></li>
+<li><p><strong>p_capv</strong> – Proportion of CaPv. [vol%]</p></li>
+<li><p><strong>p_bm</strong> – Proportion of Bm. [vol%]</p></li>
+<li><p><strong>feo</strong> – FeO content in the rock assemblage. [wt%]</p></li>
+<li><p><strong>al</strong> – Al2O3 content in the rock assemblage. [wt%]</p></li>
+<li><p><strong>ratio_fe</strong> – Oxidation state in Bm.</p></li>
+<li><p><strong>rho_capv</strong> – Density of CaPv for the considered conditions. Its value has been
+rescaled by 5500. [kg/m^3]</p></li>
+<li><p><strong>al_excess</strong> – Flag indicating whether alumina is assumed to be in excess in Bm.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list containing the molar concentration of FeO in Bm, AlO2 in Bm, and the
+rescaled density of Bm.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="src._mineral_composition._set_eqs_without_fp">
+<span class="sig-prename descclassname"><span class="pre">src._mineral_composition.</span></span><span class="sig-name descname"><span class="pre">_set_eqs_without_fp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dT</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_capv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_bm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">al</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio_fe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_capv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">al_excess</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src._mineral_composition._set_eqs_without_fp" title="Permalink to this definition"></a></dt>
+<dd><p>Implements the equations for the physics problem without Ferropericlase.</p>
+<p>This function calculates the residue for the system of equations governing the
+physics problem when no Ferropericlase (Fp) is present.</p>
+<p>The first equation comes from the equation of state for Bridgmanite (Bm). More
+specifically, the Mie-Gruneisen-Debye equation of state, which corresponds to the
+eq. (33) of Jackson and Rigden (1996).
+The second equation comes from the ratio of FeO and alumina content in Bm. It
+corresponds to the eq. (16) in the supplementary material of Vilella et al. (2021).
+The third equation comes from the alumina content in Bm. It corresponds to the
+eq. (13) in the supplementary material of Vilella et al. (2021).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>var_in</strong> – Vector composed of the equation unknowns, that is, the molar
+concentration of FeO in Bm, the molar concentration of AlO2 in Bm, and
+the rescaled density of Bm.</p></li>
+<li><p><strong>dT</strong> – Temperature contrast against the ambient mantle. [K]</p></li>
+<li><p><strong>p_capv</strong> – Proportion of CaPv. [vol%]</p></li>
+<li><p><strong>p_bm</strong> – Proportion of Bm. [vol%]</p></li>
+<li><p><strong>feo</strong> – FeO content in the rock assemblage. [wt%]</p></li>
+<li><p><strong>al</strong> – Al2O3 content in the rock assemblage. [wt%]</p></li>
+<li><p><strong>ratio_fe</strong> – Oxidation state in Bm.</p></li>
+<li><p><strong>rho_capv</strong> – Density of CaPv for the considered conditions. Its value has been
+rescaled by 5500. [kg/m^3]</p></li>
+<li><p><strong>al_excess</strong> – Flag indicating whether alumina is assumed to be in excess in Bm.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list containing the residue for the equation of state for Bridgmanite, the
+equation for the ratio of FeO and alumina content in Bridgmanite, and the
+equation for the alunina content in Bridgmanite.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="spin_configuration.html" class="btn btn-neutral float-left" title="API: Calculation of spin configuration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="seismic_anomalies.html" class="btn btn-neutral float-right" title="API: Calculation of seismic anomalies" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023,  Vilella Kenny.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v0.0.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    
+    <dl>
+      <dt>Versions</dt>
+      <dd><a href="mineral_composition.html">v0.0.0</a></dd>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
