@@ -833,8 +833,8 @@ class _EOS_fp(_EOS):
         return g_fp_t0 + data.g_dot_fp * (T - 300)
 
     def _k_t(
-        self, data, k_v_fp: float, gamma_fp: float, v_fp: float, E_th_fp: float,
-        E_th_fp_0: float, E_th_fp_dv: float
+        self, data, v_fp: float, gamma_fp: float, k_v_fp: float, E_th_fp_0: float,
+        E_th_fp: float, E_th_fp_dv: float
     ) -> float:
         """Calculates the isothermal bulk modulus of Ferropericlase.
 
@@ -845,12 +845,12 @@ class _EOS_fp(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            k_v_fp: Isothermal bulk modulus of Fp at ambient temperature. [GPa]
-            gamma_fp: Gruneisen parameter of Fp at the considered conditions.
             v_fp: Volume of Fp at considered conditions. [cm^3/mol]
+            gamma_fp: Gruneisen parameter of Fp at the considered conditions.
+            k_v_fp: Isothermal bulk modulus of Fp at ambient temperature. [GPa]
+            E_th_fp_0: Vibrational energy of Fp at ambient conditions. [cm^3 GPa mol^−1]
             E_th_fp: Vibrational energy of Fp at the considered conditions.
                      [cm^3 GPa mol^−1]
-            E_th_fp_0: Vibrational energy of Fp at ambient conditions. [cm^3 GPa mol^−1]
             E_th_fp_dv: Partial derivative of the vibrational energy with respect to
                         temperature for Fp. [cm^3 GPa mol^−1 K^-1]
 
@@ -901,7 +901,7 @@ class _EOS_fp(_EOS):
         k_v_fp = super()._k_v(v_ratio, k_fp_0, data.k0t_prime_fp)
         # Isothermal bulk modulus
         k_t_fp = self._k_t(
-            data, k_v_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv
+            data, v_fp, gamma_fp, k_v_fp, E_th_fp_0, E_th_fp, E_th_fp_dv
         )
         # Thermal expansion coefficient
         alpha_fp = self._alpha(
@@ -1363,8 +1363,8 @@ class _EOS_bm(_EOS):
         return g_bm_t0 + data.g_dot_bm * (T - 300)
 
     def _k_t(
-        self, data, k_v_bm: float, gamma_bm: float, v_bm: float, E_th_bm: float,
-        E_th_bm_0: float, E_th_bm_dv: float
+        self, data, v_bm: float, gamma_bm: float, k_v_bm: float, E_th_bm_0: float,
+        E_th_bm: float, E_th_bm_dv: float
     ) -> float:
         """Calculates the isothermal bulk modulus of Bridgmanite.
 
@@ -1375,12 +1375,12 @@ class _EOS_bm(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            k_v_bm: Isothermal bulk modulus of Bm at ambient temperature. [GPa]
-            gamma_bm: Gruneisen parameter of Bm at the considered conditions.
             v_bm: Volume of Bm at considered conditions. [cm^3/mol]
+            gamma_bm: Gruneisen parameter of Bm at the considered conditions.
+            k_v_bm: Isothermal bulk modulus of Bm at ambient temperature. [GPa]
+            E_th_bm_0: Vibrational energy of Bm at ambient conditions. [cm^3 GPa mol^−1]
             E_th_bm: Vibrational energy of Bm at the considered conditions.
                      [cm^3 GPa mol^−1]
-            E_th_bm_0: Vibrational energy of Bm at ambient conditions. [cm^3 GPa mol^−1]
             E_th_bm_dv: Partial derivative of the vibrational energy with respect to
                         temperature for Bm. [cm^3 GPa mol^−1 K^-1]
 
@@ -1439,7 +1439,7 @@ class _EOS_bm(_EOS):
         k_v_bm = super()._k_v(v_ratio, k_bm_0, data.k0t_prime_bm)
         # Isothermal bulk modulus
         k_t_bm = self._k_t(
-            data, k_v_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv
+            data, v_bm, gamma_bm, k_v_bm, E_th_bm_0, E_th_bm, E_th_bm_dv
         )
         # Thermal expansion coefficient
         alpha_bm = self._alpha(
@@ -1725,8 +1725,8 @@ class _EOS_capv(_EOS):
         return g_capv_t0 + data.g_dot_capv * (T - 300)
 
     def _k_t(
-        self, data, k_v_capv: float, gamma_capv: float, v_capv: float,
-        E_th_capv: float, E_th_capv_0: float, E_th_capv_dv: float
+        self, data, v_capv: float, gamma_capv: float, k_v_capv: float,
+        E_th_capv_0: float, E_th_capv: float, E_th_capv_dv: float
     ) -> float:
         """Calculates the isothermal bulk modulus of Calcio Perovskite.
 
@@ -1737,13 +1737,13 @@ class _EOS_capv(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            k_v_capv: Isothermal bulk modulus of CaPv at ambient temperature. [GPa]
-            gamma_capv: Gruneisen parameter of CaPv at the considered conditions.
             v_capv: Volume of CaPv at considered conditions. [cm^3/mol]
-            E_th_capv: Vibrational energy of CaPv at the considered conditions.
-                       [cm^3 GPa mol^−1]
+            gamma_capv: Gruneisen parameter of CaPv at the considered conditions.
+            k_v_capv: Isothermal bulk modulus of CaPv at ambient temperature. [GPa]
             E_th_capv_0: Vibrational energy of CaPv at ambient conditions.
                          [cm^3 GPa mol^−1]
+            E_th_capv: Vibrational energy of CaPv at the considered conditions.
+                       [cm^3 GPa mol^−1]
             E_th_capv_dv: Partial derivative of the vibrational energy with respect to
                           temperature for CaPv. [cm^3 GPa mol^−1 K^-1]
 
@@ -1789,7 +1789,7 @@ class _EOS_capv(_EOS):
         k_v_capv = super()._k_v(v_ratio, data.k_casio3_0, data.k0t_prime_capv)
         # Isothermal bulk modulus
         k_t_capv = self._k_t(
-            data, k_v_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0, E_th_capv_dv
+            data, v_capv, gamma_capv, k_v_capv, E_th_capv_0, E_th_capv, E_th_capv_dv
         )
         # Thermal expansion coefficient
         alpha_capv = self._alpha(
