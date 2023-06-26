@@ -394,7 +394,7 @@ class _EOS_fp(_EOS):
         """
         return eta_ls * data.v_feo_ls_0 + (1 - eta_ls) * data.v_feo_hs_0
 
-    def _v_fp_0(self, data, eta_ls: float, x_fp: float) -> float:
+    def _v_fp_0(self, data, eta_ls: float, x_feo_fp: float) -> float:
         """Calculates the volume of Ferropericlase at ambient conditions.
 
         This function calculates the volume of Ferropericlase (Fp) at ambient
@@ -403,13 +403,13 @@ class _EOS_fp(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             eta_ls: Average proportion of FeO in the low spin state.
-            x_fp: Molar concentration of FeO in Fp.
+            x_feo_fp: Molar concentration of FeO in Fp.
 
         Returns:
             Volume of Fp at ambient conditions. [cm^3/mol]
         """
         v_feo_0 = self. _v_feo_0(data, eta_ls)
-        return x_fp * v_feo_0 + (1 - x_fp) * data.v_mgo_0
+        return x_feo_fp * v_feo_0 + (1 - x_feo_fp) * data.v_mgo_0
 
     def _VRH_average(
         self, x_1: float, v_1: float, c_1: float, v_2: float, c_2: float
@@ -495,7 +495,7 @@ class _EOS_fp(_EOS):
             data.g_prime_feo_hs
         )
 
-    def _k_fp_0_VRH_average(self, data, eta_ls: float, x_fp: float) -> float:
+    def _k_fp_0_VRH_average(self, data, eta_ls: float, x_feo_fp: float) -> float:
         """Calculates the bulk modulus of Ferropericlase at ambient conditions.
 
         This function calculates the isothermal bulk modulus of Ferropericlase (Fp) at
@@ -505,7 +505,7 @@ class _EOS_fp(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             eta_ls: Average proportion of FeO in the low spin state.
-            x_fp: Molar concentration of FeO in Fp.
+            x_feo_fp: Molar concentration of FeO in Fp.
 
         Returns:
             Isothermal bulk modulus of Fp at ambient conditions. [GPa]
@@ -515,10 +515,10 @@ class _EOS_fp(_EOS):
         # Isothermal bulk modulus of FeO at ambient conditions
         k_feo_0 = self._k_feo_0_VRH_average(data, eta_ls)
         return self._VRH_average(
-            x_fp, v_feo_0, k_feo_0, data.v_mgo_0, data.k_mgo_0
+            x_feo_fp, v_feo_0, k_feo_0, data.v_mgo_0, data.k_mgo_0
         )
 
-    def _g_fp_0_VRH_average(self, data, eta_ls: float, x_fp: float) -> float:
+    def _g_fp_0_VRH_average(self, data, eta_ls: float, x_feo_fp: float) -> float:
         """Calculates the shear modulus of Ferropericlase at ambient conditions.
 
         This function calculates the shear modulus of Ferropericlase (Fp) at ambient
@@ -528,7 +528,7 @@ class _EOS_fp(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             eta_ls: Average proportion of FeO in the low spin state.
-            x_fp: Molar concentration of FeO in Fp.
+            x_feo_fp: Molar concentration of FeO in Fp.
 
         Returns:
             Shear modulus of Fp at ambient conditions. [GPa]
@@ -538,10 +538,10 @@ class _EOS_fp(_EOS):
         # Shear modulus of FeO at ambient conditions
         g_feo_0 = self._g_feo_0_VRH_average(data, eta_ls)
         return self._VRH_average(
-            x_fp, v_feo_0, g_feo_0, data.v_mgo_0, data.g_mgo_0
+            x_feo_fp, v_feo_0, g_feo_0, data.v_mgo_0, data.g_mgo_0
         )
 
-    def _g_prime_fp_VRH_average(self, data, eta_ls: float, x_fp: float) -> float:
+    def _g_prime_fp_VRH_average(self, data, eta_ls: float, x_feo_fp: float) -> float:
         """Calculates the pressure derivative of the shear modulus for Ferropericlase.
 
         This function calculates the pressure derivative of the shear modulus for
@@ -551,7 +551,7 @@ class _EOS_fp(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             eta_ls: Average proportion of FeO in the low spin state.
-            x_fp: Molar concentration of FeO in Fp.
+            x_feo_fp: Molar concentration of FeO in Fp.
 
         Returns:
             Pressure derivative of the shear modulus for Fp.
@@ -561,7 +561,7 @@ class _EOS_fp(_EOS):
         # Pressure derivative of the shear modulus for FeO
         g_prime_feo = self._g_prime_feo_VRH_average(data, eta_ls)
         return self._VRH_average(
-            x_fp, v_feo_0, g_prime_feo, data.v_mgo_0, data.g_prime_mgo
+            x_feo_fp, v_feo_0, g_prime_feo, data.v_mgo_0, data.g_prime_mgo
         )
 
     def _gamma(self, data, v_ratio: float) -> float:
@@ -738,7 +738,7 @@ class _EOS_fp(_EOS):
         )
 
     def _MGD(
-        self, data, P: float, T: float, v_fp: float, eta_ls: float, x_fp: float
+        self, data, P: float, T: float, v_fp: float, eta_ls: float, x_feo_fp: float
     ) -> float:
         """Implements the Mie-Gruneisen-Debye EOS for Ferropericlase.
 
@@ -755,15 +755,15 @@ class _EOS_fp(_EOS):
             T: Considered temperature. [K]
             v_fp: Volume of Fp at considered conditions. [cm^3/mol]
             eta_ls: Average proportion of FeO in the low spin state.
-            x_fp: Molar concentration of FeO in Fp.
+            x_feo_fp: Molar concentration of FeO in Fp.
 
         Returns:
             Residue of the Mie-Gruneisen-Debye EOS for Fp. [GPa]
         """
         # Isothermal bulk modulus of Fp at ambient conditions
-        k_fp_0 = self._k_fp_0_VRH_average(data, eta_ls, x_fp)
+        k_fp_0 = self._k_fp_0_VRH_average(data, eta_ls, x_feo_fp)
         # Volume of Fp at ambient conditions
-        v_fp_0 = self._v_fp_0(data, eta_ls, x_fp)
+        v_fp_0 = self._v_fp_0(data, eta_ls, x_feo_fp)
         # Volume ratio
         v_ratio = v_fp_0 / v_fp
         # Gruneisen parameter
@@ -776,7 +776,7 @@ class _EOS_fp(_EOS):
         E_th_fp_0 = self._E_th(data, 300, v_ratio)
         return super()._MGD(v_fp, gamma_fp, E_th_fp_0, E_th_fp, BM3_fp)
 
-    def _g_t0(self, data, v_fp: float, eta_ls: float, x_fp: float) -> float:
+    def _g_t0(self, data, v_fp: float, eta_ls: float, x_feo_fp: float) -> float:
         """Calculates the shear modulus of Ferropericlase at ambient temperature.
 
         This function calculates the shear modulus of Ferropericlase (Fp) at ambient
@@ -789,24 +789,24 @@ class _EOS_fp(_EOS):
             data: Data holder for the MineralProperties class.
             v_fp: Volume of Fp at considered conditions. [cm^3/mol]
             eta_ls: Average proportion of FeO in the low spin state.
-            x_fp: Molar concentration of FeO in Fp.
+            x_feo_fp: Molar concentration of FeO in Fp.
 
         Returns:
             Shear modulus of Fp at ambient temperature. [GPa]
         """
         # Volume of Fp at ambient conditions
-        v_fp_0 = self._v_fp_0(data, eta_ls, x_fp)
+        v_fp_0 = self._v_fp_0(data, eta_ls, x_feo_fp)
         # Volume ratio
         v_ratio = v_fp_0 / v_fp
         # Isothermal bulk modulus of Fp at ambient conditions
-        k_fp_0 = self._k_fp_0_VRH_average(data, eta_ls, x_fp)
+        k_fp_0 = self._k_fp_0_VRH_average(data, eta_ls, x_feo_fp)
         # Shear modulus of Fp at ambient conditions
-        g_fp_0 = self._g_fp_0_VRH_average(data, eta_ls, x_fp)
+        g_fp_0 = self._g_fp_0_VRH_average(data, eta_ls, x_feo_fp)
         # Pressure derivative of the shear modulus for Fp
-        g_prime_fp = self._g_prime_fp_VRH_average(data, eta_ls, x_fp)
+        g_prime_fp = self._g_prime_fp_VRH_average(data, eta_ls, x_feo_fp)
         return super()._g_t0(v_ratio, k_fp_0, g_fp_0, g_prime_fp)
 
-    def _g(self, data, T: float, v_fp: float, eta_ls: float, x_fp: float) -> float:
+    def _g(self, data, T: float, v_fp: float, eta_ls: float, x_feo_fp: float) -> float:
         """Calculates the shear modulus of Ferropericlase.
 
         This function calculates the shear modulus of Ferropericlase (Fp) at the
@@ -823,13 +823,13 @@ class _EOS_fp(_EOS):
             T: Considered temperature. [K]
             v_fp: Volume of Fp at considered conditions. [cm^3/mol]
             eta_ls: Average proportion of FeO in the low spin state.
-            x_fp: Molar concentration of FeO in Fp.
+            x_feo_fp: Molar concentration of FeO in Fp.
 
         Returns:
             Shear modulus of Fp. [GPa]
         """
         # Shear modulus at ambient temperature
-        g_fp_t0 = self._g_t0(data, v_fp, eta_ls, x_fp)
+        g_fp_t0 = self._g_t0(data, v_fp, eta_ls, x_feo_fp)
         return g_fp_t0 + data.g_dot_fp * (T - 300)
 
     def _k_t(
@@ -861,7 +861,9 @@ class _EOS_fp(_EOS):
             v_fp, gamma_fp, k_v_fp, E_th_fp_0, E_th_fp, E_th_fp_dv, data.q_fp
         )
 
-    def _k_s(self, data, T: float, v_fp: float, eta_ls: float, x_fp: float) -> float:
+    def _k_s(
+        self, data, T: float, v_fp: float, eta_ls: float, x_feo_fp: float
+    ) -> float:
         """Calculates the isentropic bulk modulus of Ferropericlase.
 
         This function calculates the isentropic bulk modulus of Ferropericlase (Fp) at
@@ -874,13 +876,13 @@ class _EOS_fp(_EOS):
             T: Considered temperature. [K]
             v_fp: Volume of Fp at considered conditions. [cm^3/mol]
             eta_ls: Average proportion of FeO in the low spin state.
-            x_fp: Molar concentration of FeO in Fp.
+            x_feo_fp: Molar concentration of FeO in Fp.
 
         Returns:
             Isentropic bulk modulus of Fp. [GPa]
         """
         # Volume of Fp at ambient conditions
-        v_fp_0 = self._v_fp_0(data, eta_ls, x_fp)
+        v_fp_0 = self._v_fp_0(data, eta_ls, x_feo_fp)
         # Volume ratio
         v_ratio = v_fp_0 / v_fp
         # Gruneisen parameter
@@ -888,7 +890,7 @@ class _EOS_fp(_EOS):
         # Debye temperature
         theta_fp = self._theta(data, v_ratio)
         # Isothermal bulk modulus of Fp at ambient conditions
-        k_fp_0 = self._k_fp_0_VRH_average(data, eta_ls, x_fp)
+        k_fp_0 = self._k_fp_0_VRH_average(data, eta_ls, x_feo_fp)
         # Vibrational energy at T
         E_th_fp = self._E_th(data, T, v_ratio)
         # Vibrational energy at ambient conditions

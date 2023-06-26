@@ -94,7 +94,7 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
     g_hs = 15.
 
     for ii in range(n_x):
-        x_fp = self.x_vec[ii]
+        x_feo_fp = self.x_vec[ii]
         for jj in range(n_T):
             T = self.T_vec[jj]
             for kk in range(n_v):
@@ -106,7 +106,7 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
                 E_hs = _energy_equation(self, v_fp_0, v_fp, 3)
 
                 # Coupling energy low spin state - low spin state
-                wc = _splitting_energy(self, v_fp_0, v_fp, x_fp)
+                wc = _splitting_energy(self, v_fp_0, v_fp, x_feo_fp)
 
                 # Equation parameters
                 beta = 1 / (k_b * T)
@@ -171,7 +171,7 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
                 # Storing information
                 spin_config[jj, kk, ii] = eta_ls
                 P_table[jj, kk, ii] = -fp_eos._MGD(
-                    self, 0.0, T, v_fp*0.15055, eta_ls, x_fp
+                    self, 0.0, T, v_fp*0.15055, eta_ls, x_feo_fp
                 )
 
     return spin_config, P_table
@@ -219,7 +219,7 @@ def _energy_equation(self, v_0: float, v: float, spin_state: int) -> float:
         return pairing_energy - 0.4 * delta_energy
 
 
-def _splitting_energy(self, v_0: float, v: float, x_fp: float) -> float:
+def _splitting_energy(self, v_0: float, v: float, x_feo_fp: float) -> float:
     """Calculates the splitting energy.
 
     This function calculates the coupling energy between low spin state iron atoms
@@ -228,7 +228,7 @@ def _splitting_energy(self, v_0: float, v: float, x_fp: float) -> float:
     Args:
         v_0: Volume of Ferropericlase at ambient conditions. [A^3]
         v: Volume of Ferropericlase at considered conditions. [A^3]
-        x_fp: FeO content in ferropericlase.
+        x_feo_fp: FeO content in ferropericlase.
 
     Returns:
         The splitting energy. [eV]
@@ -236,4 +236,4 @@ def _splitting_energy(self, v_0: float, v: float, x_fp: float) -> float:
     # Calculating energy difference between the two energy levels
     delta_energy = self.delta_0 * (v_0 / v)**self.xi
 
-    return x_fp**self.xi * delta_energy
+    return x_feo_fp**self.xi * delta_energy
