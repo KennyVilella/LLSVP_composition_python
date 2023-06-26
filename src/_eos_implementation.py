@@ -738,7 +738,7 @@ class _EOS_fp(_EOS):
         )
 
     def _MGD(
-        self, P: float, data, T: float, v_fp: float, eta_ls: float, x_fp: float
+        self, data, P: float, T: float, v_fp: float, eta_ls: float, x_fp: float
     ) -> float:
         """Implements the Mie-Gruneisen-Debye EOS for Ferropericlase.
 
@@ -956,7 +956,7 @@ class _EOS_bm(_EOS):
 
     def _k_bm_0_VRH_average(
         self, data, v_tot: float, x_mgsio3: float, x_fesio3: float, x_fealo3: float,
-        x_fe2o3: float, x_al2o3: float,
+        x_fe2o3: float, x_al2o3: float
     ) -> float:
         """Calculates the isothermal bulk modulus of Bridgmanite at ambient conditions.
 
