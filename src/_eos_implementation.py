@@ -341,7 +341,7 @@ class _EOS(ABC):
         return k_v - (q - 1) * gamma / v * (E_th - E_th_0) - gamma * E_th_dv
 
     @abstractmethod
-    def _k_s(self, T: float, k_t: float, alpha: float, gamma: float) -> float:
+    def _k_s(self, T: float, alpha: float, gamma: float, k_t: float) -> float:
         """Calculates the isentropic bulk modulus.
 
         This function calculates the isentropic bulk modulus at the considered
@@ -351,9 +351,9 @@ class _EOS(ABC):
 
         Args:
             T: Considered temperature. [K]
-            k_t: Isothermal bulk modulus at considered conditions. [GPa]
             alpha: Thermal expansion coefficient. [K^-1]
             gamma: Gruneisen parameter at the considered conditions.
+            k_t: Isothermal bulk modulus at considered conditions. [GPa]
 
         Returns:
             Isentropic bulk modulus. [GPa]
@@ -907,7 +907,7 @@ class _EOS_fp(_EOS):
         alpha_fp = self._alpha(
             data, T, k_v_fp, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv
         )
-        return super()._k_s(T, k_t_fp, alpha_fp, gamma_fp)
+        return super()._k_s(T, alpha_fp, gamma_fp, k_t_fp)
 
 #======================================================================================#
 #                                                                                      #
@@ -1445,7 +1445,7 @@ class _EOS_bm(_EOS):
         alpha_bm = self._alpha(
             data, T, k_v_bm, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv
         )
-        return super()._k_s(T, k_t_bm, alpha_bm, gamma_bm)
+        return super()._k_s(T, alpha_bm, gamma_bm, k_t_bm)
 
 #======================================================================================#
 #                                                                                      #
@@ -1796,4 +1796,4 @@ class _EOS_capv(_EOS):
             data, T, k_v_capv, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0,
             E_th_capv_dv
         )
-        return super()._k_s(T, k_t_capv, alpha_capv, gamma_capv)
+        return super()._k_s(T, alpha_capv, gamma_capv, k_t_capv)
