@@ -993,8 +993,8 @@ class _EOS_bm(_EOS):
         return 0.5 * (k_v + k_r)
 
     def _g_bm_0_VRH_average(
-        self, data, x_mgsio3: float, x_fesio3: float, x_fealo3: float, x_fe2o3: float,
-        x_al2o3: float, v_tot: float
+        self, data, v_tot: float, x_mgsio3: float, x_fesio3: float, x_fealo3: float,
+        x_fe2o3: float, x_al2o3: float
     ) -> float:
         """Calculates the shear modulus of Bridgmanite at ambient conditions.
 
@@ -1004,12 +1004,12 @@ class _EOS_bm(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
+            v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
             x_mgsio3: Molar concentration of MgSiO3 in Bm.
             x_fesio3: Molar concentration of FeSiO3 in Bm.
             x_fealo3: Molar concentration of FeAlO3 in Bm.
             x_fe2o3: Molar concentration of Fe2O3 in Bm.
             x_al2o3: Molar concentration of Al2O3 in Bm.
-            v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
 
         Returns:
             Shear modulus of Bm at ambient conditions. [GPa]
@@ -1322,7 +1322,7 @@ class _EOS_bm(_EOS):
         )
         # Shear modulus of Bm at ambient conditions
         g_bm_0 = self._g_bm_0_VRH_average(
-            data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3, v_bm_0
+            data, v_bm_0, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3
         )
         # Pressure derivative of the shear modulus for Bm
         g_prime_bm = self._g_prime_bm_VRH_average(
