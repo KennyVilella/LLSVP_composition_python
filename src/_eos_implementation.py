@@ -47,7 +47,7 @@ class _EOS(ABC):
     modulus follows the model presented by Bina and Helffrich (1992).
     """
     @abstractmethod
-    def _gamma(self, gamma_0: float, v_ratio: float, q: float) -> float:
+    def _gamma(self, v_ratio: float, gamma_0: float, q: float) -> float:
         """Calculates the Gruneisen parameter.
 
         This function calculates the Gruneisen parameter at the considered conditions.
@@ -55,9 +55,9 @@ class _EOS(ABC):
         It corresponds to the eq. (31) of Jackson and Rigden (1996).
 
         Args:
-            gamma_0: Gruneisen parameter at ambient conditions.
             v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
                      and V the volume at the considered conditions.
+            gamma_0: Gruneisen parameter at ambient conditions.
             q: Exponent of the Gruneisen parameter.
 
         Returns:
@@ -85,7 +85,7 @@ class _EOS(ABC):
         return theta_0 * np.exp((gamma_0 - gamma) / q)
 
     @abstractmethod
-    def _BM3(self, P: float, k_0: float, v_ratio: float, k0t_prime: float) -> float:
+    def _BM3(self, P: float, v_ratio: float, k_0: float, k0t_prime: float) -> float:
         """Calculates the third-order Birch–Murnaghan isothermal equation of state.
 
         This function calculates the residue of the third-order Birch–Murnaghan
@@ -95,9 +95,9 @@ class _EOS(ABC):
 
         Args:
             P: Considered pressure. [GPa]
-            k_0: Isothermal bulk modulus at ambient conditions. [GPa]
             v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
                      and V the volume at the considered conditions.
+            k_0: Isothermal bulk modulus at ambient conditions. [GPa]
             k0t_prime: Pressure derivative of the isothermal bulk modulus at ambient
                        conditions.
 
@@ -111,7 +111,7 @@ class _EOS(ABC):
         )
 
     @abstractmethod
-    def _E_th(self, n: int, R: float, T: float, theta: float, int_part: float) -> float:
+    def _E_th(self, T: float, theta: float, int_part: float, n: int, R: float) -> float:
         """Calculates the vibrational energy.
 
         This function calculates the vibrational energy at the considered conditions.
@@ -122,11 +122,11 @@ class _EOS(ABC):
         It corresponds to the eq. (30) of Jackson and Rigden (1996).
 
         Args:
-            n: Number of atoms per formula unit.
-            R: Gas constant. [cm^3 GPa K^−1 mol^−1]
             T: Considered temperature. [K]
             theta: Debye temperature at the considered conditions. [K]
             int_part: Integral part of the vibrational energy.
+            n: Number of atoms per formula unit.
+            R: Gas constant. [cm^3 GPa K^−1 mol^−1]
 
         Returns:
             Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
@@ -135,8 +135,8 @@ class _EOS(ABC):
 
     @abstractmethod
     def _E_th_dv(
-        self, n: int, R: float, T: float, theta: float, gamma: float, v: float,
-        E_th: float, E_th_0: float
+        self, T: float, v: float, theta: float, gamma: float, E_th_0: float,
+        E_th: float, n: int, R: float
     ) -> float:
         """Calculates the derivative of the vibrational energy with respect to volume.
 
@@ -148,14 +148,14 @@ class _EOS(ABC):
         vibrational energy.
 
         Args:
-            n: Number of atoms per formula unit.
-            R: Gas constant. [cm^3 GPa K^−1 mol^−1]
             T: Considered temperature. [K]
+            v: Volume at considered conditions. [cm^3/mol]
             theta: Debye temperature at the considered conditions. [K]
             gamma: Gruneisen parameter at the considered conditions.
-            v: Volume at considered conditions. [cm^3/mol]
-            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
             E_th_0: Vibrational energy at ambient conditions. [cm^3 GPa mol^−1]
+            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
+            n: Number of atoms per formula unit.
+            R: Gas constant. [cm^3 GPa K^−1 mol^−1]
 
         Returns:
             Partial derivative of the vibrational energy with respect to temperature.
@@ -167,7 +167,7 @@ class _EOS(ABC):
         return (gamma * theta / v) * (3 * (E_th - E_th_0) / theta - d_int_part)
 
     @abstractmethod
-    def _E_th_dT(self, n: int, R: float, T: float, theta: float, E_th: float) -> float:
+    def _E_th_dT(self, T: float, theta: float, E_th: float, n: int, R: float) -> float:
         """Calculates the derivative of vibrational energy with respect to temperature.
 
         This function calculates the derivative of the vibrational energy with respect
@@ -178,11 +178,11 @@ class _EOS(ABC):
         vibrational energy.
 
         Args:
-            n: Number of atoms per formula unit.
-            R: Gas constant. [cm^3 GPa K^−1 mol^−1]
             T: Considered temperature. [K]
             theta: Debye temperature at the considered conditions. [K]
             E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
+            n: Number of atoms per formula unit.
+            R: Gas constant. [cm^3 GPa K^−1 mol^−1]
 
         Returns:
             Partial derivative of the vibrational energy with respect to temperature.
@@ -211,8 +211,8 @@ class _EOS(ABC):
 
     @abstractmethod
     def _alpha(
-        self, k_v: float, gamma: float, q: float, v: float, E_th: float, E_th_0: float,
-        E_th_dv: float, E_th_dT: float
+        self, v: float, gamma: float, k_v: float, E_th_0: float, E_th: float,
+        E_th_dv: float, E_th_dT: float, q: float
     ) -> float:
         """Calculates the thermal expansion coefficient.
 
@@ -222,16 +222,16 @@ class _EOS(ABC):
         It corresponds to the sixth equation in (B5) of Jackson and Rigden (1996).
 
         Args:
-            k_v: Isothermal bulk modulus at ambient temperature. [GPa]
-            gamma: Gruneisen parameter at the considered conditions.
-            q: Exponent of the Gruneisen parameter.
             v: Volume at considered conditions. [cm^3/mol]
-            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
+            gamma: Gruneisen parameter at the considered conditions.
+            k_v: Isothermal bulk modulus at ambient temperature. [GPa]
             E_th_0: Vibrational energy at ambient conditions. [cm^3 GPa mol^−1]
+            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
             E_th_dv: Partial derivative of the vibrational energy with respect to
                      temperature. [cm^3 GPa mol^−1 K^-1]
             E_th_dT: Partial derivative of the vibrational energy with respect to
                      temperature. [cm^3 GPa mol^−1 K^-1]
+            q: Exponent of the Gruneisen parameter.
 
         Returns:
             Thermal expansion coefficient. [K^-1]
@@ -242,7 +242,7 @@ class _EOS(ABC):
 
     @abstractmethod
     def _MGD(
-        self, BM3: float, gamma: float, v: float, E_th: float, E_th_0: float
+        self, v: float, gamma: float, E_th_0: float, E_th: float, BM3: float
     ) -> float:
         """Calculates the residue of the Mie-Gruneisen-Debye equation of state.
 
@@ -252,12 +252,12 @@ class _EOS(ABC):
         It corresponds to the eq. (33) of Jackson and Rigden (1996).
 
         Args:
+            v: Volume at considered conditions. [cm^3/mol]
+            gamma: Gruneisen parameter at the considered conditions.
+            E_th_0: Vibrational energy at ambient conditions. [cm^3 GPa mol^−1]
+            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
             BM3: Residue of the third-order Birch–Murnaghan isothermal
                  equation of state. [GPa]
-            gamma: Gruneisen parameter at the considered conditions.
-            v: Volume at considered conditions. [cm^3/mol]
-            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
-            E_th_0: Vibrational energy at ambient conditions. [cm^3 GPa mol^−1]
 
         Returns:
             Residue of the Mie-Gruneisen-Debye equation of state. [GPa]
@@ -265,7 +265,7 @@ class _EOS(ABC):
         return BM3  - gamma / v * (E_th - E_th_0)
 
     @abstractmethod
-    def _g_t0(self, g_0: float, g_prime: float, k_0: float, v_ratio: float) -> float:
+    def _g_t0(self, v_ratio: float, k_0: float, g_0: float, g_prime: float) -> float:
         """Calculates the shear modulus at ambient temperature.
 
         This function calculates the shear modulus at ambient temperature.
@@ -274,11 +274,11 @@ class _EOS(ABC):
         the second-order terms can be neglected.
 
         Args:
-            g_0: Shear modulus at ambient conditions. [GPa]
-            g_prime: Pressure derivative of the shear modulus.
-            k_0: Isothermal bulk modulus at ambient conditions. [GPa]
             v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
                      and V the volume at the considered conditions.
+            k_0: Isothermal bulk modulus at ambient conditions. [GPa]
+            g_0: Shear modulus at ambient conditions. [GPa]
+            g_prime: Pressure derivative of the shear modulus.
 
         Returns:
             Shear modulus at ambient temperature. [GPa]
@@ -287,7 +287,7 @@ class _EOS(ABC):
             g_0 + (1 - v_ratio**(2/3)) * 0.5 * (5 * g_0 - 3 * k_0 * g_prime)
         )
 
-    def _k_v(self, k_0: float, k0t_prime: float, v_ratio: float) -> float:
+    def _k_v(self, v_ratio: float, k_0: float, k0t_prime: float) -> float:
         """Calculates the isothermal bulk modulus at ambient temperature.
 
         This function calculates the isothermal bulk modulus at ambient temperature.
@@ -298,11 +298,11 @@ class _EOS(ABC):
         of the isothermal bulk modulus (eq. 5).
 
         Args:
+            v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
+                     and V the volume at the considered conditions.
             k_0: Isothermal bulk modulus at ambient conditions. [GPa]
             k0t_prime: Pressure derivative of the isothermal bulk modulus at ambient
                        conditions.
-            v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
-                     and V the volume at the considered conditions.
 
         Returns:
             Isothermal bulk modulus at ambient temperature. [GPa]
@@ -315,8 +315,8 @@ class _EOS(ABC):
 
     @abstractmethod
     def _k_t(
-        self, k_v: float, gamma: float, q: float, v: float, E_th: float, E_th_0: float,
-         E_th_dv: float
+        self, v: float, gamma: float, k_v: float, E_th_0: float, E_th: float,
+        E_th_dv: float, q: float
     ) -> float:
         """Calculates the isothermal bulk modulus.
 
@@ -326,14 +326,14 @@ class _EOS(ABC):
         It corresponds to the fifth equation in (B5) of Jackson and Rigden (1996).
 
         Args:
-            k_v: Isothermal bulk modulus at ambient temperature. [GPa]
-            gamma: Gruneisen parameter at the considered conditions.
-            q: Exponent of the Gruneisen parameter.
             v: Volume at considered conditions. [cm^3/mol]
-            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
+            gamma: Gruneisen parameter at the considered conditions.
+            k_v: Isothermal bulk modulus at ambient temperature. [GPa]
             E_th_0: Vibrational energy at ambient conditions. [cm^3 GPa mol^−1]
+            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
             E_th_dv: Partial derivative of the vibrational energy with respect to
                      temperature. [cm^3 GPa mol^−1 K^-1]
+            q: Exponent of the Gruneisen parameter.
 
         Returns:
             Isothermal bulk modulus. [GPa]
@@ -341,7 +341,7 @@ class _EOS(ABC):
         return k_v - (q - 1) * gamma / v * (E_th - E_th_0) - gamma * E_th_dv
 
     @abstractmethod
-    def _k_s(self, T: float, k_t: float, alpha: float, gamma: float) -> float:
+    def _k_s(self, T: float, alpha: float, gamma: float, k_t: float) -> float:
         """Calculates the isentropic bulk modulus.
 
         This function calculates the isentropic bulk modulus at the considered
@@ -351,9 +351,9 @@ class _EOS(ABC):
 
         Args:
             T: Considered temperature. [K]
-            k_t: Isothermal bulk modulus at considered conditions. [GPa]
             alpha: Thermal expansion coefficient. [K^-1]
             gamma: Gruneisen parameter at the considered conditions.
+            k_t: Isothermal bulk modulus at considered conditions. [GPa]
 
         Returns:
             Isentropic bulk modulus. [GPa]
@@ -580,7 +580,7 @@ class _EOS_fp(_EOS):
         Returns:
             Gruneisen parameter of Fp at the considered conditions.
         """
-        return super()._gamma(data.gamma_fp_0, v_ratio, data.q_fp)
+        return super()._gamma(v_ratio, data.gamma_fp_0, data.q_fp)
 
     def _theta(self, data, v_ratio: float) -> float:
         """Calculates the Debye temperature of Ferropericlase.
@@ -602,7 +602,7 @@ class _EOS_fp(_EOS):
         gamma_fp = self._gamma(data, v_ratio)
         return super()._theta(data.theta_fp_0, data.gamma_fp_0, gamma_fp, data.q_fp)
 
-    def _BM3(self, data, P: float, k_fp_0: float, v_ratio: float) -> float:
+    def _BM3(self, data, P: float, v_ratio: float, k_fp_0: float) -> float:
         """Implements the third-order Birch–Murnaghan isothermal EOS for Ferropericlase.
 
         This function calculates the residue of the third-order Birch–Murnaghan
@@ -614,15 +614,15 @@ class _EOS_fp(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             P: Considered pressure. [GPa]
-            k_fp_0: Isothermal bulk modulus of Fp at ambient conditions. [GPa]
             v_ratio: Volume ratio V0 / V of Fp, where V0 is the volume of Fp at ambient
                      conditions and V the volume of Fp at the considered conditions.
+            k_fp_0: Isothermal bulk modulus of Fp at ambient conditions. [GPa]
 
         Returns:
             Residue of the third-order Birch–Murnaghan isothermal equation of state
             for Fp. [GPa]
         """
-        return super()._BM3(P, k_fp_0, v_ratio, data.k0t_prime_fp)
+        return super()._BM3(P, v_ratio, k_fp_0, data.k0t_prime_fp)
 
     def _E_th(self, data, T: float, v_ratio: float) -> float:
         """Calculates the vibrational energy of Ferropericlase.
@@ -647,11 +647,11 @@ class _EOS_fp(_EOS):
         theta_fp = self._theta(data, v_ratio)
         # Integral part of the vibrational energy
         int_part_fp = super()._integral_vibrational_energy(theta_fp / T)
-        return super()._E_th(2, data.R, T, theta_fp, int_part_fp)
+        return super()._E_th(T, theta_fp, int_part_fp, 2, data.R)
 
     def _E_th_dv(
-        self, data, T: float, theta_fp: float, gamma_fp: float, v_fp: float,
-        E_th_fp: float, E_th_fp_0: float
+        self, data, T: float, v_fp: float, theta_fp: float, gamma_fp: float,
+        E_th_fp_0: float, E_th_fp: float
     ) -> float:
         """Calculates derivative of vibrational energy with respect to volume for Fp.
 
@@ -665,19 +665,19 @@ class _EOS_fp(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             T: Considered temperature. [K]
+            v_fp: Volume of Fp at considered conditions. [cm^3/mol]
             theta_fp: Debye temperature of Fp at the considered conditions. [K]
             gamma_fp: Gruneisen parameter of Fp at the considered conditions.
-            v_fp: Volume of Fp at considered conditions. [cm^3/mol]
+            E_th_fp_0: Vibrational energy of Fp at ambient conditions. [cm^3 GPa mol^−1]
             E_th_fp: Vibrational energy of Fp at the considered conditions.
                      [cm^3 GPa mol^−1]
-            E_th_fp_0: Vibrational energy of Fp at ambient conditions. [cm^3 GPa mol^−1]
 
         Returns:
             Partial derivative of the vibrational energy with respect to temperature
             for Fp. [cm^3 GPa mol^−1 K^-1]
         """
         return super()._E_th_dv(
-            2, data.R, T, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0
+            T, v_fp, theta_fp, gamma_fp, E_th_fp_0, E_th_fp, 2, data.R
         )
 
     def _E_th_dT(self, data, T: float, theta_fp: float, E_th_fp: float) -> float:
@@ -701,11 +701,11 @@ class _EOS_fp(_EOS):
             Partial derivative of the vibrational energy with respect to temperature
             for Fp. [cm^3 GPa mol^−1 K^-1]
         """
-        return super()._E_th_dT(2, data.R, T, theta_fp, E_th_fp)
+        return super()._E_th_dT(T, theta_fp, E_th_fp, 2, data.R)
 
     def _alpha(
-        self, data, T: float, k_v_fp: float, theta_fp: float, gamma_fp: float,
-        v_fp: float, E_th_fp: float, E_th_fp_0: float, E_th_fp_dv: float
+        self, data, T: float, v_fp: float, theta_fp: float, gamma_fp: float,
+        k_v_fp: float, E_th_fp_0: float, E_th_fp: float, E_th_fp_dv: float
     ) -> float:
         """Calculates the thermal expansion coefficient of Ferropericlase.
 
@@ -717,13 +717,13 @@ class _EOS_fp(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             T: Considered temperature. [K]
-            k_v_fp: Isothermal bulk modulus of Fp at ambient temperature. [GPa]
+            v_fp: Volume of Fp at considered conditions. [cm^3/mol]
             theta_fp: Debye temperature of Fp at the considered conditions. [K]
             gamma_fp: Gruneisen parameter of Fp at the considered conditions.
-            v_fp: Volume of Fp at considered conditions. [cm^3/mol]
+            k_v_fp: Isothermal bulk modulus of Fp at ambient temperature. [GPa]
+            E_th_fp_0: Vibrational energy of Fp at ambient conditions. [cm^3 GPa mol^−1]
             E_th_fp: Vibrational energy of Fp at the considered conditions.
                      [cm^3 GPa mol^−1]
-            E_th_fp_0: Vibrational energy of Fp at ambient conditions. [cm^3 GPa mol^−1]
             E_th_fp_dv: Partial derivative of the vibrational energy with respect to
                         temperature for Fp. [cm^3 GPa mol^−1 K^-1]
 
@@ -733,12 +733,12 @@ class _EOS_fp(_EOS):
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_fp_dT = self._E_th_dT(data, T, theta_fp, E_th_fp)
         return super()._alpha(
-            k_v_fp, gamma_fp, data.q_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv,
-            E_th_fp_dT
+            v_fp, gamma_fp, k_v_fp, E_th_fp_0, E_th_fp, E_th_fp_dv, E_th_fp_dT,
+            data.q_fp
         )
 
     def _MGD(
-        self, data, T: float, P: float, v_fp: float, eta_ls: float, x_fp: float
+        self, data, P: float, T: float, v_fp: float, eta_ls: float, x_fp: float
     ) -> float:
         """Implements the Mie-Gruneisen-Debye EOS for Ferropericlase.
 
@@ -751,8 +751,8 @@ class _EOS_fp(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            T: Considered temperature. [K]
             P: Considered pressure. [GPa]
+            T: Considered temperature. [K]
             v_fp: Volume of Fp at considered conditions. [cm^3/mol]
             eta_ls: Average proportion of FeO in the low spin state.
             x_fp: Molar concentration of FeO in Fp.
@@ -769,12 +769,12 @@ class _EOS_fp(_EOS):
         # Gruneisen parameter
         gamma_fp = self._gamma(data, v_ratio)
         # Third-order Birch–Murnaghan isothermal equation of state
-        BM3_fp = self._BM3(data, P, k_fp_0, v_ratio)
+        BM3_fp = self._BM3(data, P, v_ratio, k_fp_0)
         # Vibrational energy at T
         E_th_fp = self._E_th(data, T, v_ratio)
         # Vibrational energy at ambient conditions
         E_th_fp_0 = self._E_th(data, 300, v_ratio)
-        return super()._MGD(BM3_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0)
+        return super()._MGD(v_fp, gamma_fp, E_th_fp_0, E_th_fp, BM3_fp)
 
     def _g_t0(self, data, v_fp: float, eta_ls: float, x_fp: float) -> float:
         """Calculates the shear modulus of Ferropericlase at ambient temperature.
@@ -804,7 +804,7 @@ class _EOS_fp(_EOS):
         g_fp_0 = self._g_fp_0_VRH_average(data, eta_ls, x_fp)
         # Pressure derivative of the shear modulus for Fp
         g_prime_fp = self._g_prime_fp_VRH_average(data, eta_ls, x_fp)
-        return super()._g_t0(g_fp_0, g_prime_fp, k_fp_0, v_ratio)
+        return super()._g_t0(v_ratio, k_fp_0, g_fp_0, g_prime_fp)
 
     def _g(self, data, T: float, v_fp: float, eta_ls: float, x_fp: float) -> float:
         """Calculates the shear modulus of Ferropericlase.
@@ -833,8 +833,8 @@ class _EOS_fp(_EOS):
         return g_fp_t0 + data.g_dot_fp * (T - 300)
 
     def _k_t(
-        self, data, k_v_fp: float, gamma_fp: float, v_fp: float, E_th_fp: float,
-        E_th_fp_0: float, E_th_fp_dv: float
+        self, data, v_fp: float, gamma_fp: float, k_v_fp: float, E_th_fp_0: float,
+        E_th_fp: float, E_th_fp_dv: float
     ) -> float:
         """Calculates the isothermal bulk modulus of Ferropericlase.
 
@@ -845,12 +845,12 @@ class _EOS_fp(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            k_v_fp: Isothermal bulk modulus of Fp at ambient temperature. [GPa]
-            gamma_fp: Gruneisen parameter of Fp at the considered conditions.
             v_fp: Volume of Fp at considered conditions. [cm^3/mol]
+            gamma_fp: Gruneisen parameter of Fp at the considered conditions.
+            k_v_fp: Isothermal bulk modulus of Fp at ambient temperature. [GPa]
+            E_th_fp_0: Vibrational energy of Fp at ambient conditions. [cm^3 GPa mol^−1]
             E_th_fp: Vibrational energy of Fp at the considered conditions.
                      [cm^3 GPa mol^−1]
-            E_th_fp_0: Vibrational energy of Fp at ambient conditions. [cm^3 GPa mol^−1]
             E_th_fp_dv: Partial derivative of the vibrational energy with respect to
                         temperature for Fp. [cm^3 GPa mol^−1 K^-1]
 
@@ -858,7 +858,7 @@ class _EOS_fp(_EOS):
             Isothermal bulk modulus Fp. [GPa]
         """
         return super()._k_t(
-            k_v_fp, gamma_fp, data.q_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv
+            v_fp, gamma_fp, k_v_fp, E_th_fp_0, E_th_fp, E_th_fp_dv, data.q_fp
         )
 
     def _k_s(self, data, T: float, v_fp: float, eta_ls: float, x_fp: float) -> float:
@@ -895,19 +895,19 @@ class _EOS_fp(_EOS):
         E_th_fp_0 = self._E_th(data, 300, v_ratio)
         # Partial derivative of the vibrational energy with respect to volume
         E_th_fp_dv = self._E_th_dv(
-            data, T, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0
+            data, T, v_fp, theta_fp, gamma_fp, E_th_fp_0, E_th_fp
         )
         # Isothermal bulk modulus at ambient temperature
-        k_v_fp = super()._k_v(k_fp_0, data.k0t_prime_fp, v_ratio)
+        k_v_fp = super()._k_v(v_ratio, k_fp_0, data.k0t_prime_fp)
         # Isothermal bulk modulus
         k_t_fp = self._k_t(
-            data, k_v_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv
+            data, v_fp, gamma_fp, k_v_fp, E_th_fp_0, E_th_fp, E_th_fp_dv
         )
         # Thermal expansion coefficient
         alpha_fp = self._alpha(
-            data, T, k_v_fp, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv
+            data, T, v_fp, theta_fp, gamma_fp, k_v_fp, E_th_fp_0, E_th_fp, E_th_fp_dv
         )
-        return super()._k_s(T, k_t_fp, alpha_fp, gamma_fp)
+        return super()._k_s(T, alpha_fp, gamma_fp, k_t_fp)
 
 #======================================================================================#
 #                                                                                      #
@@ -955,8 +955,8 @@ class _EOS_bm(_EOS):
         return v_bm_0
 
     def _k_bm_0_VRH_average(
-        self, data, x_mgsio3: float, x_fesio3: float, x_fealo3: float, x_fe2o3: float,
-        x_al2o3: float, v_tot: float
+        self, data, v_tot: float, x_mgsio3: float, x_fesio3: float, x_fealo3: float,
+        x_fe2o3: float, x_al2o3: float
     ) -> float:
         """Calculates the isothermal bulk modulus of Bridgmanite at ambient conditions.
 
@@ -966,12 +966,12 @@ class _EOS_bm(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
+            v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
             x_mgsio3: Molar concentration of MgSiO3 in Bm.
             x_fesio3: Molar concentration of FeSiO3 in Bm.
             x_fealo3: Molar concentration of FeAlO3 in Bm.
             x_fe2o3: Molar concentration of Fe2O3 in Bm.
             x_al2o3: Molar concentration of Al2O3 in Bm.
-            v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
 
         Returns:
             Isothermal bulk modulus of Bm at ambient conditions. [GPa]
@@ -993,8 +993,8 @@ class _EOS_bm(_EOS):
         return 0.5 * (k_v + k_r)
 
     def _g_bm_0_VRH_average(
-        self, data, x_mgsio3: float, x_fesio3: float, x_fealo3: float, x_fe2o3: float,
-        x_al2o3: float, v_tot: float
+        self, data, v_tot: float, x_mgsio3: float, x_fesio3: float, x_fealo3: float,
+        x_fe2o3: float, x_al2o3: float
     ) -> float:
         """Calculates the shear modulus of Bridgmanite at ambient conditions.
 
@@ -1004,12 +1004,12 @@ class _EOS_bm(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
+            v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
             x_mgsio3: Molar concentration of MgSiO3 in Bm.
             x_fesio3: Molar concentration of FeSiO3 in Bm.
             x_fealo3: Molar concentration of FeAlO3 in Bm.
             x_fe2o3: Molar concentration of Fe2O3 in Bm.
             x_al2o3: Molar concentration of Al2O3 in Bm.
-            v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
 
         Returns:
             Shear modulus of Bm at ambient conditions. [GPa]
@@ -1031,8 +1031,8 @@ class _EOS_bm(_EOS):
         return 0.5 * (g_v + g_r)
 
     def _g_prime_bm_VRH_average(
-        self, data, x_mgsio3: float, x_fesio3: float, x_fealo3: float, x_fe2o3: float,
-        x_al2o3: float, v_tot: float
+        self, data, v_tot: float, x_mgsio3: float, x_fesio3: float, x_fealo3: float,
+        x_fe2o3: float, x_al2o3: float
     ) -> float:
         """Calculates the pressure derivative of the shear modulus for Bridgmanite.
 
@@ -1042,12 +1042,12 @@ class _EOS_bm(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
+            v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
             x_mgsio3: Molar concentration of MgSiO3 in Bm.
             x_fesio3: Molar concentration of FeSiO3 in Bm.
             x_fealo3: Molar concentration of FeAlO3 in Bm.
             x_fe2o3: Molar concentration of Fe2O3 in Bm.
             x_al2o3: Molar concentration of Al2O3 in Bm.
-            v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
 
         Returns:
             Pressure derivative of the shear modulus for Bm.
@@ -1084,7 +1084,7 @@ class _EOS_bm(_EOS):
         Returns:
             Gruneisen parameter of Bm at the considered conditions.
         """
-        return super()._gamma(data.gamma_bm_0, v_ratio, data.q_bm)
+        return super()._gamma(v_ratio, data.gamma_bm_0, data.q_bm)
 
     def _theta(self, data, v_ratio: float) -> float:
         """Calculates the Debye temperature of Bridgmanite.
@@ -1108,7 +1108,7 @@ class _EOS_bm(_EOS):
             data.theta_bm_0, data.gamma_bm_0, gamma_bm, data.q_bm
         )
 
-    def _BM3(self, data, P: float, k_bm_0: float, v_ratio: float) -> float:
+    def _BM3(self, data, P: float, v_ratio: float, k_bm_0: float) -> float:
         """Implements the third-order Birch–Murnaghan isothermal EOS for Bridgmanite.
 
         This function calculates the residue of the third-order Birch–Murnaghan
@@ -1120,15 +1120,15 @@ class _EOS_bm(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             P: Considered pressure. [GPa]
-            k_bm_0: Isothermal bulk modulus of Bm at ambient conditions. [GPa]
             v_ratio: Volume ratio V0 / V of Bm, where V0 is the volume of Bm at ambient
                      conditions and V the volume of Bm at the considered conditions.
+            k_bm_0: Isothermal bulk modulus of Bm at ambient conditions. [GPa]
 
         Returns:
             Residue of the third-order Birch–Murnaghan isothermal equation of state
             for Bm. [GPa]
         """
-        return super()._BM3(P, k_bm_0, v_ratio, data.k0t_prime_bm)
+        return super()._BM3(P, v_ratio, k_bm_0, data.k0t_prime_bm)
 
     def _E_th(self, data, T: float, v_ratio: float) -> float:
         """Calculates the vibrational energy of Bridgmanite.
@@ -1153,11 +1153,11 @@ class _EOS_bm(_EOS):
         theta_bm = self._theta(data, v_ratio)
         # Integral part of the vibrational energy
         int_part_bm = super()._integral_vibrational_energy(theta_bm / T)
-        return super()._E_th(5, data.R, T, theta_bm, int_part_bm)
+        return super()._E_th(T, theta_bm, int_part_bm, 5, data.R)
 
     def _E_th_dv(
-        self, data, T: float, theta_bm: float, gamma_bm: float, v_bm: float,
-        E_th_bm: float, E_th_bm_0: float
+        self, data, T: float, v_bm: float, theta_bm: float, gamma_bm: float,
+        E_th_bm_0: float, E_th_bm: float
     ) -> float:
         """Calculates derivative of vibrational energy with respect to volume for Bm.
 
@@ -1171,19 +1171,19 @@ class _EOS_bm(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             T: Considered temperature. [K]
+            v_bm: Volume of Bm at considered conditions. [cm^3/mol]
             theta_bm: Debye temperature of Bm at the considered conditions. [K]
             gamma_bm: Gruneisen parameter of Bm at the considered conditions.
-            v_bm: Volume of Bm at considered conditions. [cm^3/mol]
+            E_th_bm_0: Vibrational energy of Bm at ambient conditions. [cm^3 GPa mol^−1]
             E_th_bm: Vibrational energy of Bm at the considered conditions.
                      [cm^3 GPa mol^−1]
-            E_th_bm_0: Vibrational energy of Bm at ambient conditions. [cm^3 GPa mol^−1]
 
         Returns:
             Partial derivative of the vibrational energy with respect to temperature
             for Bm. [cm^3 GPa mol^−1 K^-1]
         """
         return super()._E_th_dv(
-            5, data.R, T, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0
+            T, v_bm, theta_bm, gamma_bm, E_th_bm_0, E_th_bm, 5, data.R
         )
 
     def _E_th_dT(self, data, T: float, theta_bm: float, E_th_bm: float) -> float:
@@ -1207,11 +1207,11 @@ class _EOS_bm(_EOS):
             Partial derivative of the vibrational energy with respect to temperature
             for Bm. [cm^3 GPa mol^−1 K^-1]
         """
-        return super()._E_th_dT(5, data.R, T, theta_bm, E_th_bm)
+        return super()._E_th_dT(T, theta_bm, E_th_bm, 5, data.R)
 
     def _alpha(
-        self, data, T: float, k_v_bm: float, theta_bm: float, gamma_bm: float,
-        v_bm: float, E_th_bm: float, E_th_bm_0: float, E_th_bm_dv: float
+        self, data, T: float, v_bm: float, theta_bm: float, gamma_bm: float,
+        k_v_bm: float, E_th_bm_0: float, E_th_bm: float, E_th_bm_dv: float
     ) -> float:
         """Calculates the thermal expansion coefficient of Bridgmanite.
 
@@ -1223,13 +1223,13 @@ class _EOS_bm(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             T: Considered temperature. [K]
-            k_v_bm: Isothermal bulk modulus of Bm at ambient temperature. [GPa]
+            v_bm: Volume of Bm at considered conditions. [cm^3/mol]
             theta_bm: Debye temperature of Bm at the considered conditions. [K]
             gamma_bm: Gruneisen parameter of Bm at the considered conditions.
-            v_bm: Volume of Bm at considered conditions. [cm^3/mol]
+            k_v_bm: Isothermal bulk modulus of Bm at ambient temperature. [GPa]
+            E_th_bm_0: Vibrational energy of Bm at ambient conditions. [cm^3 GPa mol^−1]
             E_th_bm: Vibrational energy of Bm at the considered conditions.
                      [cm^3 GPa mol^−1]
-            E_th_bm_0: Vibrational energy of Bm at ambient conditions. [cm^3 GPa mol^−1]
             E_th_bm_dv: Partial derivative of the vibrational energy with respect to
                         temperature for Bm. [cm^3 GPa mol^−1 K^-1]
 
@@ -1239,12 +1239,12 @@ class _EOS_bm(_EOS):
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_bm_dT = self._E_th_dT(data, T, theta_bm, E_th_bm)
         return super()._alpha(
-            k_v_bm, gamma_bm, data.q_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv,
-            E_th_bm_dT
+            v_bm, gamma_bm, k_v_bm, E_th_bm_0, E_th_bm, E_th_bm_dv, E_th_bm_dT,
+            data.q_bm
         )
 
     def _MGD(
-        self, data, T: float, P: float, v_bm: float, x_mgsio3: float, x_fesio3: float,
+        self, data, P: float, T: float, v_bm: float, x_mgsio3: float, x_fesio3: float,
         x_fealo3: float, x_fe2o3: float, x_al2o3: float
     ) -> float:
         """Implements the Mie-Gruneisen-Debye EOS for Bridgmanite.
@@ -1258,8 +1258,8 @@ class _EOS_bm(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            T: Considered temperature. [K]
             P: Considered pressure. [GPa]
+            T: Considered temperature. [K]
             v_bm: Volume of Bm at considered conditions. [cm^3/mol]
             x_mgsio3: Molar concentration of MgSiO3 in Bm.
             x_fesio3: Molar concentration of FeSiO3 in Bm.
@@ -1276,17 +1276,17 @@ class _EOS_bm(_EOS):
         v_ratio = v_bm_0 / v_bm
         # Isothermal bulk modulus of Bm at ambient conditions
         k_bm_0 = self._k_bm_0_VRH_average(
-            data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3, v_bm_0
+            data, v_bm_0, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3
         )
         # Gruneisen parameter
         gamma_bm = self._gamma(data, v_ratio)
         # Third-order Birch–Murnaghan isothermal equation of state
-        BM3_bm = self._BM3(data, P, k_bm_0, v_ratio)
+        BM3_bm = self._BM3(data, P, v_ratio, k_bm_0)
         # Vibrational energy at T
         E_th_bm = self._E_th(data, T, v_ratio)
         # Vibrational energy at ambient conditions
         E_th_bm_0 = self._E_th(data, 300, v_ratio)
-        return super()._MGD(BM3_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0)
+        return super()._MGD(v_bm, gamma_bm, E_th_bm_0, E_th_bm, BM3_bm)
 
     def _g_t0(
         self, data, v_bm: float, x_mgsio3: float, x_fesio3: float, x_fealo3: float,
@@ -1318,17 +1318,17 @@ class _EOS_bm(_EOS):
         v_ratio = v_bm_0 / v_bm
         # Isothermal bulk modulus of Bm at ambient conditions
         k_bm_0 = self._k_bm_0_VRH_average(
-            data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3, v_bm_0
+            data, v_bm_0, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3
         )
         # Shear modulus of Bm at ambient conditions
         g_bm_0 = self._g_bm_0_VRH_average(
-            data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3, v_bm_0
+            data, v_bm_0, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3
         )
         # Pressure derivative of the shear modulus for Bm
         g_prime_bm = self._g_prime_bm_VRH_average(
-            data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3, v_bm_0
+            data, v_bm_0, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3
         )
-        return super()._g_t0(g_bm_0, g_prime_bm, k_bm_0, v_ratio)
+        return super()._g_t0(v_ratio, k_bm_0, g_bm_0, g_prime_bm)
 
     def _g(
         self, data, T: float, v_bm: float, x_mgsio3: float, x_fesio3: float,
@@ -1363,8 +1363,8 @@ class _EOS_bm(_EOS):
         return g_bm_t0 + data.g_dot_bm * (T - 300)
 
     def _k_t(
-        self, data, k_v_bm: float, gamma_bm: float, v_bm: float, E_th_bm: float,
-        E_th_bm_0: float, E_th_bm_dv: float
+        self, data, v_bm: float, gamma_bm: float, k_v_bm: float, E_th_bm_0: float,
+        E_th_bm: float, E_th_bm_dv: float
     ) -> float:
         """Calculates the isothermal bulk modulus of Bridgmanite.
 
@@ -1375,12 +1375,12 @@ class _EOS_bm(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            k_v_bm: Isothermal bulk modulus of Bm at ambient temperature. [GPa]
-            gamma_bm: Gruneisen parameter of Bm at the considered conditions.
             v_bm: Volume of Bm at considered conditions. [cm^3/mol]
+            gamma_bm: Gruneisen parameter of Bm at the considered conditions.
+            k_v_bm: Isothermal bulk modulus of Bm at ambient temperature. [GPa]
+            E_th_bm_0: Vibrational energy of Bm at ambient conditions. [cm^3 GPa mol^−1]
             E_th_bm: Vibrational energy of Bm at the considered conditions.
                      [cm^3 GPa mol^−1]
-            E_th_bm_0: Vibrational energy of Bm at ambient conditions. [cm^3 GPa mol^−1]
             E_th_bm_dv: Partial derivative of the vibrational energy with respect to
                         temperature for Bm. [cm^3 GPa mol^−1 K^-1]
 
@@ -1388,7 +1388,7 @@ class _EOS_bm(_EOS):
             Isothermal bulk modulus of Bm. [GPa]
         """
         return super()._k_t(
-            k_v_bm, gamma_bm, data.q_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv
+            v_bm, gamma_bm, k_v_bm, E_th_bm_0, E_th_bm, E_th_bm_dv, data.q_bm
         )
 
     def _k_s(
@@ -1425,7 +1425,7 @@ class _EOS_bm(_EOS):
         theta_bm = self._theta(data, v_ratio)
         # Isothermal bulk modulus of Bm at ambient conditions
         k_bm_0 = self._k_bm_0_VRH_average(
-            data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3, v_bm_0
+            data, v_bm_0, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3
         )
         # Vibrational energy at T
         E_th_bm = self._E_th(data, T, v_ratio)
@@ -1433,19 +1433,19 @@ class _EOS_bm(_EOS):
         E_th_bm_0 = self._E_th(data, 300, v_ratio)
         # Partial derivative of the vibrational energy with respect to volume
         E_th_bm_dv = self._E_th_dv(
-            data, T, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0
+            data, T, v_bm, theta_bm, gamma_bm, E_th_bm_0, E_th_bm
         )
         # Isothermal bulk modulus at ambient temperature
-        k_v_bm = super()._k_v(k_bm_0, data.k0t_prime_bm, v_ratio)
+        k_v_bm = super()._k_v(v_ratio, k_bm_0, data.k0t_prime_bm)
         # Isothermal bulk modulus
         k_t_bm = self._k_t(
-            data, k_v_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv
+            data, v_bm, gamma_bm, k_v_bm, E_th_bm_0, E_th_bm, E_th_bm_dv
         )
         # Thermal expansion coefficient
         alpha_bm = self._alpha(
-            data, T, k_v_bm, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv
+            data, T, v_bm, theta_bm, gamma_bm, k_v_bm, E_th_bm_0, E_th_bm, E_th_bm_dv
         )
-        return super()._k_s(T, k_t_bm, alpha_bm, gamma_bm)
+        return super()._k_s(T, alpha_bm, gamma_bm, k_t_bm)
 
 #======================================================================================#
 #                                                                                      #
@@ -1482,7 +1482,7 @@ class _EOS_capv(_EOS):
         Returns:
             Gruneisen parameter of CaPv at the considered conditions.
         """
-        return super()._gamma(data.gamma_capv_0, v_ratio, data.q_capv)
+        return super()._gamma(v_ratio, data.gamma_capv_0, data.q_capv)
 
     def _theta(self, data, v_ratio: float) -> float:
         """Calculates the Debye temperature of Calcio Perovskite.
@@ -1527,7 +1527,7 @@ class _EOS_capv(_EOS):
             Residue of the third-order Birch–Murnaghan isothermal equation of state
             for CaPv. [GPa]
         """
-        return super()._BM3(P, data.k_casio3_0, v_ratio, data.k0t_prime_capv)
+        return super()._BM3(P, v_ratio, data.k_casio3_0, data.k0t_prime_capv)
 
     def _E_th(self, data, T: float, v_ratio: float) -> float:
         """Calculates the vibrational energy of Calcio Perovskite.
@@ -1553,11 +1553,11 @@ class _EOS_capv(_EOS):
         theta_capv = self._theta(data, v_ratio)
         # Integral part of the vibrational energy
         int_part_capv = super()._integral_vibrational_energy(theta_capv / T)
-        return super()._E_th(5, data.R, T, theta_capv, int_part_capv)
+        return super()._E_th(T, theta_capv, int_part_capv, 5, data.R)
 
     def _E_th_dv(
-        self, data, T: float, theta_capv: float, gamma_capv: float, v_capv: float,
-        E_th_capv: float, E_th_capv_0: float
+        self, data, T: float, v_capv: float, theta_capv: float, gamma_capv: float,
+        E_th_capv_0: float, E_th_capv: float
     ) -> float:
         """Calculates derivative of vibrational energy with respect to volume for CaPv.
 
@@ -1571,20 +1571,20 @@ class _EOS_capv(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             T: Considered temperature. [K]
+            v_capv: Volume of CaPv at considered conditions. [cm^3/mol]
             theta_capv: Debye temperature of CaPv at the considered conditions. [K]
             gamma_capv: Gruneisen parameter of CaPv at the considered conditions.
-            v_bm: Volume of CaPv at considered conditions. [cm^3/mol]
-            E_th_capv: Vibrational energy of CaPv at the considered conditions.
-                       [cm^3 GPa mol^−1]
             E_th_capv_0: Vibrational energy of CaPv at ambient conditions.
                          [cm^3 GPa mol^−1]
+            E_th_capv: Vibrational energy of CaPv at the considered conditions.
+                       [cm^3 GPa mol^−1]
 
         Returns:
             Partial derivative of the vibrational energy with respect to temperature
             for CaPv. [cm^3 GPa mol^−1 K^-1]
         """
         return super()._E_th_dv(
-            5, data.R, T, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
+            T, v_capv, theta_capv, gamma_capv, E_th_capv_0, E_th_capv, 5, data.R
         )
 
     def _E_th_dT(self, data, T: float, theta_capv: float, E_th_capv: float) -> float:
@@ -1608,11 +1608,11 @@ class _EOS_capv(_EOS):
             Partial derivative of the vibrational energy with respect to temperature
             for CaPv. [cm^3 GPa mol^−1 K^-1]
         """
-        return super()._E_th_dT(5, data.R, T, theta_capv, E_th_capv)
+        return super()._E_th_dT(T, theta_capv, E_th_capv, 5, data.R)
 
     def _alpha(
-        self, data, T: float, k_v_capv: float, theta_capv: float, gamma_capv: float,
-        v_capv: float, E_th_capv: float, E_th_capv_0: float, E_th_capv_dv: float
+        self, data, T: float, v_capv: float, theta_capv: float, gamma_capv: float,
+        k_v_capv: float, E_th_capv_0: float, E_th_capv: float, E_th_capv_dv: float
     ) -> float:
         """Calculates the thermal expansion coefficient of Calcio Perovskite.
 
@@ -1624,14 +1624,14 @@ class _EOS_capv(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             T: Considered temperature. [K]
-            k_v_capv: Isothermal bulk modulus of CaPv at ambient temperature. [GPa]
+            v_capv: Volume of CaPv at considered conditions. [cm^3/mol]
             theta_capv: Debye temperature of CaPv at the considered conditions. [K]
             gamma_capv: Gruneisen parameter of CaPv at the considered conditions.
-            v_capv: Volume of CaPv at considered conditions. [cm^3/mol]
-            E_th_capv: Vibrational energy of CaPv at the considered conditions.
-                       [cm^3 GPa mol^−1]
+            k_v_capv: Isothermal bulk modulus of CaPv at ambient temperature. [GPa]
             E_th_capv_0: Vibrational energy of CaPv at ambient conditions.
                          [cm^3 GPa mol^−1]
+            E_th_capv: Vibrational energy of CaPv at the considered conditions.
+                       [cm^3 GPa mol^−1]
             E_th_capv_dv: Partial derivative of the vibrational energy with respect to
                           temperature for CaPv. [cm^3 GPa mol^−1 K^-1]
 
@@ -1641,11 +1641,11 @@ class _EOS_capv(_EOS):
         # Partial derivative of the vibrational energy with respect to temperature
         E_th_capv_dT = self._E_th_dT(data, T, theta_capv, E_th_capv)
         return super()._alpha(
-            k_v_capv, gamma_capv, data.q_capv, v_capv, E_th_capv, E_th_capv_0,
-            E_th_capv_dv, E_th_capv_dT
+            v_capv, gamma_capv, k_v_capv, E_th_capv_0, E_th_capv, E_th_capv_dv,
+            E_th_capv_dT, data.q_capv
         )
 
-    def _MGD(self, data, T: float, P: float, v_capv: float) -> float:
+    def _MGD(self, data, P: float, T: float, v_capv: float) -> float:
         """Implements the Mie-Gruneisen-Debye EOS for Calcio Perovskite.
 
         This function calculates the residue of the Mie-Gruneisen-Debye equation of
@@ -1657,8 +1657,8 @@ class _EOS_capv(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            T: Considered temperature. [K]
             P: Considered pressure. [GPa]
+            T: Considered temperature. [K]
             v_capv: Volume of CaPv at considered conditions. [cm^3/mol]
 
         Returns:
@@ -1674,7 +1674,7 @@ class _EOS_capv(_EOS):
         E_th_capv = self._E_th(data, T, v_ratio)
         # Vibrational energy at ambient conditions
         E_th_capv_0 = self._E_th(data, 300, v_ratio)
-        return super()._MGD(BM3_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0)
+        return super()._MGD(v_capv, gamma_capv, E_th_capv_0, E_th_capv, BM3_capv)
 
     def _g_t0(self, data, v_ratio: float) -> float:
         """Calculates the shear modulus of Calcio Perovskite at ambient temperature.
@@ -1695,7 +1695,7 @@ class _EOS_capv(_EOS):
             Shear modulus of Bm at ambient temperature. [GPa]
         """
         return super()._g_t0(
-            data.g_casio3_0, data.g_prime_casio3, data.k_casio3_0, v_ratio
+            v_ratio, data.k_casio3_0, data.g_casio3_0, data.g_prime_casio3
         )
 
     def _g(self, data, T: float, v_capv: float) -> float:
@@ -1725,8 +1725,8 @@ class _EOS_capv(_EOS):
         return g_capv_t0 + data.g_dot_capv * (T - 300)
 
     def _k_t(
-        self, data, k_v_capv: float, gamma_capv: float, v_capv: float,
-        E_th_capv: float, E_th_capv_0: float, E_th_capv_dv: float
+        self, data, v_capv: float, gamma_capv: float, k_v_capv: float,
+        E_th_capv_0: float, E_th_capv: float, E_th_capv_dv: float
     ) -> float:
         """Calculates the isothermal bulk modulus of Calcio Perovskite.
 
@@ -1737,13 +1737,13 @@ class _EOS_capv(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            k_v_capv: Isothermal bulk modulus of CaPv at ambient temperature. [GPa]
-            gamma_capv: Gruneisen parameter of CaPv at the considered conditions.
             v_capv: Volume of CaPv at considered conditions. [cm^3/mol]
-            E_th_capv: Vibrational energy of CaPv at the considered conditions.
-                       [cm^3 GPa mol^−1]
+            gamma_capv: Gruneisen parameter of CaPv at the considered conditions.
+            k_v_capv: Isothermal bulk modulus of CaPv at ambient temperature. [GPa]
             E_th_capv_0: Vibrational energy of CaPv at ambient conditions.
                          [cm^3 GPa mol^−1]
+            E_th_capv: Vibrational energy of CaPv at the considered conditions.
+                       [cm^3 GPa mol^−1]
             E_th_capv_dv: Partial derivative of the vibrational energy with respect to
                           temperature for CaPv. [cm^3 GPa mol^−1 K^-1]
 
@@ -1751,8 +1751,8 @@ class _EOS_capv(_EOS):
             Isothermal bulk modulus of CaPv. [GPa]
         """
         return super()._k_t(
-            k_v_capv, gamma_capv, data.q_capv, v_capv, E_th_capv, E_th_capv_0,
-            E_th_capv_dv
+            v_capv, gamma_capv, k_v_capv, E_th_capv_0, E_th_capv, E_th_capv_dv,
+            data.q_capv
         )
 
     def _k_s(self, data, T: float, v_capv: float) -> float:
@@ -1783,17 +1783,17 @@ class _EOS_capv(_EOS):
         E_th_capv_0 = self._E_th(data, 300, v_ratio)
         # Partial derivative of the vibrational energy with respect to volume
         E_th_capv_dv = self._E_th_dv(
-            data, T, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
+            data, T, v_capv, theta_capv, gamma_capv, E_th_capv_0, E_th_capv
         )
         # Isothermal bulk modulus at ambient temperature
-        k_v_capv = super()._k_v(data.k_casio3_0, data.k0t_prime_capv, v_ratio)
+        k_v_capv = super()._k_v(v_ratio, data.k_casio3_0, data.k0t_prime_capv)
         # Isothermal bulk modulus
         k_t_capv = self._k_t(
-            data, k_v_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0, E_th_capv_dv
+            data, v_capv, gamma_capv, k_v_capv, E_th_capv_0, E_th_capv, E_th_capv_dv
         )
         # Thermal expansion coefficient
         alpha_capv = self._alpha(
-            data, T, k_v_capv, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0,
+            data, T, v_capv, theta_capv, gamma_capv, k_v_capv, E_th_capv_0, E_th_capv,
             E_th_capv_dv
         )
-        return super()._k_s(T, k_t_capv, alpha_capv, gamma_capv)
+        return super()._k_s(T, alpha_capv, gamma_capv, k_t_capv)
