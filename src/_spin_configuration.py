@@ -69,12 +69,12 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
     # Calculating range for the volume of Fp using extreme cases
     solution = scipy.optimize.fsolve(
         lambda x: fp_eos._MGD(
-            self, self.T_am + self.dT_max, self.P_am, x, 1.0, x_max
+            self, self.P_am, self.T_am + self.dT_max, x, 1.0, x_max
         ), 10.
     )
     v_min = solution[0] / 0.15055 - 2.0
     solution = scipy.optimize.fsolve(
-        lambda x: fp_eos._MGD(self, self.T_am, self.P_am, x, 0.0, x_max), 10.
+        lambda x: fp_eos._MGD(self, self.P_am, self.T_am, x, 0.0, x_max), 10.
     )
     v_max = solution[0] / 0.15055
 
@@ -102,11 +102,11 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
                 v_fp = kk * self.delta_v + v_min
 
                 # Energy associated with low and high spin state
-                E_ls = _energy_equation(self, 1, v_fp_0, v_fp)
-                E_hs = _energy_equation(self, 3, v_fp_0, v_fp)
+                E_ls = _energy_equation(self, v_fp_0, v_fp, 1)
+                E_hs = _energy_equation(self, v_fp_0, v_fp, 3)
 
                 # Coupling energy low spin state - low spin state
-                wc = _splitting_energy(self, x_fp, v_fp_0, v_fp)
+                wc = _splitting_energy(self, v_fp_0, v_fp, x_fp)
 
                 # Equation parameters
                 beta = 1 / (k_b * T)
@@ -171,13 +171,13 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
                 # Storing information
                 spin_config[jj, kk, ii] = eta_ls
                 P_table[jj, kk, ii] = -fp_eos._MGD(
-                    self, T, 0.0, v_fp*0.15055, eta_ls, x_fp
+                    self, 0.0, T, v_fp*0.15055, eta_ls, x_fp
                 )
 
     return spin_config, P_table
 
 
-def _energy_equation(self, spin_state: int, v_0: float, v: float) -> float:
+def _energy_equation(self, v_0: float, v: float, spin_state: int) -> float:
     """Calculates the energy level of Fe2+ associated with a given spin state.
 
     This function calculates the energy level of Fe2+ in Ferropericlase (Fp) for a given
@@ -192,11 +192,11 @@ def _energy_equation(self, spin_state: int, v_0: float, v: float) -> float:
     the simulator.
 
     Args:
+        v_0: Volume of Ferropericlase at ambient conditions. [A^3]
+        v: Volume of Ferropericlase at considered conditions. [A^3]
         spin_state: Indicates the spin state considered.
                     1 for low spin state, 2 for mixed spin state, and 3 for high
                     spin state.
-        v_0: Volume of Ferropericlase at ambient conditions. [A^3]
-        v: Volume of Ferropericlase at considered conditions. [A^3]
 
     Returns:
         Energy of the spin state. [eV]
@@ -219,16 +219,16 @@ def _energy_equation(self, spin_state: int, v_0: float, v: float) -> float:
         return pairing_energy - 0.4 * delta_energy
 
 
-def _splitting_energy(self, x_fp: float, v_0: float, v: float) -> float:
+def _splitting_energy(self, v_0: float, v: float, x_fp: float) -> float:
     """Calculates the splitting energy.
 
     This function calculates the coupling energy between low spin state iron atoms
     in Ferropericlase (Fp).
 
     Args:
-        x_fp: FeO content in ferropericlase.
         v_0: Volume of Ferropericlase at ambient conditions. [A^3]
         v: Volume of Ferropericlase at considered conditions. [A^3]
+        x_fp: FeO content in ferropericlase.
 
     Returns:
         The splitting energy. [eV]
