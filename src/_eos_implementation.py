@@ -934,8 +934,8 @@ class _EOS_bm(_EOS):
     and should not be used outside of it.
     """
     def _v_bm_0(
-        self, data, x_mgsio3: float, x_fesio3: float, x_fealo3: float, x_fe2o3: float,
-        x_al2o3: float
+        self, data, x_mgsio3_bm: float, x_fesio3_bm: float, x_fealo3_bm: float,
+        x_fe2o3_bm: float, x_al2o3_bm: float
     ) -> float:
         """Calculates the volume of Bridgmanite at ambient conditions.
 
@@ -944,25 +944,25 @@ class _EOS_bm(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            x_mgsio3: Molar concentration of MgSiO3 in Bm.
-            x_fesio3: Molar concentration of FeSiO3 in Bm.
-            x_fealo3: Molar concentration of FeAlO3 in Bm.
-            x_fe2o3: Molar concentration of Fe2O3 in Bm.
-            x_al2o3: Molar concentration of Al2O3 in Bm.
+            x_mgsio3_bm: Molar concentration of MgSiO3 in Bm.
+            x_fesio3_bm: Molar concentration of FeSiO3 in Bm.
+            x_fealo3_bm: Molar concentration of FeAlO3 in Bm.
+            x_fe2o3_bm: Molar concentration of Fe2O3 in Bm.
+            x_al2o3_bm: Molar concentration of Al2O3 in Bm.
 
         Returns:
             Volume of Bm at ambient conditions. [cm^3/mol]
         """
         v_bm_0 = (
-            x_mgsio3 * data.v_mgsio3_0 + x_fesio3 * data.v_fesio3_0 +
-            x_fealo3 * data.v_fealo3_0 + x_al2o3 * data.v_al2o3_0 +
-            x_fe2o3 * data.v_fe2o3_0
+            x_mgsio3_bm * data.v_mgsio3_0 + x_fesio3_bm * data.v_fesio3_0 +
+            x_fealo3_bm * data.v_fealo3_0 + x_al2o3_bm * data.v_al2o3_0 +
+            x_fe2o3_bm * data.v_fe2o3_0
         )
         return v_bm_0
 
     def _k_bm_0_VRH_average(
-        self, data, v_tot: float, x_mgsio3: float, x_fesio3: float, x_fealo3: float,
-        x_fe2o3: float, x_al2o3: float
+        self, data, v_tot: float, x_mgsio3_bm: float, x_fesio3_bm: float,
+        x_fealo3_bm: float, x_fe2o3_bm: float, x_al2o3_bm: float
     ) -> float:
         """Calculates the isothermal bulk modulus of Bridgmanite at ambient conditions.
 
@@ -973,34 +973,34 @@ class _EOS_bm(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
-            x_mgsio3: Molar concentration of MgSiO3 in Bm.
-            x_fesio3: Molar concentration of FeSiO3 in Bm.
-            x_fealo3: Molar concentration of FeAlO3 in Bm.
-            x_fe2o3: Molar concentration of Fe2O3 in Bm.
-            x_al2o3: Molar concentration of Al2O3 in Bm.
+            x_mgsio3_bm: Molar concentration of MgSiO3 in Bm.
+            x_fesio3_bm: Molar concentration of FeSiO3 in Bm.
+            x_fealo3_bm: Molar concentration of FeAlO3 in Bm.
+            x_fe2o3_bm: Molar concentration of Fe2O3 in Bm.
+            x_al2o3_bm: Molar concentration of Al2O3 in Bm.
 
         Returns:
             Isothermal bulk modulus of Bm at ambient conditions. [GPa]
         """
         k_v = (
-            x_mgsio3 * data.v_mgsio3_0 * data.k_mgsio3_0 +
-            x_fesio3 * data.v_fesio3_0 * data.k_fesio3_0 +
-            x_fealo3 * data.v_fealo3_0 * data.k_fealo3_0 +
-            x_al2o3 * data.v_al2o3_0 * data.k_al2o3_0 +
-            x_fe2o3 * data.v_fe2o3_0 * data.k_fe2o3_0
+            x_mgsio3_bm * data.v_mgsio3_0 * data.k_mgsio3_0 +
+            x_fesio3_bm * data.v_fesio3_0 * data.k_fesio3_0 +
+            x_fealo3_bm * data.v_fealo3_0 * data.k_fealo3_0 +
+            x_al2o3_bm * data.v_al2o3_0 * data.k_al2o3_0 +
+            x_fe2o3_bm * data.v_fe2o3_0 * data.k_fe2o3_0
         ) / v_tot
         k_r = v_tot / (
-            x_mgsio3 * data.v_mgsio3_0 / data.k_mgsio3_0 + 
-            x_fesio3 * data.v_fesio3_0 / data.k_fesio3_0 +
-            x_fealo3 * data.v_fealo3_0 / data.k_fealo3_0 +
-            x_al2o3 * data.v_al2o3_0 / data.k_al2o3_0 +   
-            x_fe2o3 * data.v_fe2o3_0 / data.k_fe2o3_0 
+            x_mgsio3_bm * data.v_mgsio3_0 / data.k_mgsio3_0 + 
+            x_fesio3_bm * data.v_fesio3_0 / data.k_fesio3_0 +
+            x_fealo3_bm * data.v_fealo3_0 / data.k_fealo3_0 +
+            x_al2o3_bm * data.v_al2o3_0 / data.k_al2o3_0 +   
+            x_fe2o3_bm * data.v_fe2o3_0 / data.k_fe2o3_0 
         )
         return 0.5 * (k_v + k_r)
 
     def _g_bm_0_VRH_average(
-        self, data, v_tot: float, x_mgsio3: float, x_fesio3: float, x_fealo3: float,
-        x_fe2o3: float, x_al2o3: float
+        self, data, v_tot: float, x_mgsio3_bm: float, x_fesio3_bm: float,
+        x_fealo3_bm: float, x_fe2o3_bm: float, x_al2o3_bm: float
     ) -> float:
         """Calculates the shear modulus of Bridgmanite at ambient conditions.
 
@@ -1011,34 +1011,34 @@ class _EOS_bm(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
-            x_mgsio3: Molar concentration of MgSiO3 in Bm.
-            x_fesio3: Molar concentration of FeSiO3 in Bm.
-            x_fealo3: Molar concentration of FeAlO3 in Bm.
-            x_fe2o3: Molar concentration of Fe2O3 in Bm.
-            x_al2o3: Molar concentration of Al2O3 in Bm.
+            x_mgsio3_bm: Molar concentration of MgSiO3 in Bm.
+            x_fesio3_bm: Molar concentration of FeSiO3 in Bm.
+            x_fealo3_bm: Molar concentration of FeAlO3 in Bm.
+            x_fe2o3_bm: Molar concentration of Fe2O3 in Bm.
+            x_al2o3_bm: Molar concentration of Al2O3 in Bm.
 
         Returns:
             Shear modulus of Bm at ambient conditions. [GPa]
         """
         g_v = (
-            x_mgsio3 * data.v_mgsio3_0 * data.g_mgsio3_0 +
-            x_fesio3 * data.v_fesio3_0 * data.g_fesio3_0 +
-            x_fealo3 * data.v_fealo3_0 * data.g_fealo3_0 +
-            x_al2o3 * data.v_al2o3_0 * data.g_al2o3_0 +
-            x_fe2o3 * data.v_fe2o3_0 * data.g_fe2o3_0
+            x_mgsio3_bm * data.v_mgsio3_0 * data.g_mgsio3_0 +
+            x_fesio3_bm * data.v_fesio3_0 * data.g_fesio3_0 +
+            x_fealo3_bm * data.v_fealo3_0 * data.g_fealo3_0 +
+            x_al2o3_bm * data.v_al2o3_0 * data.g_al2o3_0 +
+            x_fe2o3_bm * data.v_fe2o3_0 * data.g_fe2o3_0
         ) / v_tot
         g_r = v_tot / (
-            x_mgsio3 * data.v_mgsio3_0 / data.g_mgsio3_0 +
-            x_fesio3 * data.v_fesio3_0 / data.g_fesio3_0 +
-            x_fealo3 * data.v_fealo3_0 / data.g_fealo3_0 +
-            x_al2o3 * data.v_al2o3_0 / data.g_al2o3_0 +
-            x_fe2o3 * data.v_fe2o3_0 / data.g_fe2o3_0
+            x_mgsio3_bm * data.v_mgsio3_0 / data.g_mgsio3_0 +
+            x_fesio3_bm * data.v_fesio3_0 / data.g_fesio3_0 +
+            x_fealo3_bm * data.v_fealo3_0 / data.g_fealo3_0 +
+            x_al2o3_bm * data.v_al2o3_0 / data.g_al2o3_0 +
+            x_fe2o3_bm * data.v_fe2o3_0 / data.g_fe2o3_0
         )
         return 0.5 * (g_v + g_r)
 
     def _g_prime_bm_VRH_average(
-        self, data, v_tot: float, x_mgsio3: float, x_fesio3: float, x_fealo3: float,
-        x_fe2o3: float, x_al2o3: float
+        self, data, v_tot: float, x_mgsio3_bm: float, x_fesio3_bm: float,
+        x_fealo3_bm: float, x_fe2o3_bm: float, x_al2o3_bm: float
     ) -> float:
         """Calculates the pressure derivative of the shear modulus for Bridgmanite.
 
@@ -1049,28 +1049,28 @@ class _EOS_bm(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
-            x_mgsio3: Molar concentration of MgSiO3 in Bm.
-            x_fesio3: Molar concentration of FeSiO3 in Bm.
-            x_fealo3: Molar concentration of FeAlO3 in Bm.
-            x_fe2o3: Molar concentration of Fe2O3 in Bm.
-            x_al2o3: Molar concentration of Al2O3 in Bm.
+            x_mgsio3_bm: Molar concentration of MgSiO3 in Bm.
+            x_fesio3_bm: Molar concentration of FeSiO3 in Bm.
+            x_fealo3_bm: Molar concentration of FeAlO3 in Bm.
+            x_fe2o3_bm: Molar concentration of Fe2O3 in Bm.
+            x_al2o3_bm: Molar concentration of Al2O3 in Bm.
 
         Returns:
             Pressure derivative of the shear modulus for Bm.
         """
         g_prime_v = (
-            x_mgsio3 * data.v_mgsio3_0 * data.g_prime_mgsio3 +
-            x_fesio3 * data.v_fesio3_0 * data.g_prime_fesio3 +
-            x_fealo3 * data.v_fealo3_0 * data.g_prime_fealo3 +
-            x_al2o3 * data.v_al2o3_0 * data.g_prime_al2o3 +
-            x_fe2o3 * data.v_fe2o3_0 * data.g_prime_fe2o3
+            x_mgsio3_bm * data.v_mgsio3_0 * data.g_prime_mgsio3 +
+            x_fesio3_bm * data.v_fesio3_0 * data.g_prime_fesio3 +
+            x_fealo3_bm * data.v_fealo3_0 * data.g_prime_fealo3 +
+            x_al2o3_bm * data.v_al2o3_0 * data.g_prime_al2o3 +
+            x_fe2o3_bm * data.v_fe2o3_0 * data.g_prime_fe2o3
         ) / v_tot
         g_prime_r = v_tot / (
-            x_mgsio3 * data.v_mgsio3_0 / data.g_prime_mgsio3 +
-            x_fesio3 * data.v_fesio3_0 / data.g_prime_fesio3 +
-            x_fealo3 * data.v_fealo3_0 / data.g_prime_fealo3 +
-            x_al2o3 * data.v_al2o3_0 / data.g_prime_al2o3 +
-            x_fe2o3 * data.v_fe2o3_0 / data.g_prime_fe2o3
+            x_mgsio3_bm * data.v_mgsio3_0 / data.g_prime_mgsio3 +
+            x_fesio3_bm * data.v_fesio3_0 / data.g_prime_fesio3 +
+            x_fealo3_bm * data.v_fealo3_0 / data.g_prime_fealo3 +
+            x_al2o3_bm * data.v_al2o3_0 / data.g_prime_al2o3 +
+            x_fe2o3_bm * data.v_fe2o3_0 / data.g_prime_fe2o3
         )
         return 0.5 * (g_prime_v + g_prime_r)
 
@@ -1254,8 +1254,8 @@ class _EOS_bm(_EOS):
         )
 
     def _MGD(
-        self, data, P: float, T: float, v_bm: float, x_mgsio3: float, x_fesio3: float,
-        x_fealo3: float, x_fe2o3: float, x_al2o3: float
+        self, data, P: float, T: float, v_bm: float, x_mgsio3_bm: float,
+        x_fesio3_bm: float, x_fealo3_bm: float, x_fe2o3_bm: float, x_al2o3_bm: float
     ) -> float:
         """Implements the Mie-Gruneisen-Debye EOS for Bridgmanite.
 
@@ -1271,22 +1271,24 @@ class _EOS_bm(_EOS):
             P: Considered pressure. [GPa]
             T: Considered temperature. [K]
             v_bm: Volume of Bm at considered conditions. [cm^3/mol]
-            x_mgsio3: Molar concentration of MgSiO3 in Bm.
-            x_fesio3: Molar concentration of FeSiO3 in Bm.
-            x_fealo3: Molar concentration of FeAlO3 in Bm.
-            x_fe2o3: Molar concentration of Fe2O3 in Bm.
-            x_al2o3: Molar concentration of Al2O3 in Bm.
+            x_mgsio3_bm: Molar concentration of MgSiO3 in Bm.
+            x_fesio3_bm: Molar concentration of FeSiO3 in Bm.
+            x_fealo3_bm: Molar concentration of FeAlO3 in Bm.
+            x_fe2o3_bm: Molar concentration of Fe2O3 in Bm.
+            x_al2o3_bm: Molar concentration of Al2O3 in Bm.
 
         Returns:
             Residue of the Mie-Gruneisen-Debye EOS for Bm. [GPa]
         """
         # Volume of Bm at ambient conditions
-        v_bm_0 = self._v_bm_0(data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3)
+        v_bm_0 = self._v_bm_0(
+            data, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm, x_fe2o3_bm, x_al2o3_bm
+        )
         # Volume ratio
         v_ratio_bm = v_bm_0 / v_bm
         # Isothermal bulk modulus of Bm at ambient conditions
         k_bm_0 = self._k_bm_0_VRH_average(
-            data, v_bm_0, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3
+            data, v_bm_0, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm, x_fe2o3_bm, x_al2o3_bm
         )
         # Gruneisen parameter
         gamma_bm = self._gamma(data, v_ratio_bm)
@@ -1299,8 +1301,8 @@ class _EOS_bm(_EOS):
         return super()._MGD(v_bm, gamma_bm, E_th_bm_0, E_th_bm, BM3_bm)
 
     def _g_t0(
-        self, data, v_bm: float, x_mgsio3: float, x_fesio3: float, x_fealo3: float,
-        x_fe2o3: float, x_al2o3: float
+        self, data, v_bm: float, x_mgsio3_bm: float, x_fesio3_bm: float,
+        x_fealo3_bm: float, x_fe2o3_bm: float, x_al2o3_bm: float
     ) -> float:
         """Calculates the shear modulus of Bridgmanite at ambient temperature.
 
@@ -1313,36 +1315,38 @@ class _EOS_bm(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             v_bm: Volume of Bm at considered conditions. [cm^3/mol]
-            x_mgsio3: Molar concentration of MgSiO3 in Bm.
-            x_fesio3: Molar concentration of FeSiO3 in Bm.
-            x_fealo3: Molar concentration of FeAlO3 in Bm.
-            x_fe2o3: Molar concentration of Fe2O3 in Bm.
-            x_al2o3: Molar concentration of Al2O3 in Bm.
+            x_mgsio3_bm: Molar concentration of MgSiO3 in Bm.
+            x_fesio3_bm: Molar concentration of FeSiO3 in Bm.
+            x_fealo3_bm: Molar concentration of FeAlO3 in Bm.
+            x_fe2o3_bm: Molar concentration of Fe2O3 in Bm.
+            x_al2o3_bm: Molar concentration of Al2O3 in Bm.
 
         Returns:
             Shear modulus of Bm at ambient temperature. [GPa]
         """
         # Volume of Bm at ambient conditions
-        v_bm_0 = self._v_bm_0(data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3)
+        v_bm_0 = self._v_bm_0(
+            data, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm, x_fe2o3_bm, x_al2o3_bm
+        )
         # Volume ratio
         v_ratio_bm = v_bm_0 / v_bm
         # Isothermal bulk modulus of Bm at ambient conditions
         k_bm_0 = self._k_bm_0_VRH_average(
-            data, v_bm_0, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3
+            data, v_bm_0, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm, x_fe2o3_bm, x_al2o3_bm
         )
         # Shear modulus of Bm at ambient conditions
         g_bm_0 = self._g_bm_0_VRH_average(
-            data, v_bm_0, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3
+            data, v_bm_0, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm, x_fe2o3_bm, x_al2o3_bm
         )
         # Pressure derivative of the shear modulus for Bm
         g_prime_bm = self._g_prime_bm_VRH_average(
-            data, v_bm_0, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3
+            data, v_bm_0, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm, x_fe2o3_bm, x_al2o3_bm
         )
         return super()._g_t0(v_ratio_bm, k_bm_0, g_bm_0, g_prime_bm)
 
     def _g(
-        self, data, T: float, v_bm: float, x_mgsio3: float, x_fesio3: float,
-        x_fealo3: float, x_fe2o3: float, x_al2o3: float
+        self, data, T: float, v_bm: float, x_mgsio3_bm: float, x_fesio3_bm: float,
+        x_fealo3_bm: float, x_fe2o3_bm: float, x_al2o3_bm: float
     ) -> float:
         """Calculates the shear modulus of Bridgmanite.
 
@@ -1359,17 +1363,19 @@ class _EOS_bm(_EOS):
             data: Data holder for the MineralProperties class.
             T: Considered temperature. [K]
             v_bm: Volume of Bm at considered conditions. [cm^3/mol]
-            x_mgsio3: Molar concentration of MgSiO3 in Bm.
-            x_fesio3: Molar concentration of FeSiO3 in Bm.
-            x_fealo3: Molar concentration of FeAlO3 in Bm.
-            x_fe2o3: Molar concentration of Fe2O3 in Bm.
-            x_al2o3: Molar concentration of Al2O3 in Bm.
+            x_mgsio3_bm: Molar concentration of MgSiO3 in Bm.
+            x_fesio3_bm: Molar concentration of FeSiO3 in Bm.
+            x_fealo3_bm: Molar concentration of FeAlO3 in Bm.
+            x_fe2o3_bm: Molar concentration of Fe2O3 in Bm.
+            x_al2o3_bm: Molar concentration of Al2O3 in Bm.
 
         Returns:
             Shear modulus of Bm. [GPa]
         """
         # Shear modulus at ambient temperature
-        g_bm_t0 = self._g_t0(data, v_bm, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3)
+        g_bm_t0 = self._g_t0(
+            data, v_bm, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm, x_fe2o3_bm, x_al2o3_bm
+        )
         return g_bm_t0 + data.g_dot_bm * (T - 300)
 
     def _k_t(
@@ -1402,8 +1408,8 @@ class _EOS_bm(_EOS):
         )
 
     def _k_s(
-        self, data, T: float, v_bm: float, x_mgsio3: float, x_fesio3: float,
-        x_fealo3: float, x_fe2o3: float, x_al2o3: float
+        self, data, T: float, v_bm: float, x_mgsio3_bm: float, x_fesio3_bm: float,
+        x_fealo3_bm: float, x_fe2o3_bm: float, x_al2o3_bm: float
     ) -> float:
         """Calculates the isentropic bulk modulus of Bridgmanite.
 
@@ -1416,17 +1422,19 @@ class _EOS_bm(_EOS):
             data: Data holder for the MineralProperties class.
             T: Considered temperature. [K]
             v_bm: Volume of Bm at considered conditions. [cm^3/mol]
-            x_mgsio3: Molar concentration of MgSiO3 in Bm.
-            x_fesio3: Molar concentration of FeSiO3 in Bm.
-            x_fealo3: Molar concentration of FeAlO3 in Bm.
-            x_fe2o3: Molar concentration of Fe2O3 in Bm.
-            x_al2o3: Molar concentration of Al2O3 in Bm.
+            x_mgsio3_bm: Molar concentration of MgSiO3 in Bm.
+            x_fesio3_bm: Molar concentration of FeSiO3 in Bm.
+            x_fealo3_bm: Molar concentration of FeAlO3 in Bm.
+            x_fe2o3_bm: Molar concentration of Fe2O3 in Bm.
+            x_al2o3_bm: Molar concentration of Al2O3 in Bm.
 
         Returns:
             Isentropic bulk modulus of Bm. [GPa]
         """
         # Volume of Bm at ambient conditions
-        v_bm_0 = self._v_bm_0(data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3)
+        v_bm_0 = self._v_bm_0(
+            data, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm, x_fe2o3_bm, x_al2o3_bm
+        )
         # Volume ratio
         v_ratio_bm = v_bm_0 / v_bm
         # Gruneisen parameter
@@ -1435,7 +1443,7 @@ class _EOS_bm(_EOS):
         theta_bm = self._theta(data, v_ratio_bm)
         # Isothermal bulk modulus of Bm at ambient conditions
         k_bm_0 = self._k_bm_0_VRH_average(
-            data, v_bm_0, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3
+            data, v_bm_0, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm, x_fe2o3_bm, x_al2o3_bm
         )
         # Vibrational energy at T
         E_th_bm = self._E_th(data, T, v_ratio_bm)

@@ -220,17 +220,20 @@ def _calc_seismic_properties(
 
     # Calculating composition of Bridgmanite in term of components
     al_excess = (ratio_fe * x_feo_bm < x_alo2_bm)
-    x_mgsio3 = 1 - x_alo2_bm - (2 - ratio_fe) * x_feo_bm
-    x_fesio3 = 2 * (1 - ratio_fe) * x_feo_bm
-    x_fealo3 = 2 * (1.0 - al_excess) * x_alo2_bm + 2 * al_excess * ratio_fe * x_feo_bm
-    x_fe2o3 = (1.0 - al_excess) * (ratio_fe * x_feo_bm - x_alo2_bm)
-    x_al2o3 = al_excess * (x_alo2_bm - ratio_fe * x_feo_bm)
+    x_mgsio3_bm = 1 - x_alo2_bm - (2 - ratio_fe) * x_feo_bm
+    x_fesio3_bm = 2 * (1 - ratio_fe) * x_feo_bm
+    x_fealo3_bm = (
+        2 * (1.0 - al_excess) * x_alo2_bm + 2 * al_excess * ratio_fe * x_feo_bm
+    )
+    x_fe2o3_bm = (1.0 - al_excess) * (ratio_fe * x_feo_bm - x_alo2_bm)
+    x_al2o3_bm = al_excess * (x_alo2_bm - ratio_fe * x_feo_bm)
 
     # Calculating molar mass of Fp and Bm
     m_fp = self.m_mgo * (1 - x_feo_fp) + self.m_feo * x_feo_fp
     m_bm = (
-        self.m_mgsio3 * x_mgsio3 + self.m_fealo3 * x_fealo3 + self.m_al2o3 * x_al2o3 +
-        self.m_fe2o3 * x_fe2o3 + self.m_fesio3 * x_fesio3
+        self.m_mgsio3 * x_mgsio3_bm + self.m_fealo3 * x_fealo3_bm +
+        self.m_al2o3 * x_al2o3_bm + self.m_fe2o3 * x_fe2o3_bm +
+        self.m_fesio3 * x_fesio3_bm
     )
 
     # Calculating volume of the three minerals
@@ -241,14 +244,16 @@ def _calc_seismic_properties(
     # Calculating the shear modulus of the three minerals
     g_fp = fp_eos._g(self, self.T_am + dT, v_fp, eta_ls, x_feo_fp)
     g_bm = bm_eos._g(
-        self, self.T_am + dT, v_bm, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3
+        self, self.T_am + dT, v_bm, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm, x_fe2o3_bm,
+        x_al2o3_bm
     )
     g_capv = capv_eos._g(self, self.T_am + dT, v_capv)
 
     # Calculating the isentropic bulk modulus of the three minerals
     k_s_fp = fp_eos._k_s(self, self.T_am + dT, v_fp, eta_ls, x_feo_fp)
     k_s_bm = bm_eos._k_s(
-        self, self.T_am + dT, v_bm, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3
+        self, self.T_am + dT, v_bm, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm, x_fe2o3_bm,
+        x_al2o3_bm
     )
     k_s_capv = capv_eos._k_s(self, self.T_am + dT, v_capv)
 
