@@ -315,8 +315,8 @@ class _EOS(ABC):
 
     @abstractmethod
     def _k_t(
-        self, k_v: float, gamma: float, q: float, v: float, E_th: float, E_th_0: float,
-         E_th_dv: float
+        self, v: float, gamma: float, k_v: float, E_th_0: float, E_th: float,
+        E_th_dv: float, q: float
     ) -> float:
         """Calculates the isothermal bulk modulus.
 
@@ -326,14 +326,14 @@ class _EOS(ABC):
         It corresponds to the fifth equation in (B5) of Jackson and Rigden (1996).
 
         Args:
-            k_v: Isothermal bulk modulus at ambient temperature. [GPa]
-            gamma: Gruneisen parameter at the considered conditions.
-            q: Exponent of the Gruneisen parameter.
             v: Volume at considered conditions. [cm^3/mol]
-            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
+            gamma: Gruneisen parameter at the considered conditions.
+            k_v: Isothermal bulk modulus at ambient temperature. [GPa]
             E_th_0: Vibrational energy at ambient conditions. [cm^3 GPa mol^−1]
+            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
             E_th_dv: Partial derivative of the vibrational energy with respect to
                      temperature. [cm^3 GPa mol^−1 K^-1]
+            q: Exponent of the Gruneisen parameter.
 
         Returns:
             Isothermal bulk modulus. [GPa]
@@ -858,7 +858,7 @@ class _EOS_fp(_EOS):
             Isothermal bulk modulus Fp. [GPa]
         """
         return super()._k_t(
-            k_v_fp, gamma_fp, data.q_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv
+            v_fp, gamma_fp, k_v_fp, E_th_fp_0, E_th_fp, E_th_fp_dv, data.q_fp
         )
 
     def _k_s(self, data, T: float, v_fp: float, eta_ls: float, x_fp: float) -> float:
@@ -1388,7 +1388,7 @@ class _EOS_bm(_EOS):
             Isothermal bulk modulus of Bm. [GPa]
         """
         return super()._k_t(
-            k_v_bm, gamma_bm, data.q_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv
+            v_bm, gamma_bm, k_v_bm, E_th_bm_0, E_th_bm, E_th_bm_dv, data.q_bm
         )
 
     def _k_s(
@@ -1751,8 +1751,8 @@ class _EOS_capv(_EOS):
             Isothermal bulk modulus of CaPv. [GPa]
         """
         return super()._k_t(
-            k_v_capv, gamma_capv, data.q_capv, v_capv, E_th_capv, E_th_capv_0,
-            E_th_capv_dv
+            v_capv, gamma_capv, k_v_capv, E_th_capv_0, E_th_capv, E_th_capv_dv,
+            data.q_capv
         )
 
     def _k_s(self, data, T: float, v_capv: float) -> float:
