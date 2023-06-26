@@ -355,6 +355,9 @@ def _solve_mineral_composition(
                 self, p_capv, p_bm, p_fp, feo, al, ratio_fe, x_feo_fp, rho_capv, rho_bm,
                 rho_fp
             )
+        else:
+            ### No solution has been found ###
+            x_feo_bm, x_alo2_bm = 0.0, 0.0
 
         if ((not al_excess) and (x_feo_fp == 0.0 or ratio_fe * x_feo_bm < x_alo2_bm)):
             ### First guess for al_excess is incorrect ###
