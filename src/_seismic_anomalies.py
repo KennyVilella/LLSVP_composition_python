@@ -213,7 +213,7 @@ def _calc_seismic_properties(
     rho_capv = self.rho_capv_0 * self.v_casio3_0 / solution[0]
 
     # Calculating the spin configuration
-    index_x = np.argmin(np.abs(self.x_vec - x_feo_fp))
+    index_x = np.argmin(np.abs(self.x_feo_fp_vec - x_feo_fp))
     index_T = np.argmin(np.abs(self.T_vec - (self.T_am + dT)))
     index_P = np.argmin(np.abs(P_table[index_T, :, index_x] - self.P_am))
     eta_ls = spin_config[index_T, index_P, index_x]

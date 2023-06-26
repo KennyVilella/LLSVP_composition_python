@@ -58,10 +58,12 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
     fp_eos = _EOS_fp()
 
     # Initializing range for spin configuration calculation
-    x_min = 0.0
-    x_max = 1.0
-    delta_x = 0.01
-    self.x_vec = np.arange(x_min, x_max + delta_x, delta_x)
+    x_feo_fp_min = 0.0
+    x_feo_fp_max = 1.0
+    delta_x_feo_fp = 0.01
+    self.x_feo_fp_vec = np.arange(
+        x_feo_fp_min, x_feo_fp_max + delta_x_feo_fp, delta_x_feo_fp
+    )
     self.T_vec = self.T_am + np.arange(
         0.0, self.dT_max + self.delta_dT, self.delta_dT
     )
@@ -69,18 +71,18 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
     # Calculating range for the volume of Fp using extreme cases
     solution = scipy.optimize.fsolve(
         lambda x: fp_eos._MGD(
-            self, self.P_am, self.T_am + self.dT_max, x, 1.0, x_max
+            self, self.P_am, self.T_am + self.dT_max, x, 1.0, x_feo_fp_max
         ), 10.
     )
     v_min = solution[0] / 0.15055 - 2.0
     solution = scipy.optimize.fsolve(
-        lambda x: fp_eos._MGD(self, self.P_am, self.T_am, x, 0.0, x_max), 10.
+        lambda x: fp_eos._MGD(self, self.P_am, self.T_am, x, 0.0, x_feo_fp_max), 10.
     )
     v_max = solution[0] / 0.15055
 
     n_T = len(self.T_vec)
     n_v = round((v_max - v_min) / self.delta_v) + 1
-    n_x = len(self.x_vec)
+    n_x = len(self.x_feo_fp_vec)
 
     # Initializing
     spin_config = np.zeros((n_T, n_v, n_x))
@@ -94,7 +96,7 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
     g_hs = 15.
 
     for ii in range(n_x):
-        x_feo_fp = self.x_vec[ii]
+        x_feo_fp = self.x_feo_fp_vec[ii]
         for jj in range(n_T):
             T = self.T_vec[jj]
             for kk in range(n_v):
