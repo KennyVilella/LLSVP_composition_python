@@ -375,7 +375,7 @@ def _solve_mineral_composition(
                 )
 
             # Checking that solution is indeed correct
-            if (ratio_fe * x_feo_bm > x_alo2_bm):
+            if (x_feo_fp != 0.0 and ratio_fe * x_feo_bm > x_alo2_bm):
                 ### Guess for al_excess is again incorrect ###
                 # Skipping this calculation
                 x_feo_bm, x_feo_fp, x_alo2_bm, rho_bm, rho_fp = (0., 0., 0., 0., 0.)
@@ -402,7 +402,7 @@ def _solve_mineral_composition(
                 )
 
             # Checking that solution is indeed correct
-            if (ratio_fe * x_feo_bm < x_alo2_bm):
+            if (x_feo_fp != 0.0 and ratio_fe * x_feo_bm < x_alo2_bm):
                 ### Guess for al_excess is again incorrect ###
                 # Skipping this calculation
                 x_feo_bm, x_feo_fp, x_alo2_bm, rho_bm, rho_fp = (0., 0., 0., 0., 0.)
