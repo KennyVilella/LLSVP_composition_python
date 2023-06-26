@@ -265,7 +265,7 @@ class _EOS(ABC):
         return BM3  - gamma / v * (E_th - E_th_0)
 
     @abstractmethod
-    def _g_t0(self, g_0: float, g_prime: float, k_0: float, v_ratio: float) -> float:
+    def _g_t0(self, v_ratio: float, k_0: float, g_0: float, g_prime: float) -> float:
         """Calculates the shear modulus at ambient temperature.
 
         This function calculates the shear modulus at ambient temperature.
@@ -274,11 +274,11 @@ class _EOS(ABC):
         the second-order terms can be neglected.
 
         Args:
-            g_0: Shear modulus at ambient conditions. [GPa]
-            g_prime: Pressure derivative of the shear modulus.
-            k_0: Isothermal bulk modulus at ambient conditions. [GPa]
             v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
                      and V the volume at the considered conditions.
+            k_0: Isothermal bulk modulus at ambient conditions. [GPa]
+            g_0: Shear modulus at ambient conditions. [GPa]
+            g_prime: Pressure derivative of the shear modulus.
 
         Returns:
             Shear modulus at ambient temperature. [GPa]
@@ -804,7 +804,7 @@ class _EOS_fp(_EOS):
         g_fp_0 = self._g_fp_0_VRH_average(data, eta_ls, x_fp)
         # Pressure derivative of the shear modulus for Fp
         g_prime_fp = self._g_prime_fp_VRH_average(data, eta_ls, x_fp)
-        return super()._g_t0(g_fp_0, g_prime_fp, k_fp_0, v_ratio)
+        return super()._g_t0(v_ratio, k_fp_0, g_fp_0, g_prime_fp)
 
     def _g(self, data, T: float, v_fp: float, eta_ls: float, x_fp: float) -> float:
         """Calculates the shear modulus of Ferropericlase.
@@ -1328,7 +1328,7 @@ class _EOS_bm(_EOS):
         g_prime_bm = self._g_prime_bm_VRH_average(
             data, x_mgsio3, x_fesio3, x_fealo3, x_fe2o3, x_al2o3, v_bm_0
         )
-        return super()._g_t0(g_bm_0, g_prime_bm, k_bm_0, v_ratio)
+        return super()._g_t0(v_ratio, k_bm_0, g_bm_0, g_prime_bm)
 
     def _g(
         self, data, T: float, v_bm: float, x_mgsio3: float, x_fesio3: float,
@@ -1695,7 +1695,7 @@ class _EOS_capv(_EOS):
             Shear modulus of Bm at ambient temperature. [GPa]
         """
         return super()._g_t0(
-            data.g_casio3_0, data.g_prime_casio3, data.k_casio3_0, v_ratio
+            v_ratio, data.k_casio3_0, data.g_casio3_0, data.g_prime_casio3
         )
 
     def _g(self, data, T: float, v_capv: float) -> float:
