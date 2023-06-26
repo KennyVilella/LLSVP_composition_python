@@ -738,7 +738,7 @@ class _EOS_fp(_EOS):
         )
 
     def _MGD(
-        self, data, T: float, P: float, v_fp: float, eta_ls: float, x_fp: float
+        self, P: float, data, T: float, v_fp: float, eta_ls: float, x_fp: float
     ) -> float:
         """Implements the Mie-Gruneisen-Debye EOS for Ferropericlase.
 
@@ -751,8 +751,8 @@ class _EOS_fp(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            T: Considered temperature. [K]
             P: Considered pressure. [GPa]
+            T: Considered temperature. [K]
             v_fp: Volume of Fp at considered conditions. [cm^3/mol]
             eta_ls: Average proportion of FeO in the low spin state.
             x_fp: Molar concentration of FeO in Fp.
@@ -1244,7 +1244,7 @@ class _EOS_bm(_EOS):
         )
 
     def _MGD(
-        self, data, T: float, P: float, v_bm: float, x_mgsio3: float, x_fesio3: float,
+        self, data, P: float, T: float, v_bm: float, x_mgsio3: float, x_fesio3: float,
         x_fealo3: float, x_fe2o3: float, x_al2o3: float
     ) -> float:
         """Implements the Mie-Gruneisen-Debye EOS for Bridgmanite.
@@ -1258,8 +1258,8 @@ class _EOS_bm(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            T: Considered temperature. [K]
             P: Considered pressure. [GPa]
+            T: Considered temperature. [K]
             v_bm: Volume of Bm at considered conditions. [cm^3/mol]
             x_mgsio3: Molar concentration of MgSiO3 in Bm.
             x_fesio3: Molar concentration of FeSiO3 in Bm.
@@ -1645,7 +1645,7 @@ class _EOS_capv(_EOS):
             E_th_capv_dT, data.q_capv
         )
 
-    def _MGD(self, data, T: float, P: float, v_capv: float) -> float:
+    def _MGD(self, data, P: float, T: float, v_capv: float) -> float:
         """Implements the Mie-Gruneisen-Debye EOS for Calcio Perovskite.
 
         This function calculates the residue of the Mie-Gruneisen-Debye equation of
@@ -1657,8 +1657,8 @@ class _EOS_capv(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            T: Considered temperature. [K]
             P: Considered pressure. [GPa]
+            T: Considered temperature. [K]
             v_capv: Volume of CaPv at considered conditions. [cm^3/mol]
 
         Returns:
