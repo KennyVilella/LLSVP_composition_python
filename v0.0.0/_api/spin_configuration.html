@@ -121,7 +121,7 @@ in Fp.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src._spin_configuration._energy_equation">
-<span class="sig-prename descclassname"><span class="pre">src._spin_configuration.</span></span><span class="sig-name descname"><span class="pre">_energy_equation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src._spin_configuration._energy_equation" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">src._spin_configuration.</span></span><span class="sig-name descname"><span class="pre">_energy_equation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src._spin_configuration._energy_equation" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the energy level of Fe2+ associated with a given spin state.</p>
 <p>This function calculates the energy level of Fe2+ in Ferropericlase (Fp) for a given
 spin state (low spin state, mixed spin state, or high spin state), as shown in the
@@ -134,11 +134,11 @@ the simulator.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>v_0</strong> – Volume of Ferropericlase at ambient conditions. [A^3]</p></li>
+<li><p><strong>v</strong> – Volume of Ferropericlase at considered conditions. [A^3]</p></li>
 <li><p><strong>spin_state</strong> – Indicates the spin state considered.
 1 for low spin state, 2 for mixed spin state, and 3 for high
 spin state.</p></li>
-<li><p><strong>v_0</strong> – Volume of Ferropericlase at ambient conditions. [A^3]</p></li>
-<li><p><strong>v</strong> – Volume of Ferropericlase at considered conditions. [A^3]</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -149,16 +149,16 @@ spin state.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="src._spin_configuration._splitting_energy">
-<span class="sig-prename descclassname"><span class="pre">src._spin_configuration.</span></span><span class="sig-name descname"><span class="pre">_splitting_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src._spin_configuration._splitting_energy" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">src._spin_configuration.</span></span><span class="sig-name descname"><span class="pre">_splitting_energy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#src._spin_configuration._splitting_energy" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates the splitting energy.</p>
 <p>This function calculates the coupling energy between low spin state iron atoms
 in Ferropericlase (Fp).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x_fp</strong> – FeO content in ferropericlase.</p></li>
 <li><p><strong>v_0</strong> – Volume of Ferropericlase at ambient conditions. [A^3]</p></li>
 <li><p><strong>v</strong> – Volume of Ferropericlase at considered conditions. [A^3]</p></li>
+<li><p><strong>x_fp</strong> – FeO content in ferropericlase.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -205,7 +205,6 @@ in Ferropericlase (Fp).</p>
     <dl>
       <dt>Versions</dt>
       <dd><a href="spin_configuration.html">v0.0.0</a></dd>
-      <dd><a href="../../main/_api/spin_configuration.html">main</a></dd>
   </div>
 </div><script>
       jQuery(function () {
