@@ -242,7 +242,7 @@ class _EOS(ABC):
 
     @abstractmethod
     def _MGD(
-        self, BM3: float, gamma: float, v: float, E_th: float, E_th_0: float
+        self, v: float, gamma: float, E_th_0: float, E_th: float, BM3: float
     ) -> float:
         """Calculates the residue of the Mie-Gruneisen-Debye equation of state.
 
@@ -252,12 +252,12 @@ class _EOS(ABC):
         It corresponds to the eq. (33) of Jackson and Rigden (1996).
 
         Args:
+            v: Volume at considered conditions. [cm^3/mol]
+            gamma: Gruneisen parameter at the considered conditions.
+            E_th_0: Vibrational energy at ambient conditions. [cm^3 GPa mol^−1]
+            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
             BM3: Residue of the third-order Birch–Murnaghan isothermal
                  equation of state. [GPa]
-            gamma: Gruneisen parameter at the considered conditions.
-            v: Volume at considered conditions. [cm^3/mol]
-            E_th: Vibrational energy at the considered conditions. [cm^3 GPa mol^−1]
-            E_th_0: Vibrational energy at ambient conditions. [cm^3 GPa mol^−1]
 
         Returns:
             Residue of the Mie-Gruneisen-Debye equation of state. [GPa]
@@ -774,7 +774,7 @@ class _EOS_fp(_EOS):
         E_th_fp = self._E_th(data, T, v_ratio)
         # Vibrational energy at ambient conditions
         E_th_fp_0 = self._E_th(data, 300, v_ratio)
-        return super()._MGD(BM3_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0)
+        return super()._MGD(v_fp, gamma_fp, E_th_fp_0, E_th_fp, BM3_fp)
 
     def _g_t0(self, data, v_fp: float, eta_ls: float, x_fp: float) -> float:
         """Calculates the shear modulus of Ferropericlase at ambient temperature.
@@ -1286,7 +1286,7 @@ class _EOS_bm(_EOS):
         E_th_bm = self._E_th(data, T, v_ratio)
         # Vibrational energy at ambient conditions
         E_th_bm_0 = self._E_th(data, 300, v_ratio)
-        return super()._MGD(BM3_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0)
+        return super()._MGD(v_bm, gamma_bm, E_th_bm_0, E_th_bm, BM3_bm)
 
     def _g_t0(
         self, data, v_bm: float, x_mgsio3: float, x_fesio3: float, x_fealo3: float,
@@ -1674,7 +1674,7 @@ class _EOS_capv(_EOS):
         E_th_capv = self._E_th(data, T, v_ratio)
         # Vibrational energy at ambient conditions
         E_th_capv_0 = self._E_th(data, 300, v_ratio)
-        return super()._MGD(BM3_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0)
+        return super()._MGD(v_capv, gamma_capv, E_th_capv_0, E_th_capv, BM3_capv)
 
     def _g_t0(self, data, v_ratio: float) -> float:
         """Calculates the shear modulus of Calcio Perovskite at ambient temperature.
