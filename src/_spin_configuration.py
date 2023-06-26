@@ -74,14 +74,14 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
             self, self.P_am, self.T_am + self.dT_max, x, 1.0, x_feo_fp_max
         ), 10.
     )
-    v_min = solution[0] / 0.15055 - 2.0
+    v_fp_min = solution[0] / 0.15055 - 2.0
     solution = scipy.optimize.fsolve(
         lambda x: fp_eos._MGD(self, self.P_am, self.T_am, x, 0.0, x_feo_fp_max), 10.
     )
-    v_max = solution[0] / 0.15055
+    v_fp_max = solution[0] / 0.15055
 
     n_T = len(self.T_vec)
-    n_v = round((v_max - v_min) / self.delta_v) + 1
+    n_v = round((v_fp_max - v_fp_min) / self.delta_v_fp) + 1
     n_x = len(self.x_feo_fp_vec)
 
     # Initializing
@@ -101,7 +101,7 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
             T = self.T_vec[jj]
             for kk in range(n_v):
                 # Volume of Fp at P, T condition
-                v_fp = kk * self.delta_v + v_min
+                v_fp = kk * self.delta_v_fp + v_fp_min
 
                 # Energy associated with low and high spin state
                 E_ls = _energy_equation(self, v_fp_0, v_fp, 1)

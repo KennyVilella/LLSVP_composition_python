@@ -199,8 +199,8 @@ class MineralProperties:
         ratio_fe_bm_max: Maximum oxidation state in Bm assumed for the considered
                          compositions. Default to 1.
         delta_ratio_fe: Step value for the oxidation state in Bm. Default to 0.1.
-        delta_v: Step value for the volume in the spin transition calculation.
-                 Default to 0.05. [A^3]
+        delta_v_fp: Step value for the volume in the spin transition calculation.
+                    Default to 0.05. [A^3]
         delta_P: Step value for the pressure in the spin transition calculation.
                  Default to 2.0. [GPa]
     """
@@ -366,7 +366,7 @@ class MineralProperties:
         self.delta_ratio_fe = conditions.get("delta_ratio_fe", 0.1)
 
         # Stepping used for the spin transition calculation
-        self.delta_v = conditions.get("delta_v", 0.05)
+        self.delta_v_fp = conditions.get("delta_v_fp", 0.05)
         self.delta_P = conditions.get("delta_P", 2.0)
 
 
