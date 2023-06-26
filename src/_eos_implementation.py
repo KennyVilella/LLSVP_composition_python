@@ -650,8 +650,8 @@ class _EOS_fp(_EOS):
         return super()._E_th(T, theta_fp, int_part_fp, 2, data.R)
 
     def _E_th_dv(
-        self, data, T: float, theta_fp: float, gamma_fp: float, v_fp: float,
-        E_th_fp: float, E_th_fp_0: float
+        self, data, T: float, v_fp: float, theta_fp: float, gamma_fp: float,
+        E_th_fp_0: float, E_th_fp: float
     ) -> float:
         """Calculates derivative of vibrational energy with respect to volume for Fp.
 
@@ -665,12 +665,12 @@ class _EOS_fp(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             T: Considered temperature. [K]
+            v_fp: Volume of Fp at considered conditions. [cm^3/mol]
             theta_fp: Debye temperature of Fp at the considered conditions. [K]
             gamma_fp: Gruneisen parameter of Fp at the considered conditions.
-            v_fp: Volume of Fp at considered conditions. [cm^3/mol]
+            E_th_fp_0: Vibrational energy of Fp at ambient conditions. [cm^3 GPa mol^−1]
             E_th_fp: Vibrational energy of Fp at the considered conditions.
                      [cm^3 GPa mol^−1]
-            E_th_fp_0: Vibrational energy of Fp at ambient conditions. [cm^3 GPa mol^−1]
 
         Returns:
             Partial derivative of the vibrational energy with respect to temperature
@@ -895,7 +895,7 @@ class _EOS_fp(_EOS):
         E_th_fp_0 = self._E_th(data, 300, v_ratio)
         # Partial derivative of the vibrational energy with respect to volume
         E_th_fp_dv = self._E_th_dv(
-            data, T, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0
+            data, T, v_fp, theta_fp, gamma_fp, E_th_fp_0, E_th_fp
         )
         # Isothermal bulk modulus at ambient temperature
         k_v_fp = super()._k_v(v_ratio, k_fp_0, data.k0t_prime_fp)
@@ -1156,8 +1156,8 @@ class _EOS_bm(_EOS):
         return super()._E_th(T, theta_bm, int_part_bm, 5, data.R)
 
     def _E_th_dv(
-        self, data, T: float, theta_bm: float, gamma_bm: float, v_bm: float,
-        E_th_bm: float, E_th_bm_0: float
+        self, data, T: float, v_bm: float, theta_bm: float, gamma_bm: float,
+        E_th_bm_0: float, E_th_bm: float
     ) -> float:
         """Calculates derivative of vibrational energy with respect to volume for Bm.
 
@@ -1171,12 +1171,12 @@ class _EOS_bm(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             T: Considered temperature. [K]
+            v_bm: Volume of Bm at considered conditions. [cm^3/mol]
             theta_bm: Debye temperature of Bm at the considered conditions. [K]
             gamma_bm: Gruneisen parameter of Bm at the considered conditions.
-            v_bm: Volume of Bm at considered conditions. [cm^3/mol]
+            E_th_bm_0: Vibrational energy of Bm at ambient conditions. [cm^3 GPa mol^−1]
             E_th_bm: Vibrational energy of Bm at the considered conditions.
                      [cm^3 GPa mol^−1]
-            E_th_bm_0: Vibrational energy of Bm at ambient conditions. [cm^3 GPa mol^−1]
 
         Returns:
             Partial derivative of the vibrational energy with respect to temperature
@@ -1433,7 +1433,7 @@ class _EOS_bm(_EOS):
         E_th_bm_0 = self._E_th(data, 300, v_ratio)
         # Partial derivative of the vibrational energy with respect to volume
         E_th_bm_dv = self._E_th_dv(
-            data, T, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0
+            data, T, v_bm, theta_bm, gamma_bm, E_th_bm_0, E_th_bm
         )
         # Isothermal bulk modulus at ambient temperature
         k_v_bm = super()._k_v(v_ratio, k_bm_0, data.k0t_prime_bm)
@@ -1556,8 +1556,8 @@ class _EOS_capv(_EOS):
         return super()._E_th(T, theta_capv, int_part_capv, 5, data.R)
 
     def _E_th_dv(
-        self, data, T: float, theta_capv: float, gamma_capv: float, v_capv: float,
-        E_th_capv: float, E_th_capv_0: float
+        self, data, T: float, v_capv: float, theta_capv: float, gamma_capv: float,
+        E_th_capv_0: float, E_th_capv: float
     ) -> float:
         """Calculates derivative of vibrational energy with respect to volume for CaPv.
 
@@ -1571,13 +1571,13 @@ class _EOS_capv(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             T: Considered temperature. [K]
+            v_capv: Volume of CaPv at considered conditions. [cm^3/mol]
             theta_capv: Debye temperature of CaPv at the considered conditions. [K]
             gamma_capv: Gruneisen parameter of CaPv at the considered conditions.
-            v_bm: Volume of CaPv at considered conditions. [cm^3/mol]
-            E_th_capv: Vibrational energy of CaPv at the considered conditions.
-                       [cm^3 GPa mol^−1]
             E_th_capv_0: Vibrational energy of CaPv at ambient conditions.
                          [cm^3 GPa mol^−1]
+            E_th_capv: Vibrational energy of CaPv at the considered conditions.
+                       [cm^3 GPa mol^−1]
 
         Returns:
             Partial derivative of the vibrational energy with respect to temperature
@@ -1783,7 +1783,7 @@ class _EOS_capv(_EOS):
         E_th_capv_0 = self._E_th(data, 300, v_ratio)
         # Partial derivative of the vibrational energy with respect to volume
         E_th_capv_dv = self._E_th_dv(
-            data, T, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
+            data, T, v_capv, theta_capv, gamma_capv, E_th_capv_0, E_th_capv
         )
         # Isothermal bulk modulus at ambient temperature
         k_v_capv = super()._k_v(v_ratio, data.k_casio3_0, data.k0t_prime_capv)
