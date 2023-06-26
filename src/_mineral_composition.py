@@ -111,7 +111,7 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray)
 
         # Calculating density of CaPv at P, T conditions
         solution = scipy.optimize.fsolve(
-            lambda x: capv_eos._MGD(self, self.T_am + dT, self.P_am, x), 30.
+            lambda x: capv_eos._MGD(self, self.P_am, self.T_am + dT, x), 30.
         )
         rho_capv = self.rho_capv_0 * self.v_casio3_0 / solution[0]
 
@@ -203,8 +203,8 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray)
 
                             # Calculating the composition of the rock assemblage
                             x_result = _solve_mineral_composition(
-                                self, dT, p_capv, p_bm, feo, al, ratio_fe,
-                                spin_config, P_table, rho_capv, p_fp, x_init
+                                self, x_init, dT, p_capv, p_bm, p_fp, feo, al, ratio_fe,
+                                spin_config, P_table, rho_capv
                             )
 
                             # Loading results
@@ -281,9 +281,9 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray)
 
 
 def _solve_mineral_composition(
-    self, dT: float, p_capv: float, p_bm: float, feo: float, al: float, ratio_fe: float,
-    spin_config: np.ndarray, P_table: np.ndarray, rho_capv: float, p_fp: float,
-    x_init: list
+    self, x_init: list, dT: float, p_capv: float, p_bm: float, p_fp: float, feo: float,
+    al: float, ratio_fe: float, spin_config: np.ndarray, P_table: np.ndarray,
+    rho_capv: float
 ) -> list:
     """Calculates the mineral composition of the provided rock assemblage.
 
@@ -308,9 +308,14 @@ def _solve_mineral_composition(
     property.
 
     Args:
+        x_init: Starting conditions for the physics problem, that is, the molar
+                concentration of FeO in Bm, the molar concentration of FeO in Fp, the
+                molar concentration of AlO2 in Bm, the rescaled density of Bm, and the
+                rescaled density of Fp.
         dT: Temperature contrast against the ambient mantle. [K]
         p_capv: Proportion of CaPv. [vol%]
         p_bm: Proportion of Bm. [vol%]
+        p_fp: Proportion of Fp. [vol%]
         feo: FeO content in the rock assemblage. [wt%]
         al: Al2O3 content in the rock assemblage. [wt%]
         ratio_fe: Oxidation state in Bm.
@@ -320,11 +325,6 @@ def _solve_mineral_composition(
                  FeO content in Fp.
         rho_capv: Density of CaPv for the considered conditions. Its value has been
                   rescaled by 5500. [kg/m^3]
-        p_fp: Proportion of Fp. [vol%]
-        x_init: Starting conditions for the physics problem, that is, the molar
-                concentration of FeO in Bm, the molar concentration of FeO in Fp, the
-                molar concentration of AlO2 in Bm, the rescaled density of Bm, and the
-                rescaled density of Fp.
 
     Returns:
         A list containing the molar concentration of FeO in Bm, FeO in Fp, AlO2 in Bm,
@@ -344,16 +344,16 @@ def _solve_mineral_composition(
         # Solving the system of equation
         x_init = [x_init[1], x_init[3] / 5500, x_init[4] / 5500]
         x_feo_fp, rho_bm, rho_fp = _solve_with_fp(
-            self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, spin_config, P_table,
-            rho_capv, p_fp, al_excess
+            self, x_init, dT, p_capv, p_bm, p_fp, feo, al, ratio_fe, spin_config,
+            P_table, rho_capv, al_excess
         )
 
         if (x_feo_fp != 0.0):
             ### A solution has been found ###
             # Getting extra outputs
-            x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
-                self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
-                rho_capv, p_fp
+            x_feo_bm, x_alo2_bm = _oxides_content_in_bm(
+                self, p_capv, p_bm, p_fp, feo, al, ratio_fe, x_feo_fp, rho_capv, rho_bm,
+                rho_fp
             )
 
         if ((not al_excess) and (x_feo_fp == 0.0 or ratio_fe * x_feo_bm < x_alo2_bm)):
@@ -362,16 +362,16 @@ def _solve_mineral_composition(
             al_excess = True
             x_init = [x_feo_fp, rho_bm, rho_fp]
             x_feo_fp, rho_bm, rho_fp = _solve_with_fp(
-                self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, spin_config,
-                P_table, rho_capv, p_fp, al_excess
+                self, x_init, dT, p_capv, p_bm, p_fp, feo, al, ratio_fe, spin_config,
+                P_table, rho_capv, al_excess
             )
 
             if (x_feo_fp != 0.0):
                 ### A solution has been found ###
                 # Getting extra outputs
-                x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
-                    self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
-                    rho_capv, p_fp
+                x_feo_bm, x_alo2_bm = _oxides_content_in_bm(
+                    self, p_capv, p_bm, p_fp, feo, al, ratio_fe, x_feo_fp, rho_capv,
+                    rho_bm, rho_fp
                 )
 
             # Checking that solution is indeed correct
@@ -389,16 +389,16 @@ def _solve_mineral_composition(
             al_excess = False
             x_init = [x_feo_fp, rho_bm, rho_fp]
             x_feo_fp, rho_bm, rho_fp = _solve_with_fp(
-                self, x_init, dT, p_capv, p_bm, feo, al, ratio_fe, spin_config,
-                P_table, rho_capv, p_fp, al_excess
+                self, x_init, dT, p_capv, p_bm, p_fp, feo, al, ratio_fe, spin_config,
+                P_table, rho_capv, al_excess
             )
 
             if (x_feo_fp != 0.0):
                 ### A solution has been found ###
                 # Getting extra outputs
-                x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
-                    self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe,
-                    rho_capv, p_fp
+                x_feo_bm, x_alo2_bm = _oxides_content_in_bm(
+                    self, p_capv, p_bm, p_fp, feo, al, ratio_fe, x_feo_fp, rho_capv,
+                    rho_bm, rho_fp
                 )
 
             # Checking that solution is indeed correct
@@ -413,8 +413,8 @@ def _solve_mineral_composition(
 
         # Verifying that the solution is indeed consistent
         _set_eqs_with_fp(
-            self, [x_feo_fp, rho_bm, rho_fp], dT, p_capv, p_bm, feo, al, ratio_fe,
-            spin_config, P_table, rho_capv, p_fp, al_excess, True
+            self, [x_feo_fp, rho_bm, rho_fp], dT, p_capv, p_bm, p_fp, feo, al, ratio_fe,
+            spin_config, P_table, rho_capv, al_excess, True
         )
     else:
         ### Ferropericlase is absent from the rock assemblage ###
@@ -467,9 +467,9 @@ def _solve_mineral_composition(
 
 
 def _solve_with_fp(
-    self, x_init: list, dT: float, p_capv: float, p_bm: float, feo: float, al: float,
-    ratio_fe: float, spin_config: np.ndarray, P_table: np.ndarray, rho_capv: float,
-    p_fp: float, al_excess: bool
+    self, x_init: list, dT: float, p_capv: float, p_bm: float, p_fp: float, feo: float,
+    al: float, ratio_fe: float, spin_config: np.ndarray, P_table: np.ndarray,
+    rho_capv: float, al_excess: bool
 ) -> list:
     """Solves the physics problem with Ferropericlase.
 
@@ -498,6 +498,7 @@ def _solve_with_fp(
         dT: Temperature contrast against the ambient mantle. [K]
         p_capv: Proportion of CaPv. [vol%]
         p_bm: Proportion of Bm. [vol%]
+        p_fp: Proportion of Fp. [vol%]
         feo: FeO content in the rock assemblage. [wt%]
         al: Al2O3 content in the rock assemblage. [wt%]
         ratio_fe: Oxidation state in Bm.
@@ -507,7 +508,6 @@ def _solve_with_fp(
                  FeO content in Fp.
         rho_capv: Density of CaPv for the considered conditions. Its value has been
                   rescaled by 5500. [kg/m^3]
-        p_fp: Proportion of Fp. [vol%]
         al_excess: Flag indicating whether alumina is assumed to be in excess in Bm.
 
     Returns:
@@ -524,8 +524,8 @@ def _solve_with_fp(
             # Solving the system of equation
             solution = scipy.optimize.newton_krylov(
                 lambda x: _set_eqs_with_fp(
-                    self, x, dT, p_capv, p_bm, feo, al, ratio_fe, spin_config,
-                    P_table, rho_capv, p_fp, al_excess
+                    self, x, dT, p_capv, p_bm, p_fp, feo, al, ratio_fe, spin_config,
+                    P_table, rho_capv, al_excess
                 ),
                 x_init,
                 maxiter=1000
@@ -544,9 +544,9 @@ def _solve_with_fp(
 
 
 def _set_eqs_with_fp(
-    self, var_in: list, dT: float, p_capv: float, p_bm: float, feo: float, al: float,
-    ratio_fe: float, spin_config: np.ndarray, P_table: np.ndarray, rho_capv: float,
-    p_fp: float, al_excess: bool, testing: bool=False
+    self, var_in: list, dT: float, p_capv: float, p_bm: float, p_fp: float, feo: float,
+    al: float, ratio_fe: float, spin_config: np.ndarray, P_table: np.ndarray,
+    rho_capv: float, al_excess: bool, testing: bool=False
 ) -> list:
     """Implements the equations for the physics problem with Ferropericlase.
 
@@ -566,6 +566,7 @@ def _set_eqs_with_fp(
         dT: Temperature contrast against the ambient mantle. [K]
         p_capv: Proportion of CaPv. [vol%]
         p_bm: Proportion of Bm. [vol%]
+        p_fp: Proportion of Fp. [vol%]
         feo: FeO content in the rock assemblage. [wt%]
         al: Al2O3 content in the rock assemblage. [wt%]
         ratio_fe: Oxidation state in Bm.
@@ -575,7 +576,6 @@ def _set_eqs_with_fp(
                  FeO content in Fp.
         rho_capv: Density of CaPv for the considered conditions. Its value has been
                   rescaled by 5500. [kg/m^3]
-        p_fp: Proportion of Fp. [vol%]
         al_excess: Flag indicating whether alumina is assumed to be in excess in Bm.
         testing: Whether tests are conducted to make sure that the provided values of
                  var_in lead to a consistent composition.
@@ -611,8 +611,8 @@ def _set_eqs_with_fp(
     k_fp_0 = fp_eos._k_fp_0_VRH_average(self, eta_ls, x_feo_fp)
 
     # Mineral composition of Bm
-    x_alo2_bm, x_feo_bm = _oxides_content_in_bm(
-        self, x_feo_fp, rho_bm, rho_fp, p_capv, p_bm, feo, al, ratio_fe, rho_capv, p_fp
+    x_feo_bm, x_alo2_bm = _oxides_content_in_bm(
+        self, p_capv, p_bm, p_fp, feo, al, ratio_fe, x_feo_fp, rho_capv, rho_bm, rho_fp
     )
 
     # Checking that the oxides content makes sense
@@ -649,12 +649,12 @@ def _set_eqs_with_fp(
 
     # Equation from the EOS for Fp
     eq_MGD_fp = fp_eos._MGD(
-        self, self.T_am + dT, self.P_am, v_fp, eta_ls, x_feo_fp
+        self, self.P_am, self.T_am + dT, v_fp, eta_ls, x_feo_fp
     ) 
 
     # Equation from the EOS for Bm
     eq_MGD_bm = bm_eos._MGD(
-        self, self.T_am + dT, self.P_am, v_bm, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm,
+        self, self.P_am, self.T_am + dT, v_bm, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm,
         x_fe2o3_bm, x_al2o3_bm
     )
 
@@ -708,8 +708,8 @@ def _set_eqs_with_fp(
 
 
 def _oxides_content_in_bm(
-    self, x_feo_fp: float, rho_bm: float, rho_fp: float, p_capv: float, p_bm: float,
-    feo: float, al: float, ratio_fe: float, rho_capv: float, p_fp: float
+    self, p_capv: float, p_bm: float, p_fp: float, feo: float, al: float,
+    ratio_fe: float, x_feo_fp: float, rho_capv: float, rho_bm: float, rho_fp: float
 ) -> list:
     """Calculates the molar concentration of FeO and AlO2 in Bridgmanite.
 
@@ -718,19 +718,19 @@ def _oxides_content_in_bm(
     supplementary material of Vilella et al. (2021).
 
     Args:
+        p_capv: Proportion of CaPv. [vol%]
+        p_bm: Proportion of Bm. [vol%]
+        p_fp: Proportion of Fp. [vol%]
+        feo: FeO content in the rock assemblage. [wt%]
+        al: Al2O3 content in the rock assemblage. [wt%]
+        ratio_fe: Oxidation state in Bm.
         x_feo_fp: The molar concentration of FeO in Fp.
+        rho_capv: Density of CaPv for the considered conditions. Its value has been
+                  rescaled by 5500. [kg/m^3]
         rho_bm: Density of Bm for the considered conditions. Its value has been
                 rescaled by 5500. [kg/m^3]
         rho_fp: Density of Fp for the considered conditions. Its value has been
                 rescaled by 5500. [kg/m^3]
-        p_capv: Proportion of CaPv. [vol%]
-        p_bm: Proportion of Bm. [vol%]
-        feo: FeO content in the rock assemblage. [wt%]
-        al: Al2O3 content in the rock assemblage. [wt%]
-        ratio_fe: Oxidation state in Bm.
-        rho_capv: Density of CaPv for the considered conditions. Its value has been
-                  rescaled by 5500. [kg/m^3]
-        p_fp: Proportion of Fp. [vol%]
 
     Returns:
         A list containing the molar concentration of AlO2 in Bm and FeO in Bm.
@@ -751,7 +751,7 @@ def _oxides_content_in_bm(
     )
     x_feo_bm  = c_1 * x_alo2_bm
 
-    return [x_alo2_bm, x_feo_bm]
+    return [x_feo_bm, x_alo2_bm]
 
 
 def _solve_without_fp(
@@ -902,7 +902,7 @@ def _set_eqs_without_fp(
 
     # Equation from the EOS for Bm
     eq_MGD_bm = bm_eos._MGD(
-        self, self.T_am + dT, self.P_am, v_bm, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm,
+        self, self.P_am, self.T_am + dT, v_bm, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm,
         x_fe2o3_bm, x_al2o3_bm
     )
 
