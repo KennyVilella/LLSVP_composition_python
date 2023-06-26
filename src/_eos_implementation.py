@@ -602,7 +602,7 @@ class _EOS_fp(_EOS):
         gamma_fp = self._gamma(data, v_ratio)
         return super()._theta(data.theta_fp_0, data.gamma_fp_0, gamma_fp, data.q_fp)
 
-    def _BM3(self, data, P: float, k_fp_0: float, v_ratio: float) -> float:
+    def _BM3(self, data, P: float, v_ratio: float, k_fp_0: float) -> float:
         """Implements the third-order Birch–Murnaghan isothermal EOS for Ferropericlase.
 
         This function calculates the residue of the third-order Birch–Murnaghan
@@ -614,9 +614,9 @@ class _EOS_fp(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             P: Considered pressure. [GPa]
-            k_fp_0: Isothermal bulk modulus of Fp at ambient conditions. [GPa]
             v_ratio: Volume ratio V0 / V of Fp, where V0 is the volume of Fp at ambient
                      conditions and V the volume of Fp at the considered conditions.
+            k_fp_0: Isothermal bulk modulus of Fp at ambient conditions. [GPa]
 
         Returns:
             Residue of the third-order Birch–Murnaghan isothermal equation of state
@@ -769,7 +769,7 @@ class _EOS_fp(_EOS):
         # Gruneisen parameter
         gamma_fp = self._gamma(data, v_ratio)
         # Third-order Birch–Murnaghan isothermal equation of state
-        BM3_fp = self._BM3(data, P, k_fp_0, v_ratio)
+        BM3_fp = self._BM3(data, P, v_ratio, k_fp_0)
         # Vibrational energy at T
         E_th_fp = self._E_th(data, T, v_ratio)
         # Vibrational energy at ambient conditions
@@ -1108,7 +1108,7 @@ class _EOS_bm(_EOS):
             data.theta_bm_0, data.gamma_bm_0, gamma_bm, data.q_bm
         )
 
-    def _BM3(self, data, P: float, k_bm_0: float, v_ratio: float) -> float:
+    def _BM3(self, data, P: float, v_ratio: float, k_bm_0: float) -> float:
         """Implements the third-order Birch–Murnaghan isothermal EOS for Bridgmanite.
 
         This function calculates the residue of the third-order Birch–Murnaghan
@@ -1120,9 +1120,9 @@ class _EOS_bm(_EOS):
         Args:
             data: Data holder for the MineralProperties class.
             P: Considered pressure. [GPa]
-            k_bm_0: Isothermal bulk modulus of Bm at ambient conditions. [GPa]
             v_ratio: Volume ratio V0 / V of Bm, where V0 is the volume of Bm at ambient
                      conditions and V the volume of Bm at the considered conditions.
+            k_bm_0: Isothermal bulk modulus of Bm at ambient conditions. [GPa]
 
         Returns:
             Residue of the third-order Birch–Murnaghan isothermal equation of state
@@ -1281,7 +1281,7 @@ class _EOS_bm(_EOS):
         # Gruneisen parameter
         gamma_bm = self._gamma(data, v_ratio)
         # Third-order Birch–Murnaghan isothermal equation of state
-        BM3_bm = self._BM3(data, P, k_bm_0, v_ratio)
+        BM3_bm = self._BM3(data, P, v_ratio, k_bm_0)
         # Vibrational energy at T
         E_th_bm = self._E_th(data, T, v_ratio)
         # Vibrational energy at ambient conditions
