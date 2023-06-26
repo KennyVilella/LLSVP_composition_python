@@ -961,7 +961,7 @@ class _EOS_bm(_EOS):
         return v_bm_0
 
     def _k_bm_0_VRH_average(
-        self, data, v_tot: float, x_mgsio3_bm: float, x_fesio3_bm: float,
+        self, data, v_bm_0: float, x_mgsio3_bm: float, x_fesio3_bm: float,
         x_fealo3_bm: float, x_fe2o3_bm: float, x_al2o3_bm: float
     ) -> float:
         """Calculates the isothermal bulk modulus of Bridgmanite at ambient conditions.
@@ -972,7 +972,7 @@ class _EOS_bm(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
+            v_bm_0: Volume of Bm at ambient conditions. [cm^3/mol]
             x_mgsio3_bm: Molar concentration of MgSiO3 in Bm.
             x_fesio3_bm: Molar concentration of FeSiO3 in Bm.
             x_fealo3_bm: Molar concentration of FeAlO3 in Bm.
@@ -988,8 +988,8 @@ class _EOS_bm(_EOS):
             x_fealo3_bm * data.v_fealo3_0 * data.k_fealo3_0 +
             x_al2o3_bm * data.v_al2o3_0 * data.k_al2o3_0 +
             x_fe2o3_bm * data.v_fe2o3_0 * data.k_fe2o3_0
-        ) / v_tot
-        k_r = v_tot / (
+        ) / v_bm_0
+        k_r = v_bm_0 / (
             x_mgsio3_bm * data.v_mgsio3_0 / data.k_mgsio3_0 + 
             x_fesio3_bm * data.v_fesio3_0 / data.k_fesio3_0 +
             x_fealo3_bm * data.v_fealo3_0 / data.k_fealo3_0 +
@@ -999,7 +999,7 @@ class _EOS_bm(_EOS):
         return 0.5 * (k_v + k_r)
 
     def _g_bm_0_VRH_average(
-        self, data, v_tot: float, x_mgsio3_bm: float, x_fesio3_bm: float,
+        self, data, v_bm_0: float, x_mgsio3_bm: float, x_fesio3_bm: float,
         x_fealo3_bm: float, x_fe2o3_bm: float, x_al2o3_bm: float
     ) -> float:
         """Calculates the shear modulus of Bridgmanite at ambient conditions.
@@ -1010,7 +1010,7 @@ class _EOS_bm(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
+            v_bm_0: Volume of Bm at ambient conditions. [cm^3/mol]
             x_mgsio3_bm: Molar concentration of MgSiO3 in Bm.
             x_fesio3_bm: Molar concentration of FeSiO3 in Bm.
             x_fealo3_bm: Molar concentration of FeAlO3 in Bm.
@@ -1026,8 +1026,8 @@ class _EOS_bm(_EOS):
             x_fealo3_bm * data.v_fealo3_0 * data.g_fealo3_0 +
             x_al2o3_bm * data.v_al2o3_0 * data.g_al2o3_0 +
             x_fe2o3_bm * data.v_fe2o3_0 * data.g_fe2o3_0
-        ) / v_tot
-        g_r = v_tot / (
+        ) / v_bm_0
+        g_r = v_bm_0 / (
             x_mgsio3_bm * data.v_mgsio3_0 / data.g_mgsio3_0 +
             x_fesio3_bm * data.v_fesio3_0 / data.g_fesio3_0 +
             x_fealo3_bm * data.v_fealo3_0 / data.g_fealo3_0 +
@@ -1037,7 +1037,7 @@ class _EOS_bm(_EOS):
         return 0.5 * (g_v + g_r)
 
     def _g_prime_bm_VRH_average(
-        self, data, v_tot: float, x_mgsio3_bm: float, x_fesio3_bm: float,
+        self, data, v_bm_0: float, x_mgsio3_bm: float, x_fesio3_bm: float,
         x_fealo3_bm: float, x_fe2o3_bm: float, x_al2o3_bm: float
     ) -> float:
         """Calculates the pressure derivative of the shear modulus for Bridgmanite.
@@ -1048,7 +1048,7 @@ class _EOS_bm(_EOS):
 
         Args:
             data: Data holder for the MineralProperties class.
-            v_tot: Volume of Bm at ambient conditions. [cm^3/mol]
+            v_bm_0: Volume of Bm at ambient conditions. [cm^3/mol]
             x_mgsio3_bm: Molar concentration of MgSiO3 in Bm.
             x_fesio3_bm: Molar concentration of FeSiO3 in Bm.
             x_fealo3_bm: Molar concentration of FeAlO3 in Bm.
@@ -1064,8 +1064,8 @@ class _EOS_bm(_EOS):
             x_fealo3_bm * data.v_fealo3_0 * data.g_prime_fealo3 +
             x_al2o3_bm * data.v_al2o3_0 * data.g_prime_al2o3 +
             x_fe2o3_bm * data.v_fe2o3_0 * data.g_prime_fe2o3
-        ) / v_tot
-        g_prime_r = v_tot / (
+        ) / v_bm_0
+        g_prime_r = v_bm_0 / (
             x_mgsio3_bm * data.v_mgsio3_0 / data.g_prime_mgsio3 +
             x_fesio3_bm * data.v_fesio3_0 / data.g_prime_fesio3 +
             x_fealo3_bm * data.v_fealo3_0 / data.g_prime_fealo3 +
