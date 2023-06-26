@@ -77,7 +77,7 @@ def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
 
     # Calculating the density of CaPv in the ambient mantle
     solution = scipy.optimize.fsolve(
-        lambda x: capv_eos._MGD(self, self.T_am, self.P_am, x), 20.
+        lambda x: capv_eos._MGD(self, self.P_am, self.T_am, x), 20.
     )
     rho_capv_am = self.rho_capv_0 * self.v_casio3_0 / solution[0]
 
@@ -85,16 +85,15 @@ def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
     p_fp_am = 1 - self.p_capv_am - self.p_bm_am
     x_init = [0.1, 0.3, 0.1, 5500.0, 6500.0]
     solution = _solve_mineral_composition(
-        self, 0., self.p_capv_am, self.p_bm_am, self.iron_content_am,
-        self.al_content_am, self.ratio_fe_bm_am, spin_config, P_table, rho_capv_am,
-        p_fp_am, x_init
+        self, x_init, 0., self.p_capv_am, self.p_bm_am, p_fp_am, self.iron_content_am,
+        self.al_content_am, self.ratio_fe_bm_am, spin_config, P_table, rho_capv_am
     )
     x_feo_bm_am, x_feo_fp_am, x_alo2_bm_am, rho_bm_am, rho_fp_am = solution
 
     # Calculating the seismic properties of the ambient mantle
     rho_ref, v_phi_ref, v_s_ref, v_p_ref = _calc_seismic_properties(
-        self, spin_config, P_table, 0., self.p_capv_am, self.p_bm_am, p_fp_am,
-        self.iron_content_am, self.al_content_am, self.ratio_fe_bm_am, x_feo_bm_am,
+        self, 0., self.p_capv_am, self.p_bm_am, p_fp_am, self.iron_content_am,
+        self.al_content_am, self.ratio_fe_bm_am, spin_config, P_table, x_feo_bm_am,
         x_feo_fp_am, x_alo2_bm_am, rho_bm_am, rho_fp_am
     )
 
@@ -133,8 +132,8 @@ def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
 
                 # Calculating the seismic properties of the rock assemblage
                 rho, v_phi, v_s, v_p = _calc_seismic_properties(
-                    self, spin_config, P_table, dT, p_capv, p_bm, p_fp, feo, al,
-                    ratio_fe, x_feo_bm, x_feo_fp, x_alo2_bm, rho_bm, rho_fp
+                    self, dT, p_capv, p_bm, p_fp, feo, al, ratio_fe, spin_config,
+                    P_table, x_feo_bm, x_feo_fp, x_alo2_bm, rho_bm, rho_fp
                 )
 
                 # Calculating the seismic anomalies of the rock assemblage
@@ -152,8 +151,8 @@ def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
                     )
 
 def _calc_seismic_properties(
-    self, spin_config: np.ndarray, P_table: np.ndarray, dT: float, p_capv: float,
-    p_bm: float, p_fp: float, feo: float, al: float, ratio_fe: float, x_feo_bm: float,
+    self, dT: float, p_capv: float, p_bm: float, p_fp: float, feo: float, al: float,
+    ratio_fe: float, spin_config: np.ndarray, P_table: np.ndarray, x_feo_bm: float,
     x_feo_fp: float, x_alo2_bm: float, rho_bm: float, rho_fp: float
 ) -> list:
     """Calculates the seismic properties of a rock assemblage.
@@ -181,10 +180,6 @@ def _calc_seismic_properties(
     throughout the considered parameter space.
 
     Args:
-        spin_config: Average spin state of FeO in Fp for a given value for the
-                     temperature, volume of Fp, and FeO content in Fp.
-        P_table: Pressure for a given value for the temperature, volume of Fp, and
-                 FeO content in Fp.
         dT: Temperature contrast against the ambient mantle. [K]
         p_capv: Proportion of CaPv. [vol%]
         p_bm: Proportion of Bm. [vol%]
@@ -192,6 +187,10 @@ def _calc_seismic_properties(
         feo: FeO content in the rock assemblage. [wt%]
         al: Al2O3 content in the rock assemblage. [wt%]
         ratio_fe: Oxidation state in Bm.
+        spin_config: Average spin state of FeO in Fp for a given value for the
+                     temperature, volume of Fp, and FeO content in Fp.
+        P_table: Pressure for a given value for the temperature, volume of Fp, and
+                 FeO content in Fp.
         x_feo_bm: Molar concentration of FeO in Bm.
         x_feo_fp: Molar concentration of FeO in Fp.
         x_alo2_bm: Molar concentration of AlO2 in Bm.
@@ -209,7 +208,7 @@ def _calc_seismic_properties(
    
     # Calculating the density of CaPv
     solution = scipy.optimize.fsolve(
-        lambda x: capv_eos._MGD(self, self.T_am + dT, self.P_am, x), 20.
+        lambda x: capv_eos._MGD(self, self.P_am, self.T_am + dT, x), 20.
     )
     rho_capv = self.rho_capv_0 * self.v_casio3_0 / solution[0]
 
