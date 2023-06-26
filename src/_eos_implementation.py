@@ -287,7 +287,7 @@ class _EOS(ABC):
             g_0 + (1 - v_ratio**(2/3)) * 0.5 * (5 * g_0 - 3 * k_0 * g_prime)
         )
 
-    def _k_v(self, k_0: float, k0t_prime: float, v_ratio: float) -> float:
+    def _k_v(self, v_ratio: float, k_0: float, k0t_prime: float) -> float:
         """Calculates the isothermal bulk modulus at ambient temperature.
 
         This function calculates the isothermal bulk modulus at ambient temperature.
@@ -298,11 +298,11 @@ class _EOS(ABC):
         of the isothermal bulk modulus (eq. 5).
 
         Args:
+            v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
+                     and V the volume at the considered conditions.
             k_0: Isothermal bulk modulus at ambient conditions. [GPa]
             k0t_prime: Pressure derivative of the isothermal bulk modulus at ambient
                        conditions.
-            v_ratio: Volume ratio V0 / V, where V0 is the volume at ambient conditions
-                     and V the volume at the considered conditions.
 
         Returns:
             Isothermal bulk modulus at ambient temperature. [GPa]
@@ -898,7 +898,7 @@ class _EOS_fp(_EOS):
             data, T, theta_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0
         )
         # Isothermal bulk modulus at ambient temperature
-        k_v_fp = super()._k_v(k_fp_0, data.k0t_prime_fp, v_ratio)
+        k_v_fp = super()._k_v(v_ratio, k_fp_0, data.k0t_prime_fp)
         # Isothermal bulk modulus
         k_t_fp = self._k_t(
             data, k_v_fp, gamma_fp, v_fp, E_th_fp, E_th_fp_0, E_th_fp_dv
@@ -1436,7 +1436,7 @@ class _EOS_bm(_EOS):
             data, T, theta_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0
         )
         # Isothermal bulk modulus at ambient temperature
-        k_v_bm = super()._k_v(k_bm_0, data.k0t_prime_bm, v_ratio)
+        k_v_bm = super()._k_v(v_ratio, k_bm_0, data.k0t_prime_bm)
         # Isothermal bulk modulus
         k_t_bm = self._k_t(
             data, k_v_bm, gamma_bm, v_bm, E_th_bm, E_th_bm_0, E_th_bm_dv
@@ -1786,7 +1786,7 @@ class _EOS_capv(_EOS):
             data, T, theta_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0
         )
         # Isothermal bulk modulus at ambient temperature
-        k_v_capv = super()._k_v(data.k_casio3_0, data.k0t_prime_capv, v_ratio)
+        k_v_capv = super()._k_v(v_ratio, data.k_casio3_0, data.k0t_prime_capv)
         # Isothermal bulk modulus
         k_t_capv = self._k_t(
             data, k_v_capv, gamma_capv, v_capv, E_th_capv, E_th_capv_0, E_th_capv_dv
