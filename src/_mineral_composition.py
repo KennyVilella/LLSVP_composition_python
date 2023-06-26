@@ -600,7 +600,7 @@ def _set_eqs_with_fp(
         return None
 
     # Average spin state of FeO
-    index_x = np.argmin(np.abs(self.x_vec - x_feo_fp))
+    index_x = np.argmin(np.abs(self.x_feo_fp_vec - x_feo_fp))
     index_T = np.argmin(np.abs(self.T_vec - (self.T_am + dT)))
     index_P = np.argmin(np.abs(P_table[index_T, :, index_x] - self.P_am))
     eta_ls = spin_config[index_T, index_P, index_x]
@@ -666,15 +666,18 @@ def _set_eqs_with_fp(
 
     if (testing):
         # Verifying that error on the spin configuration is reasonable
+        delta_x_feo_fp = self.x_feo_fp_vec[1] - self.x_feo_fp_vec[0]
         if (abs(P_table[index_T, index_P, index_x] - self.P_am) > self.delta_P):
             print("Error on P for the spin transition is large")
             print("Pressure for the spin configuration: `",
                 P_table[index_T, index_P, index_x], "` actual pressure: `", self.P_am,
                 "`")
-        elif ((self.x_vec[index_x] - x_feo_fp) > self.x_vec[1] - self.x_vec[0]):
+        elif ((self.x_feo_fp_vec[index_x] - x_feo_fp) > delta_x_feo_fp):
             print("Error on x for the spin transition is large")
-            print("FeO content for the spin configuration: `",
-                self.x_vec[index_x], "` calculated FeO content: `", x_feo_fp, "`")
+            print(
+                "FeO content for the spin configuration: `", self.x_feo_fp_vec[index_x],
+                "` calculated FeO content: `", x_feo_fp, "`"
+            )
 
 
         # Verifying that the sum of all chemical elements is equal to 1

@@ -58,10 +58,12 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
     fp_eos = _EOS_fp()
 
     # Initializing range for spin configuration calculation
-    x_min = 0.0
-    x_max = 1.0
-    delta_x = 0.01
-    self.x_vec = np.arange(x_min, x_max + delta_x, delta_x)
+    x_feo_fp_min = 0.0
+    x_feo_fp_max = 1.0
+    delta_x_feo_fp = 0.01
+    self.x_feo_fp_vec = np.arange(
+        x_feo_fp_min, x_feo_fp_max + delta_x_feo_fp, delta_x_feo_fp
+    )
     self.T_vec = self.T_am + np.arange(
         0.0, self.dT_max + self.delta_dT, self.delta_dT
     )
@@ -69,18 +71,18 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
     # Calculating range for the volume of Fp using extreme cases
     solution = scipy.optimize.fsolve(
         lambda x: fp_eos._MGD(
-            self, self.P_am, self.T_am + self.dT_max, x, 1.0, x_max
+            self, self.P_am, self.T_am + self.dT_max, x, 1.0, x_feo_fp_max
         ), 10.
     )
-    v_min = solution[0] / 0.15055 - 2.0
+    v_fp_min = solution[0] / 0.15055 - 2.0
     solution = scipy.optimize.fsolve(
-        lambda x: fp_eos._MGD(self, self.P_am, self.T_am, x, 0.0, x_max), 10.
+        lambda x: fp_eos._MGD(self, self.P_am, self.T_am, x, 0.0, x_feo_fp_max), 10.
     )
-    v_max = solution[0] / 0.15055
+    v_fp_max = solution[0] / 0.15055
 
     n_T = len(self.T_vec)
-    n_v = round((v_max - v_min) / self.delta_v) + 1
-    n_x = len(self.x_vec)
+    n_v = round((v_fp_max - v_fp_min) / self.delta_v_fp) + 1
+    n_x = len(self.x_feo_fp_vec)
 
     # Initializing
     spin_config = np.zeros((n_T, n_v, n_x))
@@ -94,19 +96,19 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
     g_hs = 15.
 
     for ii in range(n_x):
-        x_fp = self.x_vec[ii]
+        x_feo_fp = self.x_feo_fp_vec[ii]
         for jj in range(n_T):
             T = self.T_vec[jj]
             for kk in range(n_v):
                 # Volume of Fp at P, T condition
-                v_fp = kk * self.delta_v + v_min
+                v_fp = kk * self.delta_v_fp + v_fp_min
 
                 # Energy associated with low and high spin state
                 E_ls = _energy_equation(self, v_fp_0, v_fp, 1)
                 E_hs = _energy_equation(self, v_fp_0, v_fp, 3)
 
                 # Coupling energy low spin state - low spin state
-                wc = _splitting_energy(self, v_fp_0, v_fp, x_fp)
+                wc = _splitting_energy(self, v_fp_0, v_fp, x_feo_fp)
 
                 # Equation parameters
                 beta = 1 / (k_b * T)
@@ -171,7 +173,7 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
                 # Storing information
                 spin_config[jj, kk, ii] = eta_ls
                 P_table[jj, kk, ii] = -fp_eos._MGD(
-                    self, 0.0, T, v_fp*0.15055, eta_ls, x_fp
+                    self, 0.0, T, v_fp*0.15055, eta_ls, x_feo_fp
                 )
 
     return spin_config, P_table
@@ -219,7 +221,7 @@ def _energy_equation(self, v_0: float, v: float, spin_state: int) -> float:
         return pairing_energy - 0.4 * delta_energy
 
 
-def _splitting_energy(self, v_0: float, v: float, x_fp: float) -> float:
+def _splitting_energy(self, v_0: float, v: float, x_feo_fp: float) -> float:
     """Calculates the splitting energy.
 
     This function calculates the coupling energy between low spin state iron atoms
@@ -228,7 +230,7 @@ def _splitting_energy(self, v_0: float, v: float, x_fp: float) -> float:
     Args:
         v_0: Volume of Ferropericlase at ambient conditions. [A^3]
         v: Volume of Ferropericlase at considered conditions. [A^3]
-        x_fp: FeO content in ferropericlase.
+        x_feo_fp: FeO content in ferropericlase.
 
     Returns:
         The splitting energy. [eV]
@@ -236,4 +238,4 @@ def _splitting_energy(self, v_0: float, v: float, x_fp: float) -> float:
     # Calculating energy difference between the two energy levels
     delta_energy = self.delta_0 * (v_0 / v)**self.xi
 
-    return x_fp**self.xi * delta_energy
+    return x_feo_fp**self.xi * delta_energy
