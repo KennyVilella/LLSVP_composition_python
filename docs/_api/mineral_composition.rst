@@ -19,7 +19,7 @@ To improve convergence, adjustments to the starting conditions or the non-linear
 In this implementation, the calculation speed is priotized and cases where the solving step is difficult are easily skipped.
 This approach is acceptable since having no solution for tens of thousands of cases is not a problem when considering tens of millions of cases.
 
-The theoretical derivation of the equations implemented in these functions is presented in the supplementary material of Vilella et al. (2021).
+The theoretical derivation of the equations implemented in these functions is presented in the supplementary material of `Vilella et al. (2021)`_.
 
 .. _calc_mineral_composition:
 .. autofunction:: src._mineral_composition._calc_mineral_composition
@@ -36,3 +36,5 @@ The theoretical derivation of the equations implemented in these functions is pr
 .. autofunction:: src._mineral_composition._solve_without_fp
 
 .. autofunction:: src._mineral_composition._set_eqs_without_fp
+
+.. _Vilella et al. (2021): https://doi.org/10.1016/j.epsl.2020.116685

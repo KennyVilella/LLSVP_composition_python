@@ -11,7 +11,7 @@ The average spin state is calculated by minimizing the Helmholtz free energy (``
 More specifically, the function searches for the value of the average spin state resulting in a derivative of ``F`` with respect to the average spin state equal to zero.
 Since multiple local minima may exist, the calculation is performed with three different initial conditions, and the solution with the lowest ``F`` value is selected.
 
-This model is based on the work of Sturhahn et al. (2005) and this specific version is described in Vilella et al. (2015).
+This model is based on the work of `Sturhahn et al. (2005)`_ and this specific version is described in `Vilella et al. (2015)`_.
 
 .. _calc_spin_configuration:
 .. autofunction::  src._spin_configuration._calc_spin_configuration
@@ -19,3 +19,6 @@ This model is based on the work of Sturhahn et al. (2005) and this specific vers
 .. autofunction::  src._spin_configuration._energy_equation
 
 .. autofunction::  src._spin_configuration._splitting_energy
+
+.. _Sturhahn et al. (2005): http://dx.doi.org/10.1029/2005GL022802
+.. _Vilella et al. (2015): https://doi.org/10.1016/j.epsl.2015.02.009
