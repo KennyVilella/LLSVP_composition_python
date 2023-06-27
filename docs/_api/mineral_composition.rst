@@ -1,7 +1,7 @@
 API: Calculation of mineral composition
 =======================================
 
-This subpage contains the API documentation for the python file `_mineral_composition.py`.
+This subpage contains the API documentation for the python file ``_mineral_composition.py``.
 
 The main objective of these functions is to determine the mineral composition of rock assemblages for a wide range of input parameters.
 The function :ref:`_calc_mineral_composition <calc_mineral_composition>` calculates the mineral compositions for the entire investigated parameter space, while the function :ref:`_solve_mineral_composition <solve_mineral_composition>` performs the calculation for a single composition.
