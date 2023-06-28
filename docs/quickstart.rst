@@ -29,7 +29,7 @@ To execute the script, use the following command:
 
 .. code-block::
 
-   python3 <path_to_repositpry>/example/sample_script.py
+   python3 <path_to_repository>/example/sample_script.py
 
 This will run a quick simulation and save the results in the ``results`` folder.
 

@@ -16,7 +16,7 @@ This is crucial as the simulation can be computationally intensive, taking up to
 Solving the equations governing this problem is challenging due to their highly non-linear nature.
 If a solution is not found, a value of 0.0 is returned for each property.
 To improve convergence, adjustments to the starting conditions or the non-linear solver are required, both of which can be quite challenging.
-In this implementation, the calculation speed is priotized and cases where the solving step is difficult are easily skipped.
+In this implementation, the calculation speed is prioritized and cases where the solving step is difficult are easily skipped.
 This approach is acceptable since having no solution for tens of thousands of cases is not a problem when considering tens of millions of cases.
 
 The theoretical derivation of the equations implemented in these functions is presented in the supplementary material of `Vilella et al. (2021)`_.

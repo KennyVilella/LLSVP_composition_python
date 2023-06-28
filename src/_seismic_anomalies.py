@@ -44,7 +44,7 @@ from ._mineral_composition import _solve_mineral_composition
 #                                                                                      #
 #======================================================================================#
 def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
-    """"Calculates the seismic anomalies of a wide range of rock assemblages.
+    """Calculates the seismic anomalies of a wide range of rock assemblages.
 
     This function calculates the seismic anomalies of a wide range of mineral
     compositions and writes the results into files. The calculated seismic anomalies are

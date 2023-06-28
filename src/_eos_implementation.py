@@ -89,7 +89,7 @@ class _EOS(ABC):
         """Calculates the third-order Birch–Murnaghan isothermal equation of state.
 
         This function calculates the residue of the third-order Birch–Murnaghan
-        isothermal equation of state at the consideredconditions.
+        isothermal equation of state at the considered conditions.
 
         It corresponds to the eq. (B1) of Jackson and Rigden (1996).
 
@@ -366,7 +366,7 @@ class _EOS(ABC):
 #                                                                                      #
 #======================================================================================#
 class _EOS_fp(_EOS):
-    """Implement the Mie-Gruneisen-Debye equation of state for Ferropericlase.
+    """Implements the Mie-Gruneisen-Debye equation of state for Ferropericlase.
 
     This class is derived from the abstract class _EOS, which implements the basic
     functionality required to implement the Mie-Gruneisen-Debye equation of state.
@@ -425,7 +425,7 @@ class _EOS_fp(_EOS):
         given in the same unit.
 
         Args:
-            x_1: Molar concentraion of the first component.
+            x_1: Molar concentration of the first component.
             v_1: Volume of the first component.
             c_1: Bulk or shear modulus of the first component. [GPa]
             v_2: Volume of the second component.
@@ -608,7 +608,7 @@ class _EOS_fp(_EOS):
         """Implements the third-order Birch–Murnaghan isothermal EOS for Ferropericlase.
 
         This function calculates the residue of the third-order Birch–Murnaghan
-        isothermal equation of state applied to Ferroepriclase (Fp) at the considered
+        isothermal equation of state applied to Ferropericlase (Fp) at the considered
         conditions.
 
         It corresponds to the eq. (B1) of Jackson and Rigden (1996).
@@ -747,7 +747,7 @@ class _EOS_fp(_EOS):
         """Implements the Mie-Gruneisen-Debye EOS for Ferropericlase.
 
         This function calculates the residue of the Mie-Gruneisen-Debye equation of
-        state applied to Ferroepriclase (Fp) at the considered conditions. It can be
+        state applied to Ferropericlase (Fp) at the considered conditions. It can be
         used to obtain one of the conditions among the pressure, temperature, volume,
         knowing the remaining two.
 
@@ -921,7 +921,7 @@ class _EOS_fp(_EOS):
 #                                                                                      #
 #======================================================================================#
 class _EOS_bm(_EOS):
-    """Implement the Mie-Gruneisen-Debye equation of state for Bridgmanite.
+    """Implements the Mie-Gruneisen-Debye equation of state for Bridgmanite.
 
     This class is derived from the abstract class _EOS, which implements the basic
     functionality required to implement the Mie-Gruneisen-Debye equation of state.
@@ -1471,7 +1471,7 @@ class _EOS_bm(_EOS):
 #                                                                                      #
 #======================================================================================#
 class _EOS_capv(_EOS):
-    """Implement the Mie-Gruneisen-Debye equation of state for Calcio Perovskite.
+    """Implements the Mie-Gruneisen-Debye equation of state for Calcio Perovskite.
 
     This class is derived from the abstract class _EOS, which implements the basic
     functionality required to implement the Mie-Gruneisen-Debye equation of state.

@@ -13,7 +13,7 @@ The subsequent comparison of the calculated seismic anomalies with observations 
 This process is highly challenging since there are three main sources of uncertainties.
 Uncertainties on the seismic signature of the LLSVPs due to inconsistencies between different seismic models but also intrinsic heterogeneity of the LLSVPs.
 Uncertainties on the mineral properties since their experimental measurement at lower mantle conditions is challenging.
-Uncertainties on the theoretical models used to extrapolate the mineral propertie to different pressure and temperature conditions.
+Uncertainties on the theoretical models used to extrapolate the mineral properties to different pressure and temperature conditions.
 
 As a consequence, the density and seismic wave speeds provided by this simulator, particularly the P-wave and S-wave velocities, are inherently uncertain.
 It is therefore essential to approach the results with caution when analyzing specific mineral compositions.
@@ -26,7 +26,7 @@ Contents
 --------
 
 A :doc:`quickstart` is provided with instructions to install the simulator and execute simple simulations.
-For more information on the code itself or the usage of the simulator, an `API <api.html>`_ documation is available with information on all classes and functions as well as detailed information on the implementation itself.
+For more information on the code itself or the usage of the simulator, an `API <api.html>`_ documentation is available with information on all classes and functions as well as detailed information on the implementation itself.
 
 .. toctree::
    :maxdepth: 1

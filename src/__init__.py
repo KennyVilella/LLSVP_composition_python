@@ -74,7 +74,7 @@ class MineralProperties:
         iron_content_am: FeO content in the ambient mantle. Default to 0.08. [wt%]
         p_bm_am: Proportion of Bm in the ambient lower mantle. Default to 0.75. [vol%]
         al_content_am: Al2O3 content in the ambient mantle. Default to 0.036. [mol%]
-        kd_ref_am: Fe partioning coefficient in the ambient mantle. Default to 0.5.
+        kd_ref_am: Fe partitioning coefficient in the ambient mantle. Default to 0.5.
         ratio_fe_bm_am: Oxidation state in Bm. Default to 0.5.
         k0t_prime_bm: Pressure derivative of the isothermal bulk modulus for Bm.
                       Default to 3.7.

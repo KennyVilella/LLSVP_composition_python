@@ -62,7 +62,7 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray)
     The directory where the results are saved is given by the `path` attribute of the
     class MineralProperties. The name of the file corresponds to the value of the
     temperature contrast against the ambient mantle.
-    The simulation can be resumed if exsiting files are already present. As a result, it
+    The simulation can be resumed if existing files are already present. As a result, it
     is necessary to remove old files from the results folder before launching a new set
     of simulations.
 
@@ -585,7 +585,7 @@ def _set_eqs_with_fp(
 
     Returns:
         A list containing the residue for the equation of state for Ferropericlase, the
-        equation of state for Bridgmanite, and the equation for the alunina content in
+        equation of state for Bridgmanite, and the equation for the alumina content in
         Bridgmanite.
     """
     # Loading utility class for mineral properties calculation
@@ -865,7 +865,7 @@ def _set_eqs_without_fp(
     Returns:
         A list containing the residue for the equation of state for Bridgmanite, the
         equation for the ratio of FeO and alumina content in Bridgmanite, and the
-        equation for the alunina content in Bridgmanite.
+        equation for the alumina content in Bridgmanite.
     """
     # Loading utility class for mineral properties calculation
     bm_eos = _EOS_bm()
