@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API: Calculation of seismic anomalies &mdash; LLSVP composition calculator  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="API: Calculation of mineral composition" href="mineral_composition.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            LLSVP composition calculator
+          </a>
+              <div class="version">
+                1.0.0
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Home</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quickstart guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api.html">General documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api.html">Home</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mineral_properties.html">class MineralProperties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="eos_implementation.html">EOS implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="spin_configuration.html">Spin configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mineral_composition.html">Mineral composition</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Seismic anomalies</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#src._seismic_anomalies._calc_seismic_anomalies"><code class="docutils literal notranslate"><span class="pre">_calc_seismic_anomalies()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#src._seismic_anomalies._calc_seismic_properties"><code class="docutils literal notranslate"><span class="pre">_calc_seismic_properties()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LLSVP composition calculator</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../api.html">API</a></li>
+      <li class="breadcrumb-item active">API: Calculation of seismic anomalies</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/_api/seismic_anomalies.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-calculation-of-seismic-anomalies">
+<h1>API: Calculation of seismic anomalies<a class="headerlink" href="#api-calculation-of-seismic-anomalies" title="Permalink to this heading"></a></h1>
+<p>This subpage contains the API documentation for the python file <code class="docutils literal notranslate"><span class="pre">_seismic_anomalies.py</span></code>.</p>
+<p>The main objective of these functions is to determine the seismic anomalies of a rock assemblage relative to the ambient mantle for a wide range of mineral compositions.
+The function <a class="reference internal" href="#calc-seismic-anomalies"><span class="std std-ref">_calc_seismic_anomalies</span></a> reads the files generated by <cite>_calc_mineral_composition</cite> and calculates the density and seismic wave speeds anomalies for each composition.
+The seismic anomalies are expressed as relative differences in percent.
+The function <a class="reference internal" href="#calc-seismic-properties"><span class="std std-ref">_calc_seismic_properties</span></a> is responsible for determining the density and seismic wave speeds of a single composition.</p>
+<p>It is important to note that the calculation of S-wave and P-wave seismic velocities is considered less reliable compared to the calculation of density and bulk sound speed.
+Further discussion on this topic is available in the associated article.</p>
+<p>The results are written into new files with the name of the input file appended with “_processed”.
+The simulation cannot be resumed, as it is expected to be a relatively quick calculation.</p>
+<span class="target" id="calc-seismic-anomalies"></span><dl class="py function">
+<dt class="sig sig-object py" id="src._seismic_anomalies._calc_seismic_anomalies">
+<span class="sig-prename descclassname"><span class="pre">src._seismic_anomalies.</span></span><span class="sig-name descname"><span class="pre">_calc_seismic_anomalies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src._seismic_anomalies._calc_seismic_anomalies" title="Permalink to this definition"></a></dt>
+<dd><p>“Calculates the seismic anomalies of a wide range of rock assemblages.</p>
+<p>This function calculates the seismic anomalies of a wide range of mineral
+compositions and writes the results into files. The calculated seismic anomalies are
+the relative differences in percent for density, bulk sound speed, S-wave velocity
+and P-wave velocity compared to the ambient mantle.</p>
+<p>The investigated mineral compositions are read from the files generated by
+_calc_mineral_composition in the directory given by the <cite>path</cite> attribute of the
+class MineralProperties. The results are then written in new files in the same
+directory with the same name except that “_processed” is added.</p>
+<p>The function reads the mineral compositions from files generated by
+_calc_mineral_composition in the directory specified by the <cite>path</cite> attribute of the
+MineralProperties class. The results are then written to new files in the same
+directory, with the addition of “_processed” to the original file names.</p>
+<p>It is important to note that the simulation cannot be resumed, and any existing old
+files in the directory will be automatically deleted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>spin_config</strong> – Average spin state of FeO in Fp for a given value for the
+temperature, volume of Fp, and FeO content in Fp.</p></li>
+<li><p><strong>P_table</strong> – Pressure for a given value for the temperature, volume of Fp, and
+FeO content in Fp.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="calc-seismic-properties"></span><dl class="py function">
+<dt class="sig sig-object py" id="src._seismic_anomalies._calc_seismic_properties">
+<span class="sig-prename descclassname"><span class="pre">src._seismic_anomalies.</span></span><span class="sig-name descname"><span class="pre">_calc_seismic_properties</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dT</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_capv</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_bm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">p_fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">al</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ratio_fe</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spin_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">P_table</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_feo_bm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_feo_fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_alo2_bm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_bm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho_fp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#src._seismic_anomalies._calc_seismic_properties" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the seismic properties of a rock assemblage.</p>
+<p>This function calculates the density and seismic wave speeds of a given mineral
+composition.</p>
+<p>In addition to the calculation described in _mineral_composition, this function
+requires the calculation of the shear modulus and isentropic bulk modulus. The
+shear modulus is calculated using a combination of eqs. (21) and (38) of Bina and
+Helffrich (1992). The isentropic bulk modulus is calculated using multiple
+equations, primarily described in (B5) and (B6) of Jackson and Rigden (1996).</p>
+<p>The value of the shear modulus and the isentropic bulk modulus of the rock
+assemblage is calculated from the value for its individual components using the
+Voigt-Reuss-Hill average.</p>
+<p>The shear modulus and isentropic bulk modulus of the rock assemblage are calculated
+by taking the Voigt-Reuss-Hill average of the individual components values.</p>
+<p>Note that the calculation of S-wave and P-wave seismic velocities is considered to
+be less reliable compared to the calculation of density and bulk sound speed. This
+is mainly due to the assumption made in the shear modulus calculation, particularly
+the assumption of a constant temperature dependence of the shear modulus is
+throughout the considered parameter space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dT</strong> – Temperature contrast against the ambient mantle. [K]</p></li>
+<li><p><strong>p_capv</strong> – Proportion of CaPv. [vol%]</p></li>
+<li><p><strong>p_bm</strong> – Proportion of Bm. [vol%]</p></li>
+<li><p><strong>p_fp</strong> – Proportion of Fp. [vol%]</p></li>
+<li><p><strong>feo</strong> – FeO content in the rock assemblage. [wt%]</p></li>
+<li><p><strong>al</strong> – Al2O3 content in the rock assemblage. [wt%]</p></li>
+<li><p><strong>ratio_fe</strong> – Oxidation state in Bm.</p></li>
+<li><p><strong>spin_config</strong> – Average spin state of FeO in Fp for a given value for the
+temperature, volume of Fp, and FeO content in Fp.</p></li>
+<li><p><strong>P_table</strong> – Pressure for a given value for the temperature, volume of Fp, and
+FeO content in Fp.</p></li>
+<li><p><strong>x_feo_bm</strong> – Molar concentration of FeO in Bm.</p></li>
+<li><p><strong>x_feo_fp</strong> – Molar concentration of FeO in Fp.</p></li>
+<li><p><strong>x_alo2_bm</strong> – Molar concentration of AlO2 in Bm.</p></li>
+<li><p><strong>rho_bm</strong> – Density of Bm. [kg/m^3]</p></li>
+<li><p><strong>rho_fp</strong> – Density of Fp. [kg/m^3]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list containing the density of the rock assemblage [kg/m^3], its bulk sound
+speed [km/s], its S-wave velocity [km/s], and its P-wave velocity [km/s].</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="mineral_composition.html" class="btn btn-neutral float-left" title="API: Calculation of mineral composition" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023,  Vilella Kenny.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  
+<div class="rst-versions" data-toggle="rst-versions" role="note" aria-label="versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    <span class="fa fa-book"> Other Versions</span>
+    v: v1.0.0
+    <span class="fa fa-caret-down"></span>
+  </span>
+  <div class="rst-other-versions">
+    
+    <dl>
+      <dt>Versions</dt>
+      <dd><a href="seismic_anomalies.html">v1.0.0</a></dd>
+  </div>
+</div><script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
