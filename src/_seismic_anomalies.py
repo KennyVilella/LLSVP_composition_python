@@ -1,4 +1,4 @@
-""""Calculates the seismic anomalies of the rock assemblage.
+"""Calculates the seismic anomalies of the rock assemblage.
 
 This file is associated with the article:
 "Constraints on the composition and temperature of LLSVPs from seismic properties of
