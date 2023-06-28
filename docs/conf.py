@@ -9,7 +9,7 @@ sys.path.insert(0, _srcdir)
 import src
 
 project = "LLSVP composition calculator"
-version = "0.0.0"
+version = "1.0.0"
 copyright = "2023,  Vilella Kenny"
 author = "Kenny Vilella"
 
