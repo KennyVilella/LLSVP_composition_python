@@ -7,6 +7,7 @@
 This repository implements the model described in:
 
 “Constraints on the composition and temperature of LLSVPs from seismic properties of lower mantle minerals” by K. Vilella, T. Bodin, C.-E. Boukare, F. Deschamps, J. Badro, M. D. Ballmer, and Y. Li
+
 ---
 
 The aim of this module is to provide some constraints on the composition and temperature of the Large Low Shear Velocity Provinces (LLSVPs) observed in the lowermost mantle.
