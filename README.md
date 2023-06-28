@@ -3,9 +3,11 @@
 [![Build status](https://github.com/KennyVilella/LLSVP_composition_python/workflows/CI/badge.svg)](https://github.com/KennyVilella/LLSVP_composition_python/actions)
 [![](https://img.shields.io/badge/docs-main-blue.svg)][docs-main]
 
+---
 This repository implements the model described in:
 
 “Constraints on the composition and temperature of LLSVPs from seismic properties of lower mantle minerals” by K. Vilella, T. Bodin, C.-E. Boukare, F. Deschamps, J. Badro, M. D. Ballmer, and Y. Li
+---
 
 The aim of this module is to provide some constraints on the composition and temperature of the Large Low Shear Velocity Provinces (LLSVPs) observed in the lowermost mantle.
 To do so, this simulator calculates the seismic anomalies associated with a wide range of potential LLSVPs compositions under various temperature conditions.
