@@ -206,6 +206,7 @@ class MineralProperties:
         delta_P: Step value for the pressure in the spin transition calculation.
                  Default to 2.0. [GPa]
     """
+
     def __init__(self, prop: dict = {}):
         """Initializes mineral properties.
 
@@ -236,7 +237,7 @@ class MineralProperties:
         self.path = prop.get("path", result_path)
 
         # Gas constant
-        self.R = 8.31446 * 10 ** (-3)
+        self.R = 8.31446 * 10**(-3)
 
         # Parameters related to the spin transition
         self.xi = prop.get("xi", 1.5)  # Sturhahn 2005

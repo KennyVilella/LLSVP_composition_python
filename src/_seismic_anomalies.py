@@ -77,16 +77,25 @@ def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
 
     # Calculating the density of CaPv in the ambient mantle
     solution = scipy.optimize.fsolve(
-        lambda x: capv_eos._MGD(self, self.P_am, self.T_am, x), 20.
-    )
+        lambda x: capv_eos._MGD(self, self.P_am, self.T_am, x), 20.)
     rho_capv_am = self.rho_capv_0 * self.v_casio3_0 / solution[0]
 
     # Calculating the composition of the ambient mantle
     p_fp_am = 1 - self.p_capv_am - self.p_bm_am
     x_init = [0.1, 0.3, 0.1, 5500.0, 6500.0]
     solution = _solve_mineral_composition(
-        self, x_init, 0., self.p_capv_am, self.p_bm_am, p_fp_am, self.iron_content_am,
-        self.al_content_am, self.ratio_fe_bm_am, spin_config, P_table, rho_capv_am,
+        self,
+        x_init,
+        0.,
+        self.p_capv_am,
+        self.p_bm_am,
+        p_fp_am,
+        self.iron_content_am,
+        self.al_content_am,
+        self.ratio_fe_bm_am,
+        spin_config,
+        P_table,
+        rho_capv_am,
     )
     x_feo_bm_am, x_feo_fp_am, x_alo2_bm_am, rho_bm_am, rho_fp_am = solution
 
@@ -94,8 +103,7 @@ def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
     rho_ref, v_phi_ref, v_s_ref, v_p_ref = _calc_seismic_properties(
         self, 0., self.p_capv_am, self.p_bm_am, p_fp_am, self.iron_content_am,
         self.al_content_am, self.ratio_fe_bm_am, spin_config, P_table, x_feo_bm_am,
-        x_feo_fp_am, x_alo2_bm_am, rho_bm_am, rho_fp_am
-    )
+        x_feo_fp_am, x_alo2_bm_am, rho_bm_am, rho_fp_am)
 
     for file in os.listdir(self.path):
         if (not file.endswith(".csv") or file.endswith("_processed.csv")):
@@ -104,8 +112,8 @@ def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
 
         # Determining name for processed file
         processed_filename = os.path.join(
-            self.path, os.path.splitext(file)[0] + "_processed.csv"
-        )
+            self.path,
+            os.path.splitext(file)[0] + "_processed.csv")
         if os.path.isfile(processed_filename):
             ### A file already exists ###
             print("File detected")
@@ -133,8 +141,7 @@ def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
                 # Calculating the seismic properties of the rock assemblage
                 rho, v_phi, v_s, v_p = _calc_seismic_properties(
                     self, dT, p_capv, p_bm, p_fp, feo, al, ratio_fe, spin_config,
-                    P_table, x_feo_bm, x_feo_fp, x_alo2_bm, rho_bm, rho_fp
-                )
+                    P_table, x_feo_bm, x_feo_fp, x_alo2_bm, rho_bm, rho_fp)
 
                 # Calculating the seismic anomalies of the rock assemblage
                 delta_rho = 100 * (rho - rho_ref) / rho
@@ -147,15 +154,13 @@ def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
                     f.write(
                         f"{dT:.0f}\t{p_capv:.2f}\t{p_bm:.2f}\t{feo:.3f}\t{al:.3f}\t" +
                         f"{ratio_fe:.1f}\t{delta_rho:.3f}\t{delta_v_phi:.3f}\t" +
-                        f"{delta_v_s:.3f}\t{delta_v_p:.0f}\n"
-                    )
+                        f"{delta_v_s:.3f}\t{delta_v_p:.0f}\n")
 
 
 def _calc_seismic_properties(
-    self, dT: float, p_capv: float, p_bm: float, p_fp: float, feo: float, al: float,
-    ratio_fe: float, spin_config: np.ndarray, P_table: np.ndarray, x_feo_bm: float,
-    x_feo_fp: float, x_alo2_bm: float, rho_bm: float, rho_fp: float
-) -> list:
+        self, dT: float, p_capv: float, p_bm: float, p_fp: float, feo: float, al: float,
+        ratio_fe: float, spin_config: np.ndarray, P_table: np.ndarray, x_feo_bm: float,
+        x_feo_fp: float, x_alo2_bm: float, rho_bm: float, rho_fp: float) -> list:
     """Calculates the seismic properties of a rock assemblage.
 
     This function calculates the density and seismic wave speeds of a given mineral
@@ -209,8 +214,7 @@ def _calc_seismic_properties(
 
     # Calculating the density of CaPv
     solution = scipy.optimize.fsolve(
-        lambda x: capv_eos._MGD(self, self.P_am, self.T_am + dT, x), 20.
-    )
+        lambda x: capv_eos._MGD(self, self.P_am, self.T_am + dT, x), 20.)
     rho_capv = self.rho_capv_0 * self.v_casio3_0 / solution[0]
 
     # Calculating the spin configuration
@@ -224,8 +228,7 @@ def _calc_seismic_properties(
     x_mgsio3_bm = 1 - x_alo2_bm - (2 - ratio_fe) * x_feo_bm
     x_fesio3_bm = 2 * (1 - ratio_fe) * x_feo_bm
     x_fealo3_bm = (
-        2 * (1.0 - al_excess) * x_alo2_bm + 2 * al_excess * ratio_fe * x_feo_bm
-    )
+        2 * (1.0 - al_excess) * x_alo2_bm + 2 * al_excess * ratio_fe * x_feo_bm)
     x_fe2o3_bm = (1.0 - al_excess) * (ratio_fe * x_feo_bm - x_alo2_bm)
     x_al2o3_bm = al_excess * (x_alo2_bm - ratio_fe * x_feo_bm)
 
@@ -234,8 +237,7 @@ def _calc_seismic_properties(
     m_bm = (
         self.m_mgsio3 * x_mgsio3_bm + self.m_fealo3 * x_fealo3_bm +
         self.m_al2o3 * x_al2o3_bm + self.m_fe2o3 * x_fe2o3_bm +
-        self.m_fesio3 * x_fesio3_bm
-    )
+        self.m_fesio3 * x_fesio3_bm)
 
     # Calculating volume of the three minerals
     v_fp = 1000 * m_fp / rho_fp
@@ -246,16 +248,14 @@ def _calc_seismic_properties(
     g_fp = fp_eos._g(self, self.T_am + dT, v_fp, eta_ls, x_feo_fp)
     g_bm = bm_eos._g(
         self, self.T_am + dT, v_bm, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm, x_fe2o3_bm,
-        x_al2o3_bm
-    )
+        x_al2o3_bm)
     g_capv = capv_eos._g(self, self.T_am + dT, v_capv)
 
     # Calculating the isentropic bulk modulus of the three minerals
     k_s_fp = fp_eos._k_s(self, self.T_am + dT, v_fp, eta_ls, x_feo_fp)
     k_s_bm = bm_eos._k_s(
         self, self.T_am + dT, v_bm, x_mgsio3_bm, x_fesio3_bm, x_fealo3_bm, x_fe2o3_bm,
-        x_al2o3_bm
-    )
+        x_al2o3_bm)
     k_s_capv = capv_eos._k_s(self, self.T_am + dT, v_capv)
 
     # Calculating the shear modulus of the rock assemblage
@@ -272,8 +272,8 @@ def _calc_seismic_properties(
     rho = p_fp * rho_fp + p_bm * rho_bm + p_capv * rho_capv
 
     # Calculating the seismic velocities of the rock assemblage
-    v_phi = ((k_s_tot * 10 ** 9) / rho) ** (1 / 2) / 1000
-    v_s = ((g_tot * 10 ** 9) / rho) ** (1 / 2) / 1000
+    v_phi = ((k_s_tot * 10**9) / rho)**(1 / 2) / 1000
+    v_s = ((g_tot * 10**9) / rho)**(1 / 2) / 1000
     v_p = np.sqrt(v_phi * v_phi + (4 / 3) * v_s * v_s)
 
     return [rho, v_phi, v_s, v_p]
