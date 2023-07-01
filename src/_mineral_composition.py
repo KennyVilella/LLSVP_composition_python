@@ -42,12 +42,14 @@ import os
 import random
 import scipy.optimize
 from ._eos_implementation import _EOS_fp, _EOS_bm, _EOS_capv
-#======================================================================================#
+
+
+# ==================================================================================== #
 #                                                                                      #
 #    Starting implementation of functions used to calculate the mineral composition    #
 #                                                                                      #
-#======================================================================================#
-def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray):
+# ==================================================================================== #
+def _calc_mineral_composition(self, spin_config: np.ndarray, P_table: np.ndarray):
     """Calculates the mineral composition of a wide range of rock assemblages.
 
     This function calculates the properties of a large range of mineral composition and
@@ -182,11 +184,11 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray)
                             if (mm != 0):
                                 ### Using previous starting conditions ###
                                 x_init = [
-                                    x_feo_bm_ii[jj, kk, ll, mm-1, nn],
-                                    x_feo_fp_ii[jj, kk, ll, mm-1, nn],
-                                    x_alo2_bm_ii[jj, kk, ll, mm-1, nn],
-                                    rho_bm_ii[jj, kk, ll, mm-1, nn],
-                                    rho_fp_ii[jj, kk, ll, mm-1, nn]
+                                    x_feo_bm_ii[jj, kk, ll, mm - 1, nn],
+                                    x_feo_fp_ii[jj, kk, ll, mm - 1, nn],
+                                    x_alo2_bm_ii[jj, kk, ll, mm - 1, nn],
+                                    rho_bm_ii[jj, kk, ll, mm - 1, nn],
+                                    rho_fp_ii[jj, kk, ll, mm - 1, nn]
                                 ]
                             if (x_init[0] < 0.0):
                                 ### Starting condition is incorrect ###
@@ -238,7 +240,7 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray)
                             rho_bm_ii[jj, kk, ll, mm, 0],
                             rho_fp_ii[jj, kk, ll, mm, 0]
                         ]
-                        nn_start = 0 # In case the calculation has been resumed
+                        nn_start = 0  # In case the calculation has been resumed
                     # End of Al content loop
 
                     # Updating starting conditions
@@ -249,7 +251,7 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray)
                         rho_bm_ii[jj, kk, ll, 0, 0],
                         rho_fp_ii[jj, kk, ll, 0, 0]
                     ]
-                    mm_start = 0 # In case the calculation has been resumed
+                    mm_start = 0  # In case the calculation has been resumed
                 # End of FeO content loop
 
                 # Updating starting conditions
@@ -258,7 +260,7 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray)
                     x_alo2_bm_ii[jj, kk, 0, 0, 0], rho_bm_ii[jj, kk, 0, 0, 0],
                     rho_fp_ii[jj, kk, 0, 0, 0]
                 ]
-                ll_start = 0 # In case the calculation has been resumed
+                ll_start = 0  # In case the calculation has been resumed
             # End of Bm proportion loop
 
             # Updating starting conditions
@@ -267,7 +269,7 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray)
                 x_alo2_bm_ii[jj, 0, 0, 0, 0], rho_bm_ii[jj, 0, 0, 0, 0],
                 rho_fp_ii[jj, 0, 0, 0, 0]
             ]
-            kk_start = 0 # In case the calculation has been resumed
+            kk_start = 0  # In case the calculation has been resumed
         # End of CaPv proportion loop
 
         # Updating starting conditions
@@ -276,7 +278,7 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table:np.ndarray)
             x_alo2_bm_ii[0, 0, 0, 0, 0], rho_bm_ii[0, 0, 0, 0, 0],
             rho_fp_ii[0, 0, 0, 0, 0]
         ]
-        jj_start = 0 # In case the calculation has been resumed
+        jj_start = 0  # In case the calculation has been resumed
     # End of temperature loop
 
 
@@ -383,8 +385,10 @@ def _solve_mineral_composition(
                 # Skipping this calculation
                 x_feo_bm, x_feo_fp, x_alo2_bm, rho_bm, rho_fp = (0., 0., 0., 0., 0.)
                 print("Problem with Al_excess")
-                print("p_bm = ", p_bm, " p_capv = ", p_capv," feo = ", feo,
-                    " al = ", al, " ratio_fe = ", ratio_fe, " dT = ", dT)
+                print(
+                    "p_bm = ", p_bm, " p_capv = ", p_capv, " feo = ", feo,
+                    " al = ", al, " ratio_fe = ", ratio_fe, " dT = ", dT
+                )
                 print("Skip this condition")
         elif ((al_excess) and (x_feo_fp == 0.0 or ratio_fe * x_feo_bm > x_alo2_bm)):
             ### First guess for al_excess is incorrect ###
@@ -410,8 +414,10 @@ def _solve_mineral_composition(
                 # Skipping this calculation
                 x_feo_bm, x_feo_fp, x_alo2_bm, rho_bm, rho_fp = (0., 0., 0., 0., 0.)
                 print("Problem with Al_excess")
-                print("p_bm = ", p_bm, " p_capv = ", p_capv," feo = ", feo,
-                    " al = ", al, " ratio_fe = ", ratio_fe, " dT = ", dT)
+                print(
+                    "p_bm = ", p_bm, " p_capv = ", p_capv, " feo = ", feo,
+                    " al = ", al, " ratio_fe = ", ratio_fe, " dT = ", dT
+                )
                 print("Skip this condition")
 
         # Verifying that the solution is indeed consistent
@@ -444,8 +450,10 @@ def _solve_mineral_composition(
                 # Skipping this calculation
                 x_feo_bm, x_alo2_bm, rho_bm = (0., 0., 0.)
                 print("Problem with Al_excess")
-                print("p_bm = ", p_bm, " p_capv = ", p_capv," feo = ", feo,
-                    " al = ", al, " ratio_fe = ", ratio_fe, " dT = ", dT)
+                print(
+                    "p_bm = ", p_bm, " p_capv = ", p_capv, " feo = ", feo,
+                    " al = ", al, " ratio_fe = ", ratio_fe, " dT = ", dT
+                )
                 print("Skip this condition")
         elif ((al_excess) and (ratio_fe * x_feo_bm > x_alo2_bm)):
             ### First guess for al_excess is incorrect ###
@@ -462,8 +470,10 @@ def _solve_mineral_composition(
                 # Skipping this calculation
                 x_feo_bm, x_alo2_bm, rho_bm = (0., 0., 0.)
                 print("Problem with Al_excess")
-                print("p_bm = ", p_bm, " p_capv = ", p_capv," feo = ", feo,
-                    " al = ", al, " ratio_fe = ", ratio_fe, " dT = ", dT)
+                print(
+                    "p_bm = ", p_bm, " p_capv = ", p_capv, " feo = ", feo,
+                    " al = ", al, " ratio_fe = ", ratio_fe, " dT = ", dT
+                )
                 print("Skip this condition")
 
     return [x_feo_bm, x_feo_fp, x_alo2_bm, 5500 * rho_bm, 5500 * rho_fp]
@@ -549,7 +559,7 @@ def _solve_with_fp(
 def _set_eqs_with_fp(
     self, var_in: list, dT: float, p_capv: float, p_bm: float, p_fp: float, feo: float,
     al: float, ratio_fe: float, spin_config: np.ndarray, P_table: np.ndarray,
-    rho_capv: float, al_excess: bool, testing: bool=False
+    rho_capv: float, al_excess: bool, testing: bool = False
 ) -> list:
     """Implements the equations for the physics problem with Ferropericlase.
 
@@ -607,11 +617,7 @@ def _set_eqs_with_fp(
 
     # Volume of Fp
     m_fp = self.m_mgo * (1 - x_feo_fp) + self.m_feo * x_feo_fp
-    v_fp_0 = fp_eos._v_fp_0(self, eta_ls, x_feo_fp)
     v_fp = 1000 * m_fp / (5500 * rho_fp)
-
-    # Isothermal bulk modulus of Fp
-    k_fp_0 = fp_eos._k_fp_0_VRH_average(self, eta_ls, x_feo_fp)
 
     # Mineral composition of Bm
     x_feo_bm, x_alo2_bm = _oxides_content_in_bm(
@@ -653,7 +659,7 @@ def _set_eqs_with_fp(
     # Equation from the EOS for Fp
     eq_MGD_fp = fp_eos._MGD(
         self, self.P_am, self.T_am + dT, v_fp, eta_ls, x_feo_fp
-    ) 
+    )
 
     # Equation from the EOS for Bm
     eq_MGD_bm = bm_eos._MGD(
@@ -669,16 +675,17 @@ def _set_eqs_with_fp(
         delta_x_feo_fp = self.x_feo_fp_vec[1] - self.x_feo_fp_vec[0]
         if (abs(P_table[index_T, index_P, index_x] - self.P_am) > self.delta_P):
             print("Error on P for the spin transition is large")
-            print("Pressure for the spin configuration: `",
+            print(
+                "Pressure for the spin configuration: `",
                 P_table[index_T, index_P, index_x], "` actual pressure: `", self.P_am,
-                "`")
+                "`"
+            )
         elif ((self.x_feo_fp_vec[index_x] - x_feo_fp) > delta_x_feo_fp):
             print("Error on x for the spin transition is large")
             print(
                 "FeO content for the spin configuration: `", self.x_feo_fp_vec[index_x],
                 "` calculated FeO content: `", x_feo_fp, "`"
             )
-
 
         # Verifying that the sum of all chemical elements is equal to 1
         x_m_capv = (p_capv * rho_capv) / (
@@ -707,8 +714,10 @@ def _set_eqs_with_fp(
         )
         if (not isclose(sum_feo, feo, abs_tol=1e-3)):
             print("Problem with the FeO content")
-            print("Calculated FeO content is `", sum_feo,
-                "` , while the actual value is `", feo, "`")
+            print(
+                "Calculated FeO content is `", sum_feo,
+                "` , while the actual value is `", feo, "`"
+            )
 
     return [eq_MGD_fp, eq_MGD_bm, eq_alo2]
 
@@ -755,7 +764,7 @@ def _oxides_content_in_bm(
         2 * c_1 * (1 - x_feo_fp) + self.kd_ref_am * x_feo_fp +
         self.kd_ref_am * x_feo_fp * (2 - ratio_fe) * c_1
     )
-    x_feo_bm  = c_1 * x_alo2_bm
+    x_feo_bm = c_1 * x_alo2_bm
 
     return [x_feo_bm, x_alo2_bm]
 

@@ -28,11 +28,13 @@ Copyright, 2023,  Vilella Kenny.
 import numpy as np
 import scipy.integrate
 from abc import ABC, abstractmethod
-#======================================================================================#
+
+
+# ==================================================================================== #
 #                                                                                      #
 #   Starting implementation of the abstract class for mineral properties calculation   #
 #                                                                                      #
-#======================================================================================#
+# ==================================================================================== #
 class _EOS(ABC):
     """Provides base utilities to implement the Mie-Gruneisen-Debye equation of state.
 
@@ -105,9 +107,9 @@ class _EOS(ABC):
             Residue of the third-order Birch–Murnaghan isothermal equation of state.
             [GPa]
         """
-        return (P -
-            1.5 * k_0 * (v_ratio**(7/3) - v_ratio**(5/3)) *
-            (1 + 3/4 * (k0t_prime - 4) * (v_ratio**(2/3) - 1))
+        return (
+            P - 1.5 * k_0 * (v_ratio ** (7 / 3) - v_ratio ** (5 / 3)) *
+            (1 + 3 / 4 * (k0t_prime - 4) * (v_ratio ** (2 / 3) - 1))
         )
 
     @abstractmethod
@@ -262,7 +264,7 @@ class _EOS(ABC):
         Returns:
             Residue of the Mie-Gruneisen-Debye equation of state. [GPa]
         """
-        return BM3  - gamma / v * (E_th - E_th_0)
+        return BM3 - gamma / v * (E_th - E_th_0)
 
     @abstractmethod
     def _g_t0(self, v_ratio: float, k_0: float, g_0: float, g_prime: float) -> float:
@@ -283,8 +285,8 @@ class _EOS(ABC):
         Returns:
             Shear modulus at ambient temperature. [GPa]
         """
-        return v_ratio**(5/3) * (
-            g_0 + (1 - v_ratio**(2/3)) * 0.5 * (5 * g_0 - 3 * k_0 * g_prime)
+        return v_ratio ** (5 / 3) * (
+            g_0 + (1 - v_ratio ** (2 / 3)) * 0.5 * (5 * g_0 - 3 * k_0 * g_prime)
         )
 
     def _k_v(self, v_ratio: float, k_0: float, k0t_prime: float) -> float:
@@ -308,9 +310,10 @@ class _EOS(ABC):
             Isothermal bulk modulus at ambient temperature. [GPa]
         """
         return k_0 * (
-            (v_ratio**(7/3) - v_ratio**(5/3)) * 3/4 * (k0t_prime - 4) * v_ratio**(2/3) +
-            0.5 * (7 * v_ratio**(7/3) - 5 * v_ratio**(5/3)) *
-            (1 + 3/4 * (k0t_prime - 4) * (v_ratio**(2/3) - 1))
+            (v_ratio ** (7 / 3) - v_ratio ** (5 / 3)) *
+            3 / 4 * (k0t_prime - 4) * v_ratio ** (2 / 3) +
+            0.5 * (7 * v_ratio ** (7 / 3) - 5 * v_ratio ** (5 / 3)) *
+            (1 + 3 / 4 * (k0t_prime - 4) * (v_ratio ** (2 / 3) - 1))
         )
 
     @abstractmethod
@@ -360,11 +363,12 @@ class _EOS(ABC):
         """
         return k_t * (1 + alpha * gamma * T)
 
-#======================================================================================#
+
+# ==================================================================================== #
 #                                                                                      #
 #   Starting implementation of the class for calculation of Ferropericlase properties  #
 #                                                                                      #
-#======================================================================================#
+# ==================================================================================== #
 class _EOS_fp(_EOS):
     """Implements the Mie-Gruneisen-Debye equation of state for Ferropericlase.
 
@@ -820,7 +824,7 @@ class _EOS_fp(_EOS):
         of the shear modulus is assumed to be constant, so that it can be simply
         calculated from its temperature derivative.
         It should however be noted that it is a rough estimation that is unlikely to be
-        valid. 
+        valid.
 
         Args:
             data: Data holder for the MineralProperties class.
@@ -915,11 +919,12 @@ class _EOS_fp(_EOS):
         )
         return super()._k_s(T, alpha_fp, gamma_fp, k_t_fp)
 
-#======================================================================================#
+
+# ==================================================================================== #
 #                                                                                      #
 #    Starting implementation of the class for calculation of Bridgmanite properties    #
 #                                                                                      #
-#======================================================================================#
+# ==================================================================================== #
 class _EOS_bm(_EOS):
     """Implements the Mie-Gruneisen-Debye equation of state for Bridgmanite.
 
@@ -990,11 +995,11 @@ class _EOS_bm(_EOS):
             x_fe2o3_bm * data.v_fe2o3_0 * data.k_fe2o3_0
         ) / v_bm_0
         k_r = v_bm_0 / (
-            x_mgsio3_bm * data.v_mgsio3_0 / data.k_mgsio3_0 + 
+            x_mgsio3_bm * data.v_mgsio3_0 / data.k_mgsio3_0 +
             x_fesio3_bm * data.v_fesio3_0 / data.k_fesio3_0 +
             x_fealo3_bm * data.v_fealo3_0 / data.k_fealo3_0 +
-            x_al2o3_bm * data.v_al2o3_0 / data.k_al2o3_0 +   
-            x_fe2o3_bm * data.v_fe2o3_0 / data.k_fe2o3_0 
+            x_al2o3_bm * data.v_al2o3_0 / data.k_al2o3_0 +
+            x_fe2o3_bm * data.v_fe2o3_0 / data.k_fe2o3_0
         )
         return 0.5 * (k_v + k_r)
 
@@ -1357,7 +1362,7 @@ class _EOS_bm(_EOS):
         of the shear modulus is assumed to be constant, so that it can be simply
         calculated from its temperature derivative.
         It should however be noted that it is a rough estimation that is unlikely to be
-        valid. 
+        valid.
 
         Args:
             data: Data holder for the MineralProperties class.
@@ -1465,11 +1470,12 @@ class _EOS_bm(_EOS):
         )
         return super()._k_s(T, alpha_bm, gamma_bm, k_t_bm)
 
-#======================================================================================#
+
+# ==================================================================================== #
 #                                                                                      #
 # Starting implementation of the class for calculation of Calcio Perovskite properties #
 #                                                                                      #
-#======================================================================================#
+# ==================================================================================== #
 class _EOS_capv(_EOS):
     """Implements the Mie-Gruneisen-Debye equation of state for Calcio Perovskite.
 
@@ -1726,7 +1732,7 @@ class _EOS_capv(_EOS):
         of the shear modulus is assumed to be constant, so that it can be simply
         calculated from its temperature derivative.
         It should however be noted that it is a rough estimation that is unlikely to be
-        valid. 
+        valid.
 
         Args:
             data: Data holder for the MineralProperties class.

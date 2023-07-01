@@ -23,20 +23,22 @@ Copyright, 2023,  Vilella Kenny.
 import numpy as np
 import scipy.optimize
 from ._eos_implementation import _EOS_fp
-#======================================================================================#
+
+
+# ==================================================================================== #
 #                                                                                      #
 #    Starting implementation of functions used to calculate the spin configuration     #
 #                                                                                      #
-#======================================================================================#
+# ==================================================================================== #
 def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
     """Calculates the spin configuration of FeO in Ferropericlase.
 
     This function calculates the average spin state of FeO in Ferropericlase (Fp). The
-    spin state of FeO in Fp changes with varying pressure and temperature. In particular,
-    at ambient conditions, FeO is in a high spin state, while in the lowermost part of
-    the Earth's mantle, FeO is in a low spin state. This transition from high spin state
-    to low spin state is known as the spin state transition and is associated with an
-    increase in density.
+    spin state of FeO in Fp changes with varying pressure and temperature. In
+    In particular, at ambient conditions, FeO is in a high spin state, while in the
+    lowermost part of the Earth's mantle, FeO is in a low spin state. This transition
+    from high spin state to low spin state is known as the spin state transition and is
+    associated with an increase in density.
 
     In this model, the proportion of FeO in a low spin state (eta_ls) is determined by
     finding the value of eta_ls that minimizes the Helmholtz free energy (F), this state
@@ -87,12 +89,12 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
     # Initializing
     spin_config = np.zeros((n_T, n_v, n_x))
     P_table = np.zeros((n_T, n_v, n_x))
-    k_b = 8.617 * 10**(-5) # Boltzmann constant
+    k_b = 8.617 * 10**(-5)  # Boltzmann constant
     v_fp_0 = self.v_feo_hs_0 / 0.15055
 
     # The energy degeneracy of the electronic configuration for the low/high
     # spin state
-    g_ls = 1.;
+    g_ls = 1.
     g_hs = 15.
 
     for ii in range(n_x):
@@ -122,8 +124,10 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
 
                 # Calculating the entropy to avoid issue with log
                 s_1 = 0.0
-                if (eta_ls_1 > 0.01): s_1 += eta_ls_1 * np.log(eta_ls_1 / g_ls)
-                if (eta_hs_1 > 0.01): s_1 += eta_hs_1 * np.log(eta_hs_1 / g_hs)
+                if (eta_ls_1 > 0.01):
+                    s_1 += eta_ls_1 * np.log(eta_ls_1 / g_ls)
+                if (eta_hs_1 > 0.01):
+                    s_1 += eta_hs_1 * np.log(eta_hs_1 / g_hs)
 
                 # Calculating the Helmholtz free energy
                 F_1 = (
@@ -139,8 +143,10 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
 
                 # Calculating the entropy to avoid issue with log
                 s_2 = 0.0
-                if (eta_ls_2 > 0.01): s_2 += eta_ls_2 * np.log(eta_ls_2 / g_ls)
-                if (eta_hs_2 > 0.01): s_2 += eta_hs_2 * np.log(eta_hs_2 / g_hs)
+                if (eta_ls_2 > 0.01):
+                    s_2 += eta_ls_2 * np.log(eta_ls_2 / g_ls)
+                if (eta_hs_2 > 0.01):
+                    s_2 += eta_hs_2 * np.log(eta_hs_2 / g_hs)
 
                 # Calculating the Helmholtz free energy
                 F_2 = (
@@ -156,8 +162,10 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
 
                 # Calculating the entropy to avoid issue with log
                 s_3 = 0.0
-                if (eta_ls_3 > 0.01): s_3 += eta_ls_3 * np.log(eta_ls_3 / g_ls)
-                if (eta_hs_3 > 0.01): s_3 += eta_hs_3 * np.log(eta_hs_3 / g_hs)
+                if (eta_ls_3 > 0.01):
+                    s_3 += eta_ls_3 * np.log(eta_ls_3 / g_ls)
+                if (eta_hs_3 > 0.01):
+                    s_3 += eta_hs_3 * np.log(eta_hs_3 / g_hs)
 
                 # Calculating the Helmholtz free energy
                 F_3 = (
@@ -173,7 +181,7 @@ def _calc_spin_configuration(self) -> (np.ndarray, np.ndarray):
                 # Storing information
                 spin_config[jj, kk, ii] = eta_ls
                 P_table[jj, kk, ii] = -fp_eos._MGD(
-                    self, 0.0, T, v_fp*0.15055, eta_ls, x_feo_fp
+                    self, 0.0, T, v_fp * 0.15055, eta_ls, x_feo_fp
                 )
 
     return spin_config, P_table
@@ -205,7 +213,7 @@ def _energy_equation(self, v_0: float, v: float, spin_state: int) -> float:
     """
     # Calculating energy required to pair electrons
     pairing_energy = self.delta_0 * (v_0 / self.v_trans)**self.xi
-            
+
     # Calculating energy difference between the two energy levels
     delta_energy = self.delta_0 * (v_0 / v)**self.xi
 

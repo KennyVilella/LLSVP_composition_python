@@ -38,11 +38,13 @@ import os
 import scipy.optimize
 from ._eos_implementation import _EOS_fp, _EOS_bm, _EOS_capv
 from ._mineral_composition import _solve_mineral_composition
-#======================================================================================#
+
+
+# ==================================================================================== #
 #                                                                                      #
 #     Starting implementation of functions used to calculate the seismic anomalies     #
 #                                                                                      #
-#======================================================================================#
+# ==================================================================================== #
 def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
     """Calculates the seismic anomalies of a wide range of rock assemblages.
 
@@ -84,7 +86,7 @@ def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
     x_init = [0.1, 0.3, 0.1, 5500.0, 6500.0]
     solution = _solve_mineral_composition(
         self, x_init, 0., self.p_capv_am, self.p_bm_am, p_fp_am, self.iron_content_am,
-        self.al_content_am, self.ratio_fe_bm_am, spin_config, P_table, rho_capv_am
+        self.al_content_am, self.ratio_fe_bm_am, spin_config, P_table, rho_capv_am,
     )
     x_feo_bm_am, x_feo_fp_am, x_alo2_bm_am, rho_bm_am, rho_fp_am = solution
 
@@ -148,6 +150,7 @@ def _calc_seismic_anomalies(self, spin_config: np.ndarray, P_table: np.ndarray):
                         f"{delta_v_s:.3f}\t{delta_v_p:.0f}\n"
                     )
 
+
 def _calc_seismic_properties(
     self, dT: float, p_capv: float, p_bm: float, p_fp: float, feo: float, al: float,
     ratio_fe: float, spin_config: np.ndarray, P_table: np.ndarray, x_feo_bm: float,
@@ -203,7 +206,7 @@ def _calc_seismic_properties(
     fp_eos = _EOS_fp()
     bm_eos = _EOS_bm()
     capv_eos = _EOS_capv()
-   
+
     # Calculating the density of CaPv
     solution = scipy.optimize.fsolve(
         lambda x: capv_eos._MGD(self, self.P_am, self.T_am + dT, x), 20.
@@ -269,8 +272,8 @@ def _calc_seismic_properties(
     rho = p_fp * rho_fp + p_bm * rho_bm + p_capv * rho_capv
 
     # Calculating the seismic velocities of the rock assemblage
-    v_phi = ((k_s_tot * 10**9) / rho)**(1/2) / 1000
-    v_s = ((g_tot * 10**9) / rho)**(1/2) / 1000
-    v_p = np.sqrt(v_phi * v_phi + (4/3) * v_s * v_s)
+    v_phi = ((k_s_tot * 10 ** 9) / rho) ** (1 / 2) / 1000
+    v_s = ((g_tot * 10 ** 9) / rho) ** (1 / 2) / 1000
+    v_p = np.sqrt(v_phi * v_phi + (4 / 3) * v_s * v_s)
 
     return [rho, v_phi, v_s, v_p]
