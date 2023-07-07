@@ -66,6 +66,9 @@ jobs:
         run: flake8 --max-line-length=88 --ignore=E266,W504 --per-file-ignores=example/sample_script.py:E402
 
       - name: Install yapf
+        run: pip install yapf
+
+      - name: Check yapf formatting
         run: |
           yapf --recursive --style="{based_on_style: google, column_limit: 88, \
             split_before_closing_bracket: True, split_before_expression_after_opening_paren: True, \
