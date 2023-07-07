@@ -517,7 +517,7 @@ def _solve_with_fp(
             solution = scipy.optimize.newton_krylov(
                 lambda x: _set_eqs_with_fp(
                     self, x, dT, p_capv, p_bm, p_fp, feo, al, ratio_fe, spin_config,
-                    P_table, rho_capv, al_excess),
+                    P_table, rho_capv, al_excess, False),
                 x_init,
                 maxiter=1000)
 
