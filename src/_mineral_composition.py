@@ -175,12 +175,11 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table: np.ndarray
                             if (mm != 0):
                                 ### Using previous starting conditions ###
                                 x_init = [
-                                    x_feo_bm_ii[jj, kk, ll, mm - 1,
-                                                nn], x_feo_fp_ii[jj, kk, ll, mm - 1,
-                                                                 nn],
-                                    x_alo2_bm_ii[jj, kk, ll, mm - 1,
-                                                 nn], rho_bm_ii[jj, kk, ll, mm - 1, nn],
-                                    rho_fp_ii[jj, kk, ll, mm - 1, nn]
+                                    x_feo_bm_ii[jj, kk, ll, mm - 1, nn],
+                                    x_feo_fp_ii[jj, kk, ll, mm - 1, nn],
+                                    x_alo2_bm_ii[jj, kk, ll, mm - 1, nn],
+                                    rho_bm_ii[jj, kk, ll, mm - 1, nn],
+                                    rho_fp_ii[jj, kk, ll, mm - 1, nn],
                                 ]
                             if (x_init[0] < 0.0):
                                 ### Starting condition is incorrect ###
@@ -189,11 +188,10 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table: np.ndarray
                                     ll_iter -= 1
                                 x_init = [
                                     x_feo_bm_ii[jj, kk, ll_iter, mm, nn],
-                                    x_feo_fp_ii[jj, kk, ll_iter, mm,
-                                                nn], x_alo2_bm_ii[jj, kk, ll_iter, mm,
-                                                                  nn],
-                                    rho_bm_ii[jj, kk, ll_iter, mm,
-                                              nn], rho_fp_ii[jj, kk, ll_iter, mm, nn]
+                                    x_feo_fp_ii[jj, kk, ll_iter, mm, nn],
+                                    x_alo2_bm_ii[jj, kk, ll_iter, mm, nn],
+                                    rho_bm_ii[jj, kk, ll_iter, mm, nn],
+                                    rho_fp_ii[jj, kk, ll_iter, mm, nn],
                                 ]
 
                             # Calculating the composition of the rock assemblage
@@ -226,45 +224,54 @@ def _calc_mineral_composition(self, spin_config: np.ndarray, P_table: np.ndarray
                         # Updating starting conditions
                         x_init = [
                             x_feo_bm_ii[jj, kk, ll, mm, 0],
-                            x_feo_fp_ii[jj, kk, ll, mm, 0], x_alo2_bm_ii[jj, kk, ll, mm,
-                                                                         0],
-                            rho_bm_ii[jj, kk, ll, mm, 0], rho_fp_ii[jj, kk, ll, mm, 0]
+                            x_feo_fp_ii[jj, kk, ll, mm, 0],
+                            x_alo2_bm_ii[jj, kk, ll, mm, 0],
+                            rho_bm_ii[jj, kk, ll, mm, 0],
+                            rho_fp_ii[jj, kk, ll, mm, 0],
                         ]
                         nn_start = 0  # In case the calculation has been resumed
                     # End of Al content loop
 
                     # Updating starting conditions
                     x_init = [
-                        x_feo_bm_ii[jj, kk, ll, 0, 0], x_feo_fp_ii[jj, kk, ll, 0, 0],
-                        x_alo2_bm_ii[jj, kk, ll, 0, 0], rho_bm_ii[jj, kk, ll, 0, 0],
-                        rho_fp_ii[jj, kk, ll, 0, 0]
+                        x_feo_bm_ii[jj, kk, ll, 0, 0],
+                        x_feo_fp_ii[jj, kk, ll, 0, 0],
+                        x_alo2_bm_ii[jj, kk, ll, 0, 0],
+                        rho_bm_ii[jj, kk, ll, 0, 0],
+                        rho_fp_ii[jj, kk, ll, 0, 0],
                     ]
                     mm_start = 0  # In case the calculation has been resumed
                 # End of FeO content loop
 
                 # Updating starting conditions
                 x_init = [
-                    x_feo_bm_ii[jj, kk, 0, 0, 0], x_feo_fp_ii[jj, kk, 0, 0, 0],
-                    x_alo2_bm_ii[jj, kk, 0, 0, 0], rho_bm_ii[jj, kk, 0, 0, 0],
-                    rho_fp_ii[jj, kk, 0, 0, 0]
+                    x_feo_bm_ii[jj, kk, 0, 0, 0],
+                    x_feo_fp_ii[jj, kk, 0, 0, 0],
+                    x_alo2_bm_ii[jj, kk, 0, 0, 0],
+                    rho_bm_ii[jj, kk, 0, 0, 0],
+                    rho_fp_ii[jj, kk, 0, 0, 0],
                 ]
                 ll_start = 0  # In case the calculation has been resumed
             # End of Bm proportion loop
 
             # Updating starting conditions
             x_init = [
-                x_feo_bm_ii[jj, 0, 0, 0, 0], x_feo_fp_ii[jj, 0, 0, 0, 0],
-                x_alo2_bm_ii[jj, 0, 0, 0, 0], rho_bm_ii[jj, 0, 0, 0,
-                                                        0], rho_fp_ii[jj, 0, 0, 0, 0]
+                x_feo_bm_ii[jj, 0, 0, 0, 0],
+                x_feo_fp_ii[jj, 0, 0, 0, 0],
+                x_alo2_bm_ii[jj, 0, 0, 0, 0],
+                rho_bm_ii[jj, 0, 0, 0, 0],
+                rho_fp_ii[jj, 0, 0, 0, 0],
             ]
             kk_start = 0  # In case the calculation has been resumed
         # End of CaPv proportion loop
 
         # Updating starting conditions
         x_init = [
-            x_feo_bm_ii[0, 0, 0, 0, 0], x_feo_fp_ii[0, 0, 0, 0, 0],
-            x_alo2_bm_ii[0, 0, 0, 0, 0], rho_bm_ii[0, 0, 0, 0, 0], rho_fp_ii[0, 0, 0, 0,
-                                                                             0]
+            x_feo_bm_ii[0, 0, 0, 0, 0],
+            x_feo_fp_ii[0, 0, 0, 0, 0],
+            x_alo2_bm_ii[0, 0, 0, 0, 0],
+            rho_bm_ii[0, 0, 0, 0, 0],
+            rho_fp_ii[0, 0, 0, 0, 0],
         ]
         jj_start = 0  # In case the calculation has been resumed
     # End of temperature loop
