@@ -37,11 +37,13 @@ import os
 from ._spin_configuration import _calc_spin_configuration
 from ._mineral_composition import _calc_mineral_composition
 from ._seismic_anomalies import _calc_seismic_anomalies
-#======================================================================================#
+
+
+# ==================================================================================== #
 #                                                                                      #
 #                    Starting implementation of the simulator class                    #
 #                                                                                      #
-#======================================================================================#
+# ==================================================================================== #
 class MineralProperties:
     """Calculates mineral properties of lower mantle compositions.
 
@@ -97,7 +99,7 @@ class MineralProperties:
                  Default to 160. [GPa]
         v_mgo_0: Volume of MgO at ambient conditions. Default to 11.25. [cm^3/mol]
         k_feo_ls_0: Isothermal bulk modulus of FeO in the low spin state at ambient
-                    conditions. Default to 150. [GPa] 
+                    conditions. Default to 150. [GPa]
         v_feo_ls_0: Volume of FeO in the low spin state at ambient conditions.
                     Default to 10.82. [cm^3/mol]
         k_feo_hs_0: Isothermal bulk modulus of FeO in the high spin state at ambient
@@ -183,7 +185,7 @@ class MineralProperties:
         dT_max: Maximum temperature contrast against the ambient mantle assumed for the
                 considered compositions. Default to 1000. [K]
         delta_dT: Step value for the temperature contrast against the ambient mantle.
-                  Default to 100. [K] 
+                  Default to 100. [K]
         iron_content_min: Minimum FeO content assumed for the considered compositions.
                           Default to 0.08. [wt%]
         iron_content_max: Maximum FeO content assumed for the considered compositions.
@@ -204,7 +206,8 @@ class MineralProperties:
         delta_P: Step value for the pressure in the spin transition calculation.
                  Default to 2.0. [GPa]
     """
-    def __init__(self, prop: dict={}):
+
+    def __init__(self, prop: dict = {}):
         """Initializes mineral properties.
 
         This function initializes all the properties required for the simulator. Default
@@ -234,83 +237,83 @@ class MineralProperties:
         self.path = prop.get("path", result_path)
 
         # Gas constant
-        self.R = 8.31446*10**(-3)
+        self.R = 8.31446 * 10**(-3)
 
         # Parameters related to the spin transition
-        self.xi = prop.get("xi", 1.5) # Sturhahn 2005
-        self.delta_0 = prop.get("delta_0", 1.35) # Sturhahn 2005
-        self.v_trans = prop.get("v_trans", 59.) # Fei 2007
+        self.xi = prop.get("xi", 1.5)  # Sturhahn 2005
+        self.delta_0 = prop.get("delta_0", 1.35)  # Sturhahn 2005
+        self.v_trans = prop.get("v_trans", 59.)  # Fei 2007
 
         # Parameters of the considered ambient mantle
-        self.p_capv_am = prop.get("p_capv_am", 0.07) # Irifune 1994, 2010
-        self.iron_content_am = prop.get("iron_content_am", 0.08) # Irifune 2010
-        self.p_bm_am = prop.get("p_bm_am", 0.75) # Irifune 2010
-        self.al_content_am = prop.get("al_content_am", 0.036) # Irifune 2010
-        self.kd_ref_am = prop.get("kd_ref_am", 0.5) # Piet 2016
-        self.ratio_fe_bm_am = prop.get("ratio_fe_bm_am", 0.5) # Piet 2016
+        self.p_capv_am = prop.get("p_capv_am", 0.07)  # Irifune 1994, 2010
+        self.iron_content_am = prop.get("iron_content_am", 0.08)  # Irifune 2010
+        self.p_bm_am = prop.get("p_bm_am", 0.75)  # Irifune 2010
+        self.al_content_am = prop.get("al_content_am", 0.036)  # Irifune 2010
+        self.kd_ref_am = prop.get("kd_ref_am", 0.5)  # Piet 2016
+        self.ratio_fe_bm_am = prop.get("ratio_fe_bm_am", 0.5)  # Piet 2016
 
         # EOS parameters for Bridgmanite
-        self.k0t_prime_bm = prop.get("k0t_prime_bm", 3.7) # Fiquet 2000
-        self.theta_bm_0 = prop.get("theta_bm_0", 1100.) # Fiquet 2000
-        self.gamma_bm_0 = prop.get("gamma_bm_0", 1.4) # Fiquet 2000
-        self.q_bm = prop.get("q_bm", 1.4) # Fiquet 2000
+        self.k0t_prime_bm = prop.get("k0t_prime_bm", 3.7)  # Fiquet 2000
+        self.theta_bm_0 = prop.get("theta_bm_0", 1100.)  # Fiquet 2000
+        self.gamma_bm_0 = prop.get("gamma_bm_0", 1.4)  # Fiquet 2000
+        self.q_bm = prop.get("q_bm", 1.4)  # Fiquet 2000
 
         # EOS parameters for Ferropericlase
-        self.k0t_prime_fp = prop.get("k0t_prime_fp", 4.0) # Jackson 1982
-        self.theta_fp_0 = prop.get("theta_fp_0", 673) # Jackson 1982
-        self.gamma_fp_0 = prop.get("gamma_fp_0", 1.41) # Jackson 1982
-        self.q_fp = prop.get("q_fp", 1.3) # Jackson 1982
+        self.k0t_prime_fp = prop.get("k0t_prime_fp", 4.0)  # Jackson 1982
+        self.theta_fp_0 = prop.get("theta_fp_0", 673)  # Jackson 1982
+        self.gamma_fp_0 = prop.get("gamma_fp_0", 1.41)  # Jackson 1982
+        self.q_fp = prop.get("q_fp", 1.3)  # Jackson 1982
 
         # EOS parameters for Calcio Perovskite
-        self.k0t_prime_capv = prop.get("k0t_prime_capv", 3.9) # Shim 2000
-        self.theta_capv_0 = prop.get("theta_capv_0", 1000.) # Shim 2000
-        self.gamma_capv_0 = prop.get("gamma_capv_0", 1.92) # Shim 2000
-        self.q_capv = prop.get("q_capv", 0.6) # Shim 2000
+        self.k0t_prime_capv = prop.get("k0t_prime_capv", 3.9)  # Shim 2000
+        self.theta_capv_0 = prop.get("theta_capv_0", 1000.)  # Shim 2000
+        self.gamma_capv_0 = prop.get("gamma_capv_0", 1.92)  # Shim 2000
+        self.q_capv = prop.get("q_capv", 0.6)  # Shim 2000
 
         # EOS parameters for various components
-        self.k_mgo_0 = prop.get("k_mgo_0", 160.) # Speziale 2001
-        self.v_mgo_0 = prop.get("v_mgo_0", 11.25) # Speziale 2001
-        self.k_feo_ls_0 = prop.get("k_feo_ls_0", 150.) # Fei 2007
-        self.v_feo_ls_0 = prop.get("v_feo_ls_0", 10.82) # Fei 2007
-        self.k_feo_hs_0 = prop.get("k_feo_hs_0", 150.) # Fei 2007
-        self.v_feo_hs_0 = prop.get("v_feo_hs_0", 12.18) # Fei 2007
-        self.k_mgsio3_0 = prop.get("k_mgsio3_0", 261.) # Lundin 2008
-        self.v_mgsio3_0 = prop.get("v_mgsio3_0", 24.43) # Lundin 2008
-        self.k_fesio3_0 = prop.get("k_fesio3_0", 248.) # Lundin 2008
-        self.v_fesio3_0 = prop.get("v_fesio3_0", 25.44) # Lundin 2008
-        self.k_fe2o3_0 = prop.get("k_fe2o3_0", 95.) # Catalli 2010
-        self.v_fe2o3_0 = prop.get("v_fe2o3_0", 30.6) # Catalli 2010
-        self.k_fealo3_0 = prop.get("k_fealo3_0", 271.) # Catalli 2011
-        self.v_fealo3_0 = prop.get("v_fealo3_0", 28.21) # Catalli 2011
-        self.k_al2o3_0 = prop.get("k_al2o3_0", 137.) # Catalli 2011
-        self.v_al2o3_0 = prop.get("v_al2o3_0", 26.74) # Catalli 2011
-        self.k_casio3_0 = prop.get("k_casio3_0", 236.) # Shin 2000
-        self.v_casio3_0 = prop.get("v_casio3_0", 27.45) # Shin 2000
+        self.k_mgo_0 = prop.get("k_mgo_0", 160.)  # Speziale 2001
+        self.v_mgo_0 = prop.get("v_mgo_0", 11.25)  # Speziale 2001
+        self.k_feo_ls_0 = prop.get("k_feo_ls_0", 150.)  # Fei 2007
+        self.v_feo_ls_0 = prop.get("v_feo_ls_0", 10.82)  # Fei 2007
+        self.k_feo_hs_0 = prop.get("k_feo_hs_0", 150.)  # Fei 2007
+        self.v_feo_hs_0 = prop.get("v_feo_hs_0", 12.18)  # Fei 2007
+        self.k_mgsio3_0 = prop.get("k_mgsio3_0", 261.)  # Lundin 2008
+        self.v_mgsio3_0 = prop.get("v_mgsio3_0", 24.43)  # Lundin 2008
+        self.k_fesio3_0 = prop.get("k_fesio3_0", 248.)  # Lundin 2008
+        self.v_fesio3_0 = prop.get("v_fesio3_0", 25.44)  # Lundin 2008
+        self.k_fe2o3_0 = prop.get("k_fe2o3_0", 95.)  # Catalli 2010
+        self.v_fe2o3_0 = prop.get("v_fe2o3_0", 30.6)  # Catalli 2010
+        self.k_fealo3_0 = prop.get("k_fealo3_0", 271.)  # Catalli 2011
+        self.v_fealo3_0 = prop.get("v_fealo3_0", 28.21)  # Catalli 2011
+        self.k_al2o3_0 = prop.get("k_al2o3_0", 137.)  # Catalli 2011
+        self.v_al2o3_0 = prop.get("v_al2o3_0", 26.74)  # Catalli 2011
+        self.k_casio3_0 = prop.get("k_casio3_0", 236.)  # Shin 2000
+        self.v_casio3_0 = prop.get("v_casio3_0", 27.45)  # Shin 2000
 
         # Shear modulus parameters for various components
-        self.g_mgo_0 = prop.get("g_mgo_0", 131.) # Murakami 2009
-        self.g_prime_mgo = prop.get("g_prime_mgo", 1.92) # Murakami 2009
-        self.g_feo_hs_0 = prop.get("g_feo_hs_0", 29.9) # Murakami 2012
-        self.g_prime_feo_hs = prop.get("g_prime_feo_hs", 6.26) # Murakami 2012
-        self.g_feo_ls_0 = prop.get("g_feo_ls_0", 119.) # Murakami 2012
-        self.g_prime_feo_ls = prop.get("g_prime_feo_ls", 3.90) # Murakami 2012
-        self.g_casio3_0 = prop.get("g_casio3_0", 135.) # Li 2006
-        self.g_prime_casio3 = prop.get("g_prime_casio3", 1.57) # Li 2006
-        self.g_mgsio3_0 = prop.get("g_mgsio3_0", 168.2) # Shukla 2015
-        self.g_prime_mgsio3 = prop.get("g_prime_mgsio3", 1.79) # Shukla 2015
-        self.g_fesio3_0 = prop.get("g_fesio3_0", 145.7) # Shukla 2015
-        self.g_prime_fesio3 = prop.get("g_prime_fesio3", 1.87) # Shukla 2015
-        self.g_fealo3_0 = prop.get("g_fealo3_0", 95.3) # Shukla 2016
-        self.g_prime_fealo3 = prop.get("g_prime_fealo3", 2.13) # Shukla 2016
-        self.g_fe2o3_0 = prop.get("g_fe2o3_0", 53.2) # Shukla 2016
-        self.g_prime_fe2o3 = prop.get("g_prime_fe2o3", 2.63) # Shukla 2016
-        self.g_al2o3_0 = prop.get("g_al2o3_0", 129.2) # Shukla 2016
-        self.g_prime_al2o3 = prop.get("g_prime_al2o3", 2.32) # Shukla 2016
+        self.g_mgo_0 = prop.get("g_mgo_0", 131.)  # Murakami 2009
+        self.g_prime_mgo = prop.get("g_prime_mgo", 1.92)  # Murakami 2009
+        self.g_feo_hs_0 = prop.get("g_feo_hs_0", 29.9)  # Murakami 2012
+        self.g_prime_feo_hs = prop.get("g_prime_feo_hs", 6.26)  # Murakami 2012
+        self.g_feo_ls_0 = prop.get("g_feo_ls_0", 119.)  # Murakami 2012
+        self.g_prime_feo_ls = prop.get("g_prime_feo_ls", 3.90)  # Murakami 2012
+        self.g_casio3_0 = prop.get("g_casio3_0", 135.)  # Li 2006
+        self.g_prime_casio3 = prop.get("g_prime_casio3", 1.57)  # Li 2006
+        self.g_mgsio3_0 = prop.get("g_mgsio3_0", 168.2)  # Shukla 2015
+        self.g_prime_mgsio3 = prop.get("g_prime_mgsio3", 1.79)  # Shukla 2015
+        self.g_fesio3_0 = prop.get("g_fesio3_0", 145.7)  # Shukla 2015
+        self.g_prime_fesio3 = prop.get("g_prime_fesio3", 1.87)  # Shukla 2015
+        self.g_fealo3_0 = prop.get("g_fealo3_0", 95.3)  # Shukla 2016
+        self.g_prime_fealo3 = prop.get("g_prime_fealo3", 2.13)  # Shukla 2016
+        self.g_fe2o3_0 = prop.get("g_fe2o3_0", 53.2)  # Shukla 2016
+        self.g_prime_fe2o3 = prop.get("g_prime_fe2o3", 2.63)  # Shukla 2016
+        self.g_al2o3_0 = prop.get("g_al2o3_0", 129.2)  # Shukla 2016
+        self.g_prime_al2o3 = prop.get("g_prime_al2o3", 2.32)  # Shukla 2016
 
         # Temperature derivative of the shear modulus
-        self.g_dot_bm = prop.get("g_dot_bm", -0.02) # Murakami 2012
-        self.g_dot_fp = prop.get("g_dot_fp", -0.02) # Murakami 2012
-        self.g_dot_capv = prop.get("g_dot_capv", -0.002) # Li 2006
+        self.g_dot_bm = prop.get("g_dot_bm", -0.02)  # Murakami 2012
+        self.g_dot_fp = prop.get("g_dot_fp", -0.02)  # Murakami 2012
+        self.g_dot_capv = prop.get("g_dot_capv", -0.002)  # Li 2006
 
         # Molar masses for various components
         self.m_mgo = 40.304
@@ -325,8 +328,7 @@ class MineralProperties:
         # Density of Calcio Perovskite at ambient conditions
         self.rho_capv_0 = 1000. * self.m_capv / self.v_casio3_0
 
-
-    def _load_conditions(self, conditions: dict={}):
+    def _load_conditions(self, conditions: dict = {}):
         """Initializes input conditions.
 
         This function initializes the input conditions for the simulator. Default values
@@ -369,8 +371,7 @@ class MineralProperties:
         self.delta_v_fp = conditions.get("delta_v_fp", 0.05)
         self.delta_P = conditions.get("delta_P", 2.0)
 
-
-    def calc_mineral_properties(self, conditions: dict={}):
+    def calc_mineral_properties(self, conditions: dict = {}):
         """Calculates the seismic anomalies of a wide range of mineral compositions.
 
         This function is the main function of the class and its purpose is to calculate
