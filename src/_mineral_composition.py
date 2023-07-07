@@ -534,20 +534,10 @@ def _solve_with_fp(
 
 
 def _set_eqs_with_fp(
-        self,
-        var_in: list,
-        dT: float,
-        p_capv: float,
-        p_bm: float,
-        p_fp: float,
-        feo: float,
-        al: float,
-        ratio_fe: float,
-        spin_config: np.ndarray,
-        P_table: np.ndarray,
-        rho_capv: float,
-        al_excess: bool,
-        testing: bool = False) -> list:
+        self, var_in: list, dT: float, p_capv: float, p_bm: float, p_fp: float,
+        feo: float, al: float, ratio_fe: float, spin_config: np.ndarray,
+        P_table: np.ndarray, rho_capv: float, al_excess: bool, testing: bool = False
+        ) -> list:
     """Implements the equations for the physics problem with Ferropericlase.
 
     This function calculates the residue for the system of equations governing the
@@ -657,9 +647,8 @@ def _set_eqs_with_fp(
         if (abs(P_table[index_T, index_P, index_x] - self.P_am) > self.delta_P):
             print("Error on P for the spin transition is large")
             print(
-                "Pressure for the spin configuration: `", P_table[index_T, index_P,
-                                                                  index_x],
-                "` actual pressure: `", self.P_am, "`")
+                P_table[index_T, index_P, index_x], ": Pressure for the spin"
+                " configuration, while the actual pressure is `", self.P_am, "`")
         elif ((self.x_feo_fp_vec[index_x] - x_feo_fp) > delta_x_feo_fp):
             print("Error on x for the spin transition is large")
             print(
