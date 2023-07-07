@@ -537,7 +537,7 @@ def _set_eqs_with_fp(
         self, var_in: list, dT: float, p_capv: float, p_bm: float, p_fp: float,
         feo: float, al: float, ratio_fe: float, spin_config: np.ndarray,
         P_table: np.ndarray, rho_capv: float, al_excess: bool, testing: bool = False
-        ) -> list:
+) -> list:
     """Implements the equations for the physics problem with Ferropericlase.
 
     This function calculates the residue for the system of equations governing the
