@@ -536,8 +536,7 @@ def _solve_with_fp(
 def _set_eqs_with_fp(
         self, var_in: list, dT: float, p_capv: float, p_bm: float, p_fp: float,
         feo: float, al: float, ratio_fe: float, spin_config: np.ndarray,
-        P_table: np.ndarray, rho_capv: float, al_excess: bool, testing: bool = False
-) -> list:
+        P_table: np.ndarray, rho_capv: float, al_excess: bool, testing: bool) -> list:
     """Implements the equations for the physics problem with Ferropericlase.
 
     This function calculates the residue for the system of equations governing the
@@ -839,8 +838,7 @@ def _set_eqs_without_fp(
     x_feo_bm, x_alo2_bm, rho_bm = var_in
 
     # Checking that input conditions makes sense
-    if ((rho_bm < 0.1) or (x_feo_bm < 0.0) or (x_feo_bm > 1.0) or (x_alo2_bm < 0.0) or
-            (x_alo2_bm > 1.0)):
+    if (rho_bm < .1 or x_feo_bm < 0 or x_feo_bm > 1 or x_alo2_bm < 0 or x_alo2_bm > 1):
         return None
 
     if (al_excess):
