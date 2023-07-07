@@ -515,7 +515,7 @@ def _solve_with_fp(
                 maxiter=1000)
 
             return solution
-        except:
+        except Exception:
             ### Solution has not been found ###
             # Setting random starting conditions
             x_init[0] = random.uniform(0.0, 1.0)
@@ -790,7 +790,7 @@ def _solve_without_fp(
                 maxiter=1000)
 
             return solution
-        except:
+        except Exception:
             ### Solution has not been found ###
             # Setting random starting conditions
             x_init[0] = random.uniform(0.0, 1.0)
@@ -844,7 +844,7 @@ def _set_eqs_without_fp(
 
     # Checking that input conditions makes sense
     if ((rho_bm < 0.1) or (x_feo_bm < 0.0) or (x_feo_bm > 1.0) or (x_alo2_bm < 0.0) or
-        (x_alo2_bm > 1.0)):
+            (x_alo2_bm > 1.0)):
         return None
 
     if (al_excess):
